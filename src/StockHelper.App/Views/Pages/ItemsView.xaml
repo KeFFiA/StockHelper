@@ -59,7 +59,7 @@
                             <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                         </DataGrid.InputBindings>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" SortMemberPath="Name">
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" MinWidth="200" SortMemberPath="Name">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Margin="8,0" VerticalAlignment="Center">
@@ -76,11 +76,11 @@
                                                 ElementStyle="{StaticResource Cell.Secondary}" />
                             <DataGridTextColumn Header="{x:Static res:Strings.Items_Category}" Width="1.2*" Binding="{Binding Category.Name}"
                                                 ElementStyle="{StaticResource Cell.Text}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Unit}" Width="80" Binding="{Binding Unit.Name}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Unit}" Width="Auto" MinWidth="70" Binding="{Binding Unit.Name}"
                                                 ElementStyle="{StaticResource Cell.Secondary}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_MinStock}" Width="120" SortMemberPath="MinStock" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_MinStock}" Width="Auto" MinWidth="100" SortMemberPath="MinStock" HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                 Binding="{Binding MinStock, Converter={StaticResource Decimal}}" ElementStyle="{StaticResource Cell.Number}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Price}" Width="120" SortMemberPath="Price" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Price}" Width="Auto" MinWidth="96" SortMemberPath="Price" HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                 Binding="{Binding Price, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}"
                                                 ElementStyle="{StaticResource Cell.Number}" />
                         </DataGrid.Columns>

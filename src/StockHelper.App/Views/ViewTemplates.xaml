@@ -17,6 +17,9 @@
     <DataTemplate DataType="{x:Type pages:CatalogsViewModel}">
         <views:CatalogsView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type pages:ReceiptsViewModel}">
+        <views:ReceiptsView />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type pages:UsersViewModel}">
         <views:UsersView />
     </DataTemplate>

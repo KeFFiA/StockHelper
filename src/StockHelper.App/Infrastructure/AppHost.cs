@@ -81,6 +81,7 @@ public static class AppHost
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<ItemsViewModel>();
         services.AddTransient<CatalogsViewModel>();
+        services.AddTransient<ReceiptsViewModel>();
         services.AddTransient<UsersViewModel>();
     }
 }

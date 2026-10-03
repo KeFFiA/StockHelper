@@ -52,7 +52,7 @@
 
         <!-- ===== Toast notifications ===== -->
         <ItemsControl Grid.Column="1" ItemsSource="{Binding Notifications.Items}"
-                      HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="24" MaxWidth="420"
+                      HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="24" MaxWidth="440"
                       ItemTemplate="{StaticResource NotificationTemplate}" />
     </Grid>
 </Window>

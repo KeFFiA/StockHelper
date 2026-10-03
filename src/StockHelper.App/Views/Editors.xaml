@@ -166,4 +166,78 @@
             </StackPanel>
         </StackPanel>
     </DataTemplate>
+
+    <!-- ===== Receipt ===== -->
+    <DataTemplate DataType="{x:Type pages:ReceiptEditorViewModel}">
+        <StackPanel>
+            <StackPanel IsEnabled="{Binding CanEdit}">
+                <StackPanel Style="{StaticResource Field}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Receipts_Item}" />
+                    <ComboBox ItemsSource="{Binding Items}" SelectedItem="{Binding Item}" DisplayMemberPath="Name"
+                              IsEditable="True" IsTextSearchEnabled="True" TextSearch.TextPath="Name"
+                              b:FocusBehavior.FocusOnLoad="True" />
+                </StackPanel>
+                <Grid Margin="{StaticResource Space.FieldBottom}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.FieldLabel}">
+                            <Run Text="{x:Static res:Strings.Receipts_Quantity}" />
+                            <Run Text="{Binding UnitName, Mode=OneWay, StringFormat=({0}), TargetNullValue=''}" />
+                        </TextBlock>
+                        <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Right" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Receipts_Price}" />
+                        <TextBox Text="{Binding Price, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Right" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AmountText}" HorizontalAlignment="Right" Margin="0,-8,0,12"
+                           Visibility="{Binding AmountText, Converter={StaticResource NullToCollapsed}}" />
+                <Grid Margin="{StaticResource Space.FieldBottom}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="90" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Receipts_Date}" />
+                        <DatePicker SelectedDate="{Binding Date}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Common_Time}" />
+                        <TextBox Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+                <StackPanel Style="{StaticResource Field}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Receipts_Location}" />
+                    <ComboBox ItemsSource="{Binding Locations}" SelectedItem="{Binding Location}" DisplayMemberPath="Name" />
+                </StackPanel>
+                <StackPanel Style="{StaticResource Field}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Items_Note}" />
+                    <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="56" />
+                </StackPanel>
+                <CheckBox Content="{x:Static res:Strings.Receipts_UpdateItemPrice}" IsChecked="{Binding UpdateItemPrice}" Margin="0,0,0,8" />
+                <CheckBox Content="{x:Static res:Strings.Receipts_AddAnother}" IsChecked="{Binding AddAnother}" Margin="0,0,0,16"
+                          Visibility="{Binding IsNew, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+
+            <ContentControl Content="{Binding ErrorMessage}" ContentTemplate="{StaticResource EditorErrorTemplate}" Focusable="False" />
+
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource Button.Accent}" Content="{x:Static res:Strings.Common_Save}" Command="{Binding SaveCommand}"
+                        IsDefault="True" Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibility}}" Margin="0,0,8,0" />
+                <Button Style="{StaticResource Button.Standard}" Content="{x:Static res:Strings.Common_Close}" Command="{Binding CancelCommand}" IsCancel="True" />
+            </StackPanel>
+
+            <StackPanel Margin="0,24,0,0" Visibility="{Binding CanDelete, Converter={StaticResource BoolToVisibility}}">
+                <Border Style="{StaticResource Divider}" Margin="0,0,0,12" />
+                <Button Style="{StaticResource Button.Danger}" Tag="{StaticResource Icon.Delete}" Content="{x:Static res:Strings.Common_Delete}"
+                        Command="{Binding DeleteCommand}" />
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
 </ResourceDictionary>

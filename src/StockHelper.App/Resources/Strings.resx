@@ -399,4 +399,97 @@
   <data name="DomainError_ArchivedReference" xml:space="preserve">
     <value>Выбранная запись находится в архиве.</value>
   </data>
+  <data name="Nav_Receipts" xml:space="preserve">
+    <value>Поступления</value>
+  </data>
+  <data name="Common_From" xml:space="preserve">
+    <value>с</value>
+  </data>
+  <data name="Common_To" xml:space="preserve">
+    <value>по</value>
+  </data>
+  <data name="Common_Time" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="Common_CreatedBy" xml:space="preserve">
+    <value>Автор</value>
+  </data>
+  <data name="Common_PeriodFormat" xml:space="preserve">
+    <value>Период: {0} — {1}</value>
+  </data>
+  <data name="Common_InvalidDateTime" xml:space="preserve">
+    <value>Укажите дату и время в формате ЧЧ:ММ.</value>
+  </data>
+  <data name="Period_7" xml:space="preserve">
+    <value>7 дней</value>
+  </data>
+  <data name="Period_30" xml:space="preserve">
+    <value>30 дней</value>
+  </data>
+  <data name="Period_90" xml:space="preserve">
+    <value>90 дней</value>
+  </data>
+  <data name="Period_All" xml:space="preserve">
+    <value>Всё время</value>
+  </data>
+  <data name="Receipts_Summary" xml:space="preserve">
+    <value>Записей: {0} · на сумму {1:N2}</value>
+  </data>
+  <data name="Receipts_Add" xml:space="preserve">
+    <value>Добавить поступление</value>
+  </data>
+  <data name="Receipts_NewHeading" xml:space="preserve">
+    <value>Новое поступление</value>
+  </data>
+  <data name="Receipts_EditHeading" xml:space="preserve">
+    <value>Поступление</value>
+  </data>
+  <data name="Receipts_Created" xml:space="preserve">
+    <value>Поступление добавлено</value>
+  </data>
+  <data name="Receipts_Date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="Receipts_Item" xml:space="preserve">
+    <value>Позиция</value>
+  </data>
+  <data name="Receipts_Quantity" xml:space="preserve">
+    <value>Количество</value>
+  </data>
+  <data name="Receipts_Price" xml:space="preserve">
+    <value>Цена за ед.</value>
+  </data>
+  <data name="Receipts_Amount" xml:space="preserve">
+    <value>Сумма</value>
+  </data>
+  <data name="Receipts_Location" xml:space="preserve">
+    <value>Место хранения</value>
+  </data>
+  <data name="Receipts_NoLocation" xml:space="preserve">
+    <value>Не указано</value>
+  </data>
+  <data name="Receipts_AmountPreview" xml:space="preserve">
+    <value>Сумма: {0:N2}</value>
+  </data>
+  <data name="Receipts_SelectItem" xml:space="preserve">
+    <value>Выберите позицию.</value>
+  </data>
+  <data name="Receipts_UpdateItemPrice" xml:space="preserve">
+    <value>Обновить цену позиции в справочнике</value>
+  </data>
+  <data name="Receipts_AddAnother" xml:space="preserve">
+    <value>Добавить следующее после сохранения</value>
+  </data>
+  <data name="Receipts_DeleteConfirm" xml:space="preserve">
+    <value>Удалить это поступление? Это повлияет на расчёт расхода.</value>
+  </data>
+  <data name="Receipts_SearchPlaceholder" xml:space="preserve">
+    <value>Позиция, примечание…</value>
+  </data>
+  <data name="Receipts_EmptyTitle" xml:space="preserve">
+    <value>Поступлений за период нет</value>
+  </data>
+  <data name="Receipts_EmptyHint" xml:space="preserve">
+    <value>Добавьте поступление или выберите другой период.</value>
+  </data>
 </root>
