@@ -22,6 +22,9 @@ public sealed record AppSettings
     public AppTheme Theme { get; init; } = AppTheme.System;
 
     public string? LastLogin { get; init; }
+
+    /// <summary>Navigation pane shows icons only.</summary>
+    public bool IsNavigationCollapsed { get; init; }
 }
 
 public interface ISettingsService

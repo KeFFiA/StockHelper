@@ -5,7 +5,8 @@
                     xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
                     xmlns:views="clr-namespace:StockHelper.App.Views.Pages"
                     xmlns:svc="clr-namespace:StockHelper.App.Services"
-                    xmlns:res="clr-namespace:StockHelper.App.Resources">
+                    xmlns:res="clr-namespace:StockHelper.App.Resources"
+                    xmlns:b="clr-namespace:StockHelper.App.Behaviors">
 
     <!-- ===== Pages ===== -->
     <DataTemplate DataType="{x:Type pages:DashboardViewModel}">
@@ -71,7 +72,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ShellUserTemplate" DataType="{x:Type vm:ShellViewModel}">
-        <Border Margin="0,12,0,0" Padding="10,10,4,10" CornerRadius="{StaticResource Radius.Card}"
+        <Border Margin="0,12,0,0" Padding="9,9,4,9" CornerRadius="{StaticResource Radius.Card}"
                 Background="{DynamicResource SubtleFillColorSecondaryBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -94,11 +95,8 @@
     </DataTemplate>
 
     <DataTemplate x:Key="NotificationTemplate" DataType="{x:Type svc:Notification}">
-        <Border x:Name="Root" Style="{StaticResource Card.Compact}" Margin="0,8,0,0" MinWidth="320"
-                Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.18" />
-            </Border.Effect>
+        <Border x:Name="Root" Style="{StaticResource Card.Compact}" Margin="0,8,0,0" MinWidth="320" b:Motion.OnLoaded="FadeUp"
+                Background="{DynamicResource Brush.Toast}" Effect="{DynamicResource Effect.Toast}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />

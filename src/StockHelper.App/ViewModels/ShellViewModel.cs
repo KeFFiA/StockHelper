@@ -6,6 +6,7 @@ using StockHelper.App.Infrastructure;
 using StockHelper.App.Resources;
 using StockHelper.App.Services;
 using StockHelper.App.ViewModels.Pages;
+using StockHelper.Core.Abstractions;
 using StockHelper.Core.Entities;
 using StockHelper.Core.Security;
 
@@ -28,16 +29,20 @@ public sealed partial class ShellViewModel : ViewModelBase
     private readonly INavigationService _navigation;
     private readonly ICurrentUserService _currentUser;
     private readonly IServiceProvider _services;
+    private readonly ISettingsService _settings;
 
     public ShellViewModel(
         INavigationService navigation,
         INotificationService notifications,
         ICurrentUserService currentUser,
-        IServiceProvider services)
+        IServiceProvider services,
+        ISettingsService settings)
     {
         _navigation = navigation;
         _currentUser = currentUser;
         _services = services;
+        _settings = settings;
+        IsNavigationCollapsed = settings.Current.IsNavigationCollapsed;
         Notifications = notifications;
         _navigation.Navigated += (_, _) => OnNavigated();
         _currentUser.Changed += (_, _) => OnUserChanged();
@@ -54,6 +59,14 @@ public sealed partial class ShellViewModel : ViewModelBase
     public ObservableCollection<NavItem> FooterItems { get; } = [];
 
     public PageViewModel? CurrentPage => _navigation.CurrentPage;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ToggleNavigationTooltip))]
+    public partial bool IsNavigationCollapsed { get; set; }
+
+    public string ToggleNavigationTooltip => IsNavigationCollapsed ? Strings.Shell_ExpandMenu : Strings.Shell_CollapseMenu;
+
+    public string VersionTooltip => $"{Strings.AppTitle} {AppInfo.Version}";
 
     public string? UserName => _currentUser.User?.DisplayName;
 
@@ -88,6 +101,13 @@ public sealed partial class ShellViewModel : ViewModelBase
             // Navigation was cancelled: restore the selection of the current page.
             OnNavigated();
         }
+    }
+
+    [RelayCommand]
+    private async Task ToggleNavigationAsync()
+    {
+        IsNavigationCollapsed = !IsNavigationCollapsed;
+        await _settings.SaveAsync(_settings.Current with { IsNavigationCollapsed = IsNavigationCollapsed });
     }
 
     [RelayCommand]

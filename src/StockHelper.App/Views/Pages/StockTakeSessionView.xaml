@@ -23,7 +23,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="Root" Background="Transparent" BorderThickness="0,0,0,1"
-                                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                BorderBrush="{DynamicResource Brush.Divider}">
                             <Grid>
                                 <Border x:Name="Focus" Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0" />
                                 <ContentPresenter />
@@ -152,7 +152,7 @@
         <!-- Count table -->
         <Border Grid.Row="3" Style="{StaticResource Card.Flush}">
             <DockPanel>
-                <Border DockPanel.Dock="Top" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                <Border DockPanel.Dock="Top" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Brush.Divider}"
                         Background="{DynamicResource SubtleFillColorSecondaryBrush}" Padding="16,10" CornerRadius="8,8,0,0">
                     <Grid TextElement.FontWeight="SemiBold" TextElement.FontSize="{StaticResource FontSize.Caption}">
                         <Grid.ColumnDefinitions>

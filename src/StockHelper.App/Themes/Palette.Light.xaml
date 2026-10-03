@@ -1,0 +1,25 @@
+<!--
+    Surface palette for the light theme. Swapped by ThemeService together with the Fluent theme.
+    Keys must match Palette.Dark.xaml. Accent and text colors still come from the Fluent theme.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <!-- Window / navigation pane -->
+    <SolidColorBrush x:Key="Brush.AppBackground" Color="#E9EDF2" />
+    <!-- Page area behind cards -->
+    <SolidColorBrush x:Key="Brush.ContentBackground" Color="#F4F6F9" />
+    <SolidColorBrush x:Key="Brush.ContentStroke" Color="#DCE1E8" />
+    <!-- Cards, panels, tables -->
+    <SolidColorBrush x:Key="Brush.CardBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.CardStroke" Color="#DFE3E9" />
+    <SolidColorBrush x:Key="Brush.GridHeader" Color="#F2F4F7" />
+    <SolidColorBrush x:Key="Brush.Divider" Color="#E8EBF0" />
+    <!-- Hover / pressed overlays for custom templates -->
+    <SolidColorBrush x:Key="Brush.Hover" Color="#0F1F3A" Opacity="0.05" />
+    <SolidColorBrush x:Key="Brush.Pressed" Color="#0F1F3A" Opacity="0.09" />
+    <SolidColorBrush x:Key="Brush.SegmentBackground" Color="#E6EAF0" />
+    <SolidColorBrush x:Key="Brush.SegmentSelected" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Toast" Color="#FFFFFF" />
+    <DropShadowEffect x:Key="Effect.Toast" Color="#1A2433" BlurRadius="30" ShadowDepth="6" Direction="270" Opacity="0.16" />
+</ResourceDictionary>

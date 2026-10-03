@@ -960,4 +960,13 @@
   <data name="Hotkey_Escape" xml:space="preserve">
     <value>Очистить поиск, закрыть панель редактирования</value>
   </data>
+  <data name="Shell_CollapseMenu" xml:space="preserve">
+    <value>Свернуть меню (Ctrl+B)</value>
+  </data>
+  <data name="Shell_ExpandMenu" xml:space="preserve">
+    <value>Развернуть меню (Ctrl+B)</value>
+  </data>
+  <data name="Hotkey_ToggleMenu" xml:space="preserve">
+    <value>Свернуть или развернуть меню</value>
+  </data>
 </root>

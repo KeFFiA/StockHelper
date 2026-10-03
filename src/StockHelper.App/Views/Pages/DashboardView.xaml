@@ -18,14 +18,14 @@
                     <ControlTemplate TargetType="HeaderedContentControl">
                         <Border Style="{StaticResource Card}" Margin="0,0,16,0">
                             <DockPanel>
-                                <Border DockPanel.Dock="Left" Width="44" Height="44" CornerRadius="22" VerticalAlignment="Top" Margin="0,0,14,0">
+                                <Border DockPanel.Dock="Left" Width="44" Height="44" CornerRadius="22" VerticalAlignment="Center" Margin="0,0,14,0">
                                     <Grid>
                                         <Border CornerRadius="22" Background="{TemplateBinding Foreground}" Opacity="0.14" />
                                         <TextBlock Style="{StaticResource Icon}" FontSize="18" HorizontalAlignment="Center"
                                                    Text="{TemplateBinding Tag}" Foreground="{TemplateBinding Foreground}" />
                                     </Grid>
                                 </Border>
-                                <StackPanel>
+                                <StackPanel VerticalAlignment="Center">
                                     <TextBlock Style="{StaticResource Text.Secondary}" Text="{TemplateBinding Header}" TextWrapping="Wrap" />
                                     <ContentPresenter Margin="0,4,0,0" TextElement.FontSize="26" TextElement.FontWeight="SemiBold"
                                                       TextElement.FontFamily="{StaticResource Font.Display}"
@@ -39,7 +39,7 @@
         </Style>
 
         <DataTemplate x:Key="StatusRow" DataType="{x:Type core:ItemStockStatus}">
-            <Border Padding="0,10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+            <Border Padding="0,10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Brush.Divider}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -67,7 +67,7 @@
             <!-- Greeting + quick actions -->
             <DockPanel Margin="0,0,0,24">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
-                    <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Receipts}" Content="{x:Static res:Strings.Receipts_Add}"
+                    <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Receipts}" Content="{x:Static res:Strings.Nav_Receipts}"
                             Command="{Binding GoToReceiptsCommand}" Visibility="{Binding CanAddReceipt, Converter={StaticResource BoolToVisibility}}" />
                     <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.StockTakes}" Margin="{StaticResource Space.ButtonGap}"
                             Content="{x:Static res:Strings.Nav_StockTakes}" Command="{Binding GoToStockTakesCommand}"

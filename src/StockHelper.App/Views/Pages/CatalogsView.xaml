@@ -6,6 +6,7 @@
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
              xmlns:controls="clr-namespace:StockHelper.App.Controls"
              xmlns:res="clr-namespace:StockHelper.App.Resources"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:CatalogsViewModel}">
     <UserControl.Resources>
@@ -100,6 +101,6 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <ContentControl Grid.Row="2" Content="{Binding SelectedSection}" Focusable="False" />
+        <ContentControl Grid.Row="2" Content="{Binding SelectedSection}" Focusable="False" b:Motion.OnContentChange="FadeUp" />
     </Grid>
 </UserControl>

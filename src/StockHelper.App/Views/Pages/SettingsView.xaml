@@ -105,7 +105,7 @@
                         <Button Style="{StaticResource Button.SubtleIcon}" Tag="{StaticResource Icon.Folder}" Content="{x:Static res:Strings.Settings_OpenFolder}"
                                 Command="{Binding OpenFolderCommand}" CommandParameter="backups" Margin="{StaticResource Space.ButtonGap}" />
                     </StackPanel>
-                    <Border BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" CornerRadius="{StaticResource Radius.Control}">
+                    <Border BorderThickness="1" BorderBrush="{DynamicResource Brush.CardStroke}" CornerRadius="{StaticResource Radius.Control}">
                         <Grid>
                             <ItemsControl ItemsSource="{Binding Backups}" MaxHeight="300">
                                 <ItemsControl.Template>
@@ -117,7 +117,7 @@
                                 </ItemsControl.Template>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Padding="14,8" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                        <Border Padding="14,8" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Brush.Divider}">
                                             <DockPanel>
                                                 <Button DockPanel.Dock="Right" Style="{StaticResource Button.Subtle}" Content="{x:Static res:Strings.Settings_Restore}"
                                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"

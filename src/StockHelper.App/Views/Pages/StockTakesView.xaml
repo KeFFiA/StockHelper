@@ -6,6 +6,7 @@
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
              xmlns:views="clr-namespace:StockHelper.App.Views.Pages"
              xmlns:res="clr-namespace:StockHelper.App.Resources"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:StockTakesViewModel}">
     <Grid>
@@ -90,7 +91,7 @@
         </Grid>
 
         <!-- ===== Counting session ===== -->
-        <views:StockTakeSessionView DataContext="{Binding Session}"
+        <views:StockTakeSessionView DataContext="{Binding Session}" b:Motion.OnVisible="FadeUp"
                                     Visibility="{Binding DataContext.Session, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToCollapsed}}" />
     </Grid>
 </UserControl>

@@ -33,6 +33,11 @@
     <Thickness x:Key="Space.IconGap">0,0,10,0</Thickness>
     <sys:Double x:Key="Space.Gutter">16</sys:Double>
 
+    <!-- Motion -->
+    <Duration x:Key="Duration.Fast">0:0:0.12</Duration>
+    <Duration x:Key="Duration.Normal">0:0:0.22</Duration>
+    <Duration x:Key="Duration.Slow">0:0:0.32</Duration>
+
     <!-- Radii -->
     <CornerRadius x:Key="Radius.Card">8</CornerRadius>
     <CornerRadius x:Key="Radius.Control">4</CornerRadius>
@@ -40,6 +45,8 @@
 
     <!-- Sizes -->
     <GridLength x:Key="Size.NavColumn">248</GridLength>
+    <sys:Double x:Key="Size.NavExpanded">224</sys:Double>
+    <sys:Double x:Key="Size.NavCollapsed">52</sys:Double>
     <sys:Double x:Key="Size.NavItemHeight">40</sys:Double>
     <sys:Double x:Key="Size.FieldWidth">320</sys:Double>
     <sys:Double x:Key="Size.DialogWidth">440</sys:Double>

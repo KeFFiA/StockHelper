@@ -12,6 +12,7 @@
         Width="900" Height="580"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
         FontFamily="{StaticResource Font.Text}"
         FontSize="{StaticResource FontSize.Body}">
     <Grid>
@@ -43,7 +44,7 @@
 
         <!-- Form -->
         <Grid Grid.Column="1" Margin="56,0">
-            <StackPanel VerticalAlignment="Center" MaxWidth="360">
+            <StackPanel VerticalAlignment="Center" MaxWidth="360" b:Motion.OnLoaded="FadeUp">
                 <TextBlock Style="{StaticResource Text.Title}" Text="{Binding Heading}" />
                 <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Subheading}" TextWrapping="Wrap" Margin="0,6,0,28" />
 

@@ -4,19 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:StockHelper.App.ViewModels"
-        xmlns:svc="clr-namespace:StockHelper.App.Services"
+        xmlns:b="clr-namespace:StockHelper.App.Behaviors"
+        xmlns:res="clr-namespace:StockHelper.App.Resources"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:ShellViewModel}"
         Title="{Binding AppTitle}"
         Width="1360" Height="840" MinWidth="1024" MinHeight="640"
         WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
         FontFamily="{StaticResource Font.Text}"
-        FontSize="{StaticResource FontSize.Body}">
+        FontSize="{StaticResource FontSize.Body}"
+        Background="{DynamicResource Brush.AppBackground}">
 
     <Window.InputBindings>
         <KeyBinding Gesture="Ctrl+N" Command="{Binding NewCommand}" />
         <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}" />
         <KeyBinding Gesture="Ctrl+E" Command="{Binding ExportCommand}" />
+        <KeyBinding Gesture="Ctrl+B" Command="{Binding ToggleNavigationCommand}" />
         <KeyBinding Gesture="Ctrl+D1" Command="{Binding NavigateByIndexCommand}" CommandParameter="1" />
         <KeyBinding Gesture="Ctrl+D2" Command="{Binding NavigateByIndexCommand}" CommandParameter="2" />
         <KeyBinding Gesture="Ctrl+D3" Command="{Binding NavigateByIndexCommand}" CommandParameter="3" />
@@ -30,22 +34,59 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{StaticResource Size.NavColumn}" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- ===== Navigation pane ===== -->
-        <DockPanel Margin="12,16,12,12">
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10,4,0,24">
-                <Border Width="32" Height="32" CornerRadius="{StaticResource Radius.Card}" Background="{DynamicResource AccentFillColorDefaultBrush}">
-                    <TextBlock Style="{StaticResource Icon}" Text="{StaticResource Icon.Items}" HorizontalAlignment="Center"
-                               Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
-                </Border>
-                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" FontSize="{StaticResource FontSize.BodyLarge}" Text="{Binding AppTitle}" />
-                    <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding Version, StringFormat=v{0}}" />
+        <!-- ===== Navigation pane (collapsible, width animated) ===== -->
+        <DockPanel x:Name="NavPane" Margin="12,12,12,12" ClipToBounds="True">
+            <DockPanel.Style>
+                <Style TargetType="DockPanel">
+                    <Setter Property="Width" Value="{StaticResource Size.NavExpanded}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Width" To="{StaticResource Size.NavCollapsed}" Duration="{StaticResource Duration.Normal}">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseInOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Width" To="{StaticResource Size.NavExpanded}" Duration="{StaticResource Duration.Normal}">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseInOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DockPanel.Style>
+
+            <!-- Header: brand; a click collapses / expands the menu -->
+            <Button DockPanel.Dock="Top" Style="{StaticResource Button.Subtle}" Padding="6" Margin="0,0,0,20"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                    Command="{Binding ToggleNavigationCommand}" ToolTip="{Binding ToggleNavigationTooltip}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="{StaticResource Size.NavExpanded}">
+                    <Border Width="32" Height="32" CornerRadius="{StaticResource Radius.Card}" Background="{DynamicResource AccentFillColorDefaultBrush}">
+                        <TextBlock Style="{StaticResource Icon}" Text="{StaticResource Icon.Items}" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                    </Border>
+                    <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource Text.BodyStrong}" FontSize="{StaticResource FontSize.BodyLarge}" Text="{Binding AppTitle}" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding Version, StringFormat=v{0}}" />
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Button>
 
             <!-- Footer: secondary items + current user -->
             <StackPanel DockPanel.Dock="Bottom">
@@ -58,16 +99,17 @@
 
         <!-- ===== Content ===== -->
         <Border Grid.Column="1"
-                Background="{DynamicResource LayerFillColorDefaultBrush}"
-                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                Background="{DynamicResource Brush.ContentBackground}"
+                BorderBrush="{DynamicResource Brush.ContentStroke}"
                 BorderThickness="1,1,0,0"
-                CornerRadius="8,0,0,0">
-            <ContentControl Content="{Binding CurrentPage}" Focusable="False" />
+                CornerRadius="8,0,0,0"
+                ClipToBounds="True">
+            <ContentControl Content="{Binding CurrentPage}" Focusable="False" b:Motion.OnContentChange="FadeUp" />
         </Border>
 
         <!-- ===== Toast notifications ===== -->
         <ItemsControl Grid.Column="1" ItemsSource="{Binding Notifications.Items}"
-                      HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="24" MaxWidth="440"
+                      HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="24" MaxWidth="460"
                       ItemTemplate="{StaticResource NotificationTemplate}" />
     </Grid>
 </Window>
