@@ -7,8 +7,6 @@ using Serilog;
 using StockHelper.App.Infrastructure;
 using StockHelper.App.Resources;
 using StockHelper.App.Services;
-using StockHelper.App.ViewModels;
-using StockHelper.App.Views;
 
 namespace StockHelper.App;
 
@@ -40,12 +38,7 @@ public partial class App : Application
             GlobalExceptionHandler.Register(this, _host.Services.GetRequiredService<IDialogService>());
             await _host.StartAsync();
 
-            var window = _host.Services.GetRequiredService<MainWindow>();
-            MainWindow = window;
-            window.Closed += (_, _) => Shutdown();
-            window.Show();
-
-            await _host.Services.GetRequiredService<ShellViewModel>().StartAsync();
+            await _host.Services.GetRequiredService<SessionCoordinator>().StartAsync();
         }
         catch (Exception ex)
         {

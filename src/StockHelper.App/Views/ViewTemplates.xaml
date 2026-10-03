@@ -4,11 +4,21 @@
                     xmlns:vm="clr-namespace:StockHelper.App.ViewModels"
                     xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
                     xmlns:views="clr-namespace:StockHelper.App.Views.Pages"
-                    xmlns:svc="clr-namespace:StockHelper.App.Services">
+                    xmlns:svc="clr-namespace:StockHelper.App.Services"
+                    xmlns:res="clr-namespace:StockHelper.App.Resources">
 
     <!-- ===== Pages ===== -->
     <DataTemplate DataType="{x:Type pages:DashboardViewModel}">
         <views:DashboardView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type pages:ItemsViewModel}">
+        <views:ItemsView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type pages:CatalogsViewModel}">
+        <views:CatalogsView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type pages:UsersViewModel}">
+        <views:UsersView />
     </DataTemplate>
 
     <!-- ===== Shell ===== -->
@@ -25,7 +35,28 @@
         </RadioButton>
     </DataTemplate>
 
-    <DataTemplate x:Key="ShellUserTemplate" DataType="{x:Type vm:ShellViewModel}" />
+    <DataTemplate x:Key="ShellUserTemplate" DataType="{x:Type vm:ShellViewModel}">
+        <Border Margin="0,12,0,0" Padding="10,10,4,10" CornerRadius="{StaticResource Radius.Card}"
+                Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border Width="34" Height="34" CornerRadius="17" Background="{DynamicResource AccentFillColorDefaultBrush}">
+                    <TextBlock Text="{Binding UserInitials}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                </Border>
+                <StackPanel Grid.Column="1" Margin="10,0,4,0" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding UserName}" />
+                    <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding UserRole, Converter={StaticResource EnumDisplay}}" />
+                </StackPanel>
+                <Button Grid.Column="2" Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.SignOut}"
+                        ToolTip="{x:Static res:Strings.Shell_SignOut}" Command="{Binding SignOutCommand}" />
+            </Grid>
+        </Border>
+    </DataTemplate>
 
     <DataTemplate x:Key="NotificationTemplate" DataType="{x:Type svc:Notification}">
         <Border x:Name="Root" Style="{StaticResource Card.Compact}" Margin="0,8,0,0" MinWidth="320"

@@ -45,4 +45,358 @@
   <data name="Nav_Dashboard" xml:space="preserve">
     <value>Главная</value>
   </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Common_Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="Common_Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Common_Archive" xml:space="preserve">
+    <value>В архив</value>
+  </data>
+  <data name="Common_Restore" xml:space="preserve">
+    <value>Вернуть из архива</value>
+  </data>
+  <data name="Common_Archived" xml:space="preserve">
+    <value>Архив</value>
+  </data>
+  <data name="Common_Active" xml:space="preserve">
+    <value>Активна</value>
+  </data>
+  <data name="Common_Status" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="Common_Name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="Common_Description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Common_Search" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="Common_Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Common_ResetFilter" xml:space="preserve">
+    <value>Сбросить фильтр</value>
+  </data>
+  <data name="Common_ShowArchived" xml:space="preserve">
+    <value>Показывать архивные</value>
+  </data>
+  <data name="Common_ExportExcel" xml:space="preserve">
+    <value>Экспорт в Excel</value>
+  </data>
+  <data name="Common_Saved" xml:space="preserve">
+    <value>Сохранено</value>
+  </data>
+  <data name="Common_ArchivedNotice" xml:space="preserve">
+    <value>Перенесено в архив</value>
+  </data>
+  <data name="Common_RestoredNotice" xml:space="preserve">
+    <value>Возвращено из архива</value>
+  </data>
+  <data name="Common_DeletedNotice" xml:space="preserve">
+    <value>Удалено</value>
+  </data>
+  <data name="Common_DiscardChanges" xml:space="preserve">
+    <value>Есть несохранённые изменения. Закрыть без сохранения?</value>
+  </data>
+  <data name="Common_Discard" xml:space="preserve">
+    <value>Не сохранять</value>
+  </data>
+  <data name="Common_EditHeading" xml:space="preserve">
+    <value>Редактирование</value>
+  </data>
+  <data name="Common_InvalidNumber" xml:space="preserve">
+    <value>Введите неотрицательное число, например 12,5.</value>
+  </data>
+  <data name="Common_NothingFound" xml:space="preserve">
+    <value>Ничего не найдено</value>
+  </data>
+  <data name="Nav_Items" xml:space="preserve">
+    <value>Позиции</value>
+  </data>
+  <data name="Nav_Catalogs" xml:space="preserve">
+    <value>Справочники</value>
+  </data>
+  <data name="Nav_Users" xml:space="preserve">
+    <value>Пользователи</value>
+  </data>
+  <data name="Shell_SignOut" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="Auth_Tagline" xml:space="preserve">
+    <value>Учёт расходных материалов: остатки, расход, прогноз и закупки — в одном месте.</value>
+  </data>
+  <data name="Auth_SetupHeading" xml:space="preserve">
+    <value>Добро пожаловать</value>
+  </data>
+  <data name="Auth_SetupSubheading" xml:space="preserve">
+    <value>Создайте учётную запись администратора. Она понадобится для управления пользователями и настройками.</value>
+  </data>
+  <data name="Auth_SetupSubmit" xml:space="preserve">
+    <value>Создать и войти</value>
+  </data>
+  <data name="Auth_SignInHeading" xml:space="preserve">
+    <value>Вход</value>
+  </data>
+  <data name="Auth_SignInSubheading" xml:space="preserve">
+    <value>Введите логин и пароль.</value>
+  </data>
+  <data name="Auth_SignInSubmit" xml:space="preserve">
+    <value>Войти</value>
+  </data>
+  <data name="Auth_Login" xml:space="preserve">
+    <value>Логин</value>
+  </data>
+  <data name="Auth_DisplayName" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="Auth_Password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="Auth_PasswordConfirm" xml:space="preserve">
+    <value>Повторите пароль</value>
+  </data>
+  <data name="Auth_FillAllFields" xml:space="preserve">
+    <value>Заполните все поля.</value>
+  </data>
+  <data name="Auth_PasswordsDoNotMatch" xml:space="preserve">
+    <value>Пароли не совпадают.</value>
+  </data>
+  <data name="UserRole_Administrator" xml:space="preserve">
+    <value>Администратор</value>
+  </data>
+  <data name="UserRole_Manager" xml:space="preserve">
+    <value>Руководитель</value>
+  </data>
+  <data name="UserRole_Storekeeper" xml:space="preserve">
+    <value>Кладовщик</value>
+  </data>
+  <data name="UserRole_Administrator_Description" xml:space="preserve">
+    <value>Полный доступ: пользователи, места хранения, резервные копии и настройки.</value>
+  </data>
+  <data name="UserRole_Manager_Description" xml:space="preserve">
+    <value>Справочники, переоткрытие инвентаризаций, отчёты.</value>
+  </data>
+  <data name="UserRole_Storekeeper_Description" xml:space="preserve">
+    <value>Поступления, ввод и завершение инвентаризаций, просмотр отчётов.</value>
+  </data>
+  <data name="Users_Subtitle" xml:space="preserve">
+    <value>Учётные записи и роли</value>
+  </data>
+  <data name="Users_Add" xml:space="preserve">
+    <value>Добавить пользователя</value>
+  </data>
+  <data name="Users_NewHeading" xml:space="preserve">
+    <value>Новый пользователь</value>
+  </data>
+  <data name="Users_User" xml:space="preserve">
+    <value>Пользователь</value>
+  </data>
+  <data name="Users_Role" xml:space="preserve">
+    <value>Роль</value>
+  </data>
+  <data name="Users_Active" xml:space="preserve">
+    <value>Активен</value>
+  </data>
+  <data name="Users_Inactive" xml:space="preserve">
+    <value>Отключён</value>
+  </data>
+  <data name="Users_IsActive" xml:space="preserve">
+    <value>Учётная запись активна</value>
+  </data>
+  <data name="Users_NewPassword" xml:space="preserve">
+    <value>Новый пароль</value>
+  </data>
+  <data name="Users_PasswordHint" xml:space="preserve">
+    <value>Оставьте пустым, чтобы не менять пароль.</value>
+  </data>
+  <data name="Items_Summary" xml:space="preserve">
+    <value>Показано {0} из {1}</value>
+  </data>
+  <data name="Items_Add" xml:space="preserve">
+    <value>Добавить позицию</value>
+  </data>
+  <data name="Items_NewHeading" xml:space="preserve">
+    <value>Новая позиция</value>
+  </data>
+  <data name="Items_EditHeading" xml:space="preserve">
+    <value>Позиция</value>
+  </data>
+  <data name="Items_Created" xml:space="preserve">
+    <value>Позиция добавлена</value>
+  </data>
+  <data name="Items_Name" xml:space="preserve">
+    <value>Наименование</value>
+  </data>
+  <data name="Items_Code" xml:space="preserve">
+    <value>Артикул</value>
+  </data>
+  <data name="Items_Category" xml:space="preserve">
+    <value>Категория</value>
+  </data>
+  <data name="Items_Unit" xml:space="preserve">
+    <value>Ед. изм.</value>
+  </data>
+  <data name="Items_MinStock" xml:space="preserve">
+    <value>Мин. остаток</value>
+  </data>
+  <data name="Items_Price" xml:space="preserve">
+    <value>Цена</value>
+  </data>
+  <data name="Items_PriceHint" xml:space="preserve">
+    <value>Текущая цена за единицу. Используется для оценки стоимости расхода.</value>
+  </data>
+  <data name="Items_Note" xml:space="preserve">
+    <value>Примечание</value>
+  </data>
+  <data name="Items_SearchPlaceholder" xml:space="preserve">
+    <value>Название, артикул, категория…</value>
+  </data>
+  <data name="Items_AllCategories" xml:space="preserve">
+    <value>Все категории</value>
+  </data>
+  <data name="Items_SelectCategoryAndUnit" xml:space="preserve">
+    <value>Выберите категорию и единицу измерения.</value>
+  </data>
+  <data name="Items_ArchiveConfirm" xml:space="preserve">
+    <value>Перенести «{0}» в архив? Позиция не будет участвовать в инвентаризациях и закупках, история сохранится.</value>
+  </data>
+  <data name="Items_DeleteConfirm" xml:space="preserve">
+    <value>Удалить позицию «{0}»? Это действие нельзя отменить.</value>
+  </data>
+  <data name="Items_DeleteHasHistory" xml:space="preserve">
+    <value>По позиции есть поступления или инвентаризации, поэтому её нельзя удалить. Перенесите её в архив.</value>
+  </data>
+  <data name="Items_EmptyTitle" xml:space="preserve">
+    <value>Позиций пока нет</value>
+  </data>
+  <data name="Items_EmptyHint" xml:space="preserve">
+    <value>Добавьте первую позицию или измените условия поиска.</value>
+  </data>
+  <data name="Catalogs_Categories" xml:space="preserve">
+    <value>Категории</value>
+  </data>
+  <data name="Catalogs_Units" xml:space="preserve">
+    <value>Единицы измерения</value>
+  </data>
+  <data name="Catalogs_Locations" xml:space="preserve">
+    <value>Места хранения</value>
+  </data>
+  <data name="Catalogs_CategoryNew" xml:space="preserve">
+    <value>Новая категория</value>
+  </data>
+  <data name="Catalogs_UnitNew" xml:space="preserve">
+    <value>Новая единица</value>
+  </data>
+  <data name="Catalogs_LocationNew" xml:space="preserve">
+    <value>Новое место хранения</value>
+  </data>
+  <data name="Catalogs_CategoryHint" xml:space="preserve">
+    <value>Группы позиций для фильтров и отчётов</value>
+  </data>
+  <data name="Catalogs_UnitHint" xml:space="preserve">
+    <value>Единицы, в которых ведётся учёт позиций</value>
+  </data>
+  <data name="Catalogs_LocationHint" xml:space="preserve">
+    <value>Где лежат расходники. Остаток по позиции — сумма по всем местам</value>
+  </data>
+  <data name="Catalogs_DeleteInUse" xml:space="preserve">
+    <value>Запись уже используется, поэтому её нельзя удалить. Перенесите её в архив.</value>
+  </data>
+  <data name="Catalogs_DeleteConfirm" xml:space="preserve">
+    <value>Удалить «{0}»? Это действие нельзя отменить.</value>
+  </data>
+  <data name="Export_Filter" xml:space="preserve">
+    <value>Книга Excel (*.xlsx)|*.xlsx</value>
+  </data>
+  <data name="Export_Done" xml:space="preserve">
+    <value>Файл сохранён</value>
+  </data>
+  <data name="Export_Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="Export_FileLocked" xml:space="preserve">
+    <value>Не удалось сохранить файл. Возможно, он открыт в другой программе.</value>
+  </data>
+  <data name="Export_GeneratedAt" xml:space="preserve">
+    <value>Сформировано {0:dd.MM.yyyy HH:mm}</value>
+  </data>
+  <data name="Seed_Units" xml:space="preserve">
+    <value>шт|уп|пачка|л|кг|м|пара|рулон|комплект</value>
+  </data>
+  <data name="Seed_Categories" xml:space="preserve">
+    <value>Канцелярия|Расходники для принтеров|Хозяйственные товары</value>
+  </data>
+  <data name="Seed_DefaultLocation" xml:space="preserve">
+    <value>Основной склад</value>
+  </data>
+  <data name="DomainError_NameRequired" xml:space="preserve">
+    <value>Укажите название.</value>
+  </data>
+  <data name="DomainError_NameNotUnique" xml:space="preserve">
+    <value>Запись с таким названием уже существует.</value>
+  </data>
+  <data name="DomainError_LoginNotUnique" xml:space="preserve">
+    <value>Пользователь с таким логином уже существует.</value>
+  </data>
+  <data name="DomainError_InvalidCredentials" xml:space="preserve">
+    <value>Неверный логин или пароль.</value>
+  </data>
+  <data name="DomainError_UserInactive" xml:space="preserve">
+    <value>Учётная запись отключена. Обратитесь к администратору.</value>
+  </data>
+  <data name="DomainError_PasswordTooShort" xml:space="preserve">
+    <value>Пароль должен содержать не менее 4 символов.</value>
+  </data>
+  <data name="DomainError_QuantityMustBePositive" xml:space="preserve">
+    <value>Количество должно быть больше нуля.</value>
+  </data>
+  <data name="DomainError_QuantityCannotBeNegative" xml:space="preserve">
+    <value>Количество не может быть отрицательным.</value>
+  </data>
+  <data name="DomainError_PriceCannotBeNegative" xml:space="preserve">
+    <value>Цена не может быть отрицательной.</value>
+  </data>
+  <data name="DomainError_NotFound" xml:space="preserve">
+    <value>Запись не найдена. Возможно, её удалил другой пользователь.</value>
+  </data>
+  <data name="DomainError_InUse" xml:space="preserve">
+    <value>Запись используется и не может быть удалена.</value>
+  </data>
+  <data name="DomainError_StockTakeCompleted" xml:space="preserve">
+    <value>Инвентаризация завершена. Чтобы изменить её, сначала переоткройте её.</value>
+  </data>
+  <data name="DomainError_StockTakeNotCompleted" xml:space="preserve">
+    <value>Инвентаризация ещё не завершена.</value>
+  </data>
+  <data name="DomainError_DraftStockTakeExists" xml:space="preserve">
+    <value>Уже есть незавершённая инвентаризация. Завершите или удалите её.</value>
+  </data>
+  <data name="DomainError_StockTakeDateConflict" xml:space="preserve">
+    <value>На это время уже есть другая инвентаризация.</value>
+  </data>
+  <data name="DomainError_AccessDenied" xml:space="preserve">
+    <value>Недостаточно прав для этого действия.</value>
+  </data>
+  <data name="DomainError_CannotDeactivateSelf" xml:space="preserve">
+    <value>Нельзя отключить себя или снять с себя роль администратора.</value>
+  </data>
+  <data name="DomainError_LastAdministrator" xml:space="preserve">
+    <value>Должен остаться хотя бы один активный администратор.</value>
+  </data>
+  <data name="DomainError_ArchivedReference" xml:space="preserve">
+    <value>Выбранная запись находится в архиве.</value>
+  </data>
 </root>

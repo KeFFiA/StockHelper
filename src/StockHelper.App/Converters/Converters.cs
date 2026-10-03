@@ -83,3 +83,33 @@ public sealed class ResourceKeyToValueConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+
+/// <summary>Displays an enum value using the "{EnumType}_{Value}" string from Strings.resx.</summary>
+public sealed class EnumDisplayConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is Enum e ? EnumDisplay.Get(e) : value;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
+public static class EnumDisplay
+{
+    public static string Get(Enum value) =>
+        Resources.Strings.ResourceManager.GetString($"{value.GetType().Name}_{value}", Resources.Strings.Culture) ?? value.ToString();
+}
+
+/// <summary>Formats decimals compactly ("12,5" instead of "12,5000").</summary>
+public sealed class DecimalConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => value switch
+    {
+        decimal d => d.ToString(parameter as string ?? "#,0.####", culture),
+        null => string.Empty,
+        _ => value,
+    };
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}

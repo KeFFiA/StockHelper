@@ -64,6 +64,7 @@
         <Setter Property="FontFamily" Value="{StaticResource Font.Icons}" />
         <Setter Property="FontSize" Value="{StaticResource FontSize.Icon}" />
         <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
     </Style>
 
     <Style x:Key="Icon.Large" TargetType="TextBlock" BasedOn="{StaticResource Icon}">
@@ -266,6 +267,94 @@
         <Setter Property="EnableRowVirtualization" Value="True" />
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="RowStyle" Value="{DynamicResource Grid.Row}" />
+        <Setter Property="CellStyle" Value="{DynamicResource Grid.Cell}" />
+    </Style>
+
+    <!-- Rows: subtle hover, accent-tinted selection that keeps text readable in both themes. -->
+    <Style x:Key="Grid.Row" TargetType="DataGridRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="ValidationErrorTemplate" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridRow">
+                    <Border x:Name="RowBorder" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                        <Grid>
+                            <!-- Accent tint layer: follows the Windows accent color and theme. -->
+                            <Border x:Name="SelectionFill" Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0" />
+                            <SelectiveScrollingGrid>
+                                <SelectiveScrollingGrid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </SelectiveScrollingGrid.ColumnDefinitions>
+                                <SelectiveScrollingGrid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </SelectiveScrollingGrid.RowDefinitions>
+                                <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" Visibility="{TemplateBinding DetailsVisibility}" />
+                                <DataGridRowHeader Grid.RowSpan="2" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
+                                                   Visibility="Collapsed" />
+                            </SelectiveScrollingGrid>
+                            <Border x:Name="Indicator" Width="3" Height="16" CornerRadius="2" HorizontalAlignment="Left"
+                                    Background="{DynamicResource AccentFillColorDefaultBrush}" Visibility="Collapsed" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Indicator" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SelectionFill" Property="Opacity" Value="0.16" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="SelectionFill" Property="Opacity" Value="0.24" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Grid.Cell" TargetType="DataGridCell">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=DataGridRow}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="{TemplateBinding Background}" BorderThickness="0" SnapsToDevicePixels="True">
+                        <ContentPresenter VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Editable cell: visible input frame on focus. -->
+    <Style x:Key="Grid.EditableCell" TargetType="DataGridCell" BasedOn="{StaticResource Grid.Cell}">
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Grid.HeaderRight" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+        <Setter Property="HorizontalContentAlignment" Value="Right" />
+        <Setter Property="Padding" Value="8,0,8,0" />
     </Style>
 
     <Style x:Key="Grid.ReadOnly" TargetType="DataGrid" BasedOn="{StaticResource Grid.Data}">
@@ -284,6 +373,198 @@
     </Style>
     <Style x:Key="Cell.Secondary" TargetType="TextBlock" BasedOn="{StaticResource Cell.Text}">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+    </Style>
+
+    <!-- ===== Page layout ===== -->
+    <!-- Page header: Header = title, Tag = subtitle, Content = actions (right-aligned). -->
+    <Style x:Key="PageHeader" TargetType="HeaderedContentControl">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Margin" Value="0,0,0,20" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="HeaderedContentControl">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Bottom">
+                            <TextBlock Style="{StaticResource Text.Title}" Text="{TemplateBinding Header}" />
+                            <TextBlock x:Name="Subtitle" Style="{StaticResource Text.Secondary}" Margin="0,4,0,0"
+                                       Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </StackPanel>
+                        <ContentPresenter Grid.Column="1" VerticalAlignment="Bottom" Margin="24,0,0,0" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Tag" Value="{x:Null}">
+                            <Setter TargetName="Subtitle" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Toolbar row under the header: horizontal stack of filters/actions. -->
+    <Style x:Key="Toolbar" TargetType="DockPanel">
+        <Setter Property="Margin" Value="0,0,0,16" />
+        <Setter Property="LastChildFill" Value="False" />
+    </Style>
+
+    <!-- Side editor panel: Header = title, Content = form. -->
+    <Style x:Key="SidePanel" TargetType="HeaderedContentControl">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Width" Value="{StaticResource Size.SidePanelWidth}" />
+        <Setter Property="Margin" Value="16,0,0,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="HeaderedContentControl">
+                    <Border Style="{StaticResource Card.Flush}">
+                        <DockPanel>
+                            <Border DockPanel.Dock="Top" Padding="20,16" BorderThickness="0,0,0,1"
+                                    BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                <TextBlock Style="{StaticResource Text.Subtitle}" Text="{TemplateBinding Header}" />
+                            </Border>
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+                                <ContentPresenter Margin="20,16,20,20" />
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Inline error message (InfoBar). DataContext/Text = message. -->
+    <Style x:Key="InfoBar.Error" TargetType="Border" BasedOn="{StaticResource Badge.Danger}">
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Control}" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="0,0,0,16" />
+        <Setter Property="TextElement.FontWeight" Value="Normal" />
+        <Setter Property="TextElement.FontSize" Value="{StaticResource FontSize.Body}" />
+    </Style>
+
+    <Style x:Key="InfoBar.Warning" TargetType="Border" BasedOn="{StaticResource InfoBar.Error}">
+        <Setter Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="InfoBar.Info" TargetType="Border" BasedOn="{StaticResource InfoBar.Error}">
+        <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+    </Style>
+
+    <!-- Empty-state block shown instead of an empty table. -->
+    <Style x:Key="EmptyState" TargetType="StackPanel">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="24,48" />
+    </Style>
+
+    <!-- Button with an icon and a label: Tag = glyph, Content = text. -->
+    <Style x:Key="Button.AccentIcon" TargetType="Button" BasedOn="{StaticResource Button.Accent}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" FontSize="{StaticResource FontSize.Caption}" Margin="0,0,8,0"
+                                   Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=Button}}" />
+                        <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Button.StandardIcon" TargetType="Button" BasedOn="{StaticResource Button.Standard}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" FontSize="{StaticResource FontSize.Caption}" Margin="0,0,8,0"
+                                   Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=Button}}" />
+                        <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Button.SubtleIcon" TargetType="Button" BasedOn="{StaticResource Button.Subtle}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" FontSize="{StaticResource FontSize.Caption}" Margin="0,0,8,0"
+                                   Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=Button}}" />
+                        <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Button.Danger" TargetType="Button" BasedOn="{StaticResource Button.SubtleIcon}">
+        <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+    </Style>
+
+    <!-- Segmented control: a horizontal ListBox (SelectedItem = active segment). -->
+    <Style x:Key="SegmentedList" TargetType="ListBox">
+        <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBox">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                        <ItemsPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <Setter Property="Cursor" Value="Hand" />
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border x:Name="Root" Background="Transparent" CornerRadius="{StaticResource Radius.Control}" Padding="14,6">
+                                    <ContentPresenter VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Root" Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+                                        <Setter TargetName="Root" Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.15" />
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

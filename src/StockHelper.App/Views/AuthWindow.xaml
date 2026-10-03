@@ -1,0 +1,87 @@
+<Window x:Class="StockHelper.App.Views.AuthWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:StockHelper.App.ViewModels"
+        xmlns:b="clr-namespace:StockHelper.App.Behaviors"
+        xmlns:res="clr-namespace:StockHelper.App.Resources"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:AuthViewModel}"
+        Title="{x:Static res:Strings.AppTitle}"
+        Width="900" Height="580"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="{StaticResource Font.Text}"
+        FontSize="{StaticResource FontSize.Body}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="380" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Brand panel -->
+        <Border Background="{DynamicResource AccentFillColorDefaultBrush}">
+            <Grid Margin="40">
+                <StackPanel VerticalAlignment="Center">
+                    <Border Width="64" Height="64" CornerRadius="16" HorizontalAlignment="Left"
+                            Background="{DynamicResource TextOnAccentFillColorPrimaryBrush}" Opacity="0.95">
+                        <TextBlock Style="{StaticResource Icon}" FontSize="32" Text="{StaticResource Icon.Items}" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource AccentFillColorDefaultBrush}" />
+                    </Border>
+                    <TextBlock Style="{StaticResource Text.Display}" Text="{x:Static res:Strings.AppTitle}" Margin="0,24,0,8"
+                               Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                    <TextBlock Style="{StaticResource Text.Wrap}" FontSize="{StaticResource FontSize.BodyLarge}"
+                               Text="{x:Static res:Strings.Auth_Tagline}" Opacity="0.85"
+                               Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource Text.Caption}" VerticalAlignment="Bottom" Opacity="0.75"
+                           Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                           Text="{Binding Version, StringFormat=v{0}}" />
+            </Grid>
+        </Border>
+
+        <!-- Form -->
+        <Grid Grid.Column="1" Margin="56,0">
+            <StackPanel VerticalAlignment="Center" MaxWidth="360">
+                <TextBlock Style="{StaticResource Text.Title}" Text="{Binding Heading}" />
+                <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Subheading}" TextWrapping="Wrap" Margin="0,6,0,28" />
+
+                <StackPanel Style="{StaticResource Field}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_Login}" />
+                    <TextBox x:Name="LoginBox" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Style="{StaticResource Field}" Visibility="{Binding IsSetup, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_DisplayName}" />
+                    <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Style="{StaticResource Field}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_Password}" />
+                    <PasswordBox x:Name="PasswordBox" b:PasswordBoxBinding.Password="{Binding Password}" />
+                </StackPanel>
+
+                <StackPanel Style="{StaticResource Field}" Visibility="{Binding IsSetup, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_PasswordConfirm}" />
+                    <PasswordBox b:PasswordBoxBinding.Password="{Binding PasswordConfirm}" />
+                </StackPanel>
+
+                <Border Style="{StaticResource Badge.Danger}" CornerRadius="{StaticResource Radius.Control}" Padding="12,8"
+                        HorizontalAlignment="Stretch" Margin="0,0,0,16"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource NullToCollapsed}}">
+                    <DockPanel>
+                        <TextBlock Style="{StaticResource Icon}" Text="{StaticResource Icon.Error}" Margin="0,1,8,0" VerticalAlignment="Top" />
+                        <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" FontWeight="Normal" FontSize="{StaticResource FontSize.Body}" />
+                    </DockPanel>
+                </Border>
+
+                <Button Style="{StaticResource Button.Accent}" Content="{Binding SubmitText}" IsDefault="True"
+                        HorizontalAlignment="Stretch" Padding="0,8" Command="{Binding SubmitCommand}" />
+
+                <ProgressBar IsIndeterminate="True" Margin="0,16,0,0"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

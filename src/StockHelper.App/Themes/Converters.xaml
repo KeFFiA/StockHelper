@@ -9,4 +9,6 @@
     <conv:EmptyToVisibilityConverter x:Key="EmptyToVisible" />
     <conv:UtcToLocalConverter x:Key="UtcToLocal" />
     <conv:ResourceKeyToValueConverter x:Key="ResourceKeyToValue" />
+    <conv:EnumDisplayConverter x:Key="EnumDisplay" />
+    <conv:DecimalConverter x:Key="Decimal" />
 </ResourceDictionary>
