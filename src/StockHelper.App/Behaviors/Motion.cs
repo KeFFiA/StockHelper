@@ -18,6 +18,9 @@ public enum MotionKind
 
     /// <summary>Fade in while growing slightly (dialogs, popups).</summary>
     Pop,
+
+    /// <summary>Grow upwards from the bottom edge (chart bars).</summary>
+    Grow,
 }
 
 /// <summary>
@@ -71,6 +74,11 @@ public static class Motion
                 break;
             case MotionKind.SlideFromRight:
                 translate.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(36, 0, Normal) { EasingFunction = Ease });
+                break;
+            case MotionKind.Grow:
+                element.RenderTransformOrigin = new Point(0.5, 1);
+                scale.BeginAnimation(ScaleTransform.ScaleYProperty,
+                    new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(520))) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
                 break;
             case MotionKind.Pop:
                 var grow = new DoubleAnimation(0.96, 1, Normal) { EasingFunction = Ease };

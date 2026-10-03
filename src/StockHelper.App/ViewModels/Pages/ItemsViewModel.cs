@@ -16,6 +16,8 @@ namespace StockHelper.App.ViewModels.Pages;
 
 public sealed partial class ItemsViewModel : PageViewModel
 {
+    private const int HistoryDays = 120;
+
     // Remembered for the session so a series of new items keeps the same category and unit.
     private static int? _lastCategoryId;
     private static int? _lastUnitId;
@@ -28,6 +30,7 @@ public sealed partial class ItemsViewModel : PageViewModel
     private readonly IExportService _export;
     private readonly ICurrentUserService _currentUser;
     private readonly IAnalyticsService _analytics;
+    private AnalyticsResult? _data;
 
     public ItemsViewModel(
         IItemRepository items,
@@ -103,7 +106,8 @@ public sealed partial class ItemsViewModel : PageViewModel
         var selectedId = SelectedItem?.Item.Id;
         var items = await _items.GetAllAsync(includeArchived: true);
         var categories = await _categories.GetAllAsync(includeArchived: false);
-        var statuses = (await _analytics.LoadAsync()).Statuses.ToDictionary(s => s.Item.Id);
+        _data = await _analytics.LoadAsync();
+        var statuses = _data.Statuses.ToDictionary(s => s.Item.Id);
 
         Items.Clear();
         foreach (var item in items)
@@ -178,6 +182,12 @@ public sealed partial class ItemsViewModel : PageViewModel
             .Where(u => !u.IsArchived || u.Id == item?.UnitId).ToList();
 
         var editor = new ItemEditorViewModel(item, categories, units, CanEdit);
+        if (item is not null && _data is not null)
+        {
+            var now = _data.NowUtc;
+            editor.StockHistory = ChartCalculator.GetStockHistory(_data.Snapshot, item.Id, now.AddDays(-HistoryDays), now);
+        }
+
         if (item is null)
         {
             var defaultUnitName = Strings.Seed_Units.Split('|')[0];
@@ -343,6 +353,27 @@ public sealed partial class ItemEditorViewModel : ObservableObject
     public bool IsDirty { get; private set; }
 
     public void MarkClean() => IsDirty = false;
+
+    /// <summary>Stock over the last months (null for a new item).</summary>
+    public IReadOnlyList<StockPoint>? StockHistory
+    {
+        get => _stockHistory;
+        set
+        {
+            _stockHistory = value;
+            OnPropertyChanged(nameof(StockHistory));
+            OnPropertyChanged(nameof(HasHistory));
+            IsDirty = false;
+        }
+    }
+
+    private IReadOnlyList<StockPoint>? _stockHistory;
+
+    public bool HasHistory => _stockHistory is { Count: > 2 };
+
+    public decimal MinStockValue => _original?.MinStock ?? 0;
+
+    public string? UnitName => _original?.Unit?.Name;
 
     [ObservableProperty]
     public partial string Name { get; set; }

@@ -62,6 +62,38 @@
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
+    <!-- Caption that disappears when it has no text. -->
+    <Style x:Key="Text.CaptionAutoHide" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+        <Style.Triggers>
+            <Trigger Property="Text" Value="">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="Text" Value="{x:Null}">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Small status dot used inside badges (crisper than a tiny glyph). -->
+    <Style x:Key="Badge.Dot" TargetType="Ellipse">
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Height" Value="6" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Fill" Value="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType=Border}}" />
+    </Style>
+
+    <!-- Checkbox whose label wraps instead of being cut. -->
+    <Style x:Key="CheckBox.Wrap" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="Text.Wrap" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="TextTrimming" Value="None" />

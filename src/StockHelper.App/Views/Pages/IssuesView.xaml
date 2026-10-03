@@ -6,6 +6,7 @@
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
              xmlns:controls="clr-namespace:StockHelper.App.Controls"
              xmlns:res="clr-namespace:StockHelper.App.Resources"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:IssuesViewModel}">
     <Grid Margin="{StaticResource Space.Page}">
@@ -31,17 +32,27 @@
 
             <Border Background="{DynamicResource Brush.SegmentBackground}" CornerRadius="6" Padding="3" Margin="12,0,0,0">
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton Style="{StaticResource Segment}" GroupName="IssuesMode" IsChecked="{Binding OnlyOnHand, Converter={StaticResource InverseBool}}"
+                    <RadioButton Style="{StaticResource Segment}" GroupName="IssuesMode" IsChecked="{Binding IsAllMode}"
                                  ToolTip="{x:Static res:Strings.Tip_IssuesAll}">
                         <TextBlock Text="{x:Static res:Strings.Issues_All}" />
                     </RadioButton>
-                    <RadioButton Style="{StaticResource Segment}" GroupName="IssuesMode" IsChecked="{Binding OnlyOnHand}"
+                    <RadioButton Style="{StaticResource Segment}" GroupName="IssuesMode" IsChecked="{Binding IsOnHandMode}"
                                  ToolTip="{x:Static res:Strings.Tip_IssuesOnHand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{x:Static res:Strings.Issues_OnHand}" />
                             <Border Style="{StaticResource Badge.Warning}" Margin="6,0,0,0" Padding="6,0"
                                     Visibility="{Binding OnHandCount, Converter={StaticResource ZeroToCollapsed}}">
                                 <TextBlock Text="{Binding OnHandCount}" />
+                            </Border>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource Segment}" GroupName="IssuesMode" IsChecked="{Binding IsOpenMode}"
+                                 ToolTip="{x:Static res:Strings.Tip_IssuesOpen}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{x:Static res:Strings.Issues_Open}" />
+                            <Border Style="{StaticResource Badge.Accent}" Margin="6,0,0,0" Padding="6,0"
+                                    Visibility="{Binding OpenCount, Converter={StaticResource ZeroToCollapsed}}">
+                                <TextBlock Text="{Binding OpenCount}" />
                             </Border>
                         </StackPanel>
                     </RadioButton>
@@ -65,7 +76,68 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border Style="{StaticResource Card.Flush}">
+            <!-- Opened packages -->
+            <Border Style="{StaticResource Card.Flush}" Visibility="{Binding IsOpenMode, Converter={StaticResource BoolToVisibility}}"
+                    b:Motion.OnVisible="FadeUp">
+                <Grid>
+                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding OpenPackages}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" MinWidth="180" SortMemberPath="Item.Name">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="8,6" VerticalAlignment="Center">
+                                            <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding Item.Name}" />
+                                            <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding Unit.Name, TargetNullValue={x:Static res:Strings.Issues_PackageGeneric}}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Issues_Left}" Width="Auto" MinWidth="110" SortMemberPath="Quantity"
+                                                    HeaderStyle="{StaticResource Grid.HeaderRight}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource Cell.Number}">
+                                            <Run Text="≈" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                            <Run Text="{Binding Quantity, Mode=OneWay, Converter={StaticResource Decimal}}" FontWeight="SemiBold" />
+                                            <Run Text="{Binding Item.Unit.Name, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="{x:Static res:Strings.Issues_OpenedAt}" Width="Auto" MinWidth="130" SortMemberPath="OpenedAt"
+                                                Binding="{Binding OpenedAt, Converter={StaticResource UtcToLocal}, ConverterParameter=g}"
+                                                ElementStyle="{StaticResource Cell.Secondary}" />
+                            <DataGridTextColumn Header="{x:Static res:Strings.Issues_ReturnedBy}" Width="*" MinWidth="140" Binding="{Binding SourceIssue.IssuedTo}"
+                                                ElementStyle="{StaticResource Cell.Text}" />
+                            <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="4,0" HorizontalAlignment="Right">
+                                            <Button Style="{StaticResource Button.SubtleIcon}" Tag="{StaticResource Icon.Issue}" Content="{x:Static res:Strings.Issues_Add}"
+                                                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" ToolTip="{x:Static res:Strings.Tip_UseOpen}"
+                                                    Command="{Binding DataContext.IssueOpenPackageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}" />
+                                            <Button Style="{StaticResource Button.SubtleIcon}" Tag="{StaticResource Icon.Delete}" Content="{x:Static res:Strings.Issues_WriteOff}"
+                                                    ToolTip="{x:Static res:Strings.Tip_WriteOff}" Margin="4,0,0,0"
+                                                    Command="{Binding DataContext.WriteOffCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Style="{StaticResource EmptyState}" Visibility="{Binding OpenPackages.Count, Converter={StaticResource EmptyToVisible}}">
+                        <TextBlock Style="{StaticResource Icon}" FontSize="40" Text="{StaticResource Icon.Items}" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Style="{StaticResource Text.Subtitle}" Text="{x:Static res:Strings.Issues_OpenEmptyTitle}" HorizontalAlignment="Center" Margin="0,16,0,4" />
+                        <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.Issues_OpenEmptyHint}" HorizontalAlignment="Center"
+                                   TextWrapping="Wrap" TextAlignment="Center" MaxWidth="440" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource Card.Flush}" Visibility="{Binding IsIssuesListVisible, Converter={StaticResource BoolToVisibility}}">
                 <Grid>
                     <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding IssuesView}" SelectedItem="{Binding SelectedIssue}">
                         <DataGrid.InputBindings>
@@ -96,9 +168,8 @@
                                                 <Run Text="{Binding Quantity, Mode=OneWay, Converter={StaticResource Decimal}}" FontWeight="SemiBold" />
                                                 <Run Text="{Binding Item.Unit.Name, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                                             </TextBlock>
-                                            <TextBlock Style="{StaticResource Text.Caption}" HorizontalAlignment="Right"
-                                                       Text="{Binding Converter={StaticResource Entered}}"
-                                                       Visibility="{Binding UnitId, Converter={StaticResource NullToCollapsed}}" />
+                                            <TextBlock Style="{StaticResource Text.CaptionAutoHide}" HorizontalAlignment="Right"
+                                                       Text="{Binding Converter={StaticResource Entered}}" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

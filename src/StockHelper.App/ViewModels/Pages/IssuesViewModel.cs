@@ -69,10 +69,56 @@ public sealed partial class IssuesViewModel : PageViewModel
     public ICollectionView IssuesView { get; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsPeriodVisible))]
-    public partial bool OnlyOnHand { get; set; }
+    [NotifyPropertyChangedFor(nameof(IsPeriodVisible), nameof(OnlyOnHand), nameof(IsAllMode), nameof(IsOnHandMode), nameof(IsOpenMode), nameof(IsIssuesListVisible))]
+    public partial IssuesMode Mode { get; set; }
 
-    public bool IsPeriodVisible => !OnlyOnHand;
+    public bool OnlyOnHand => Mode == IssuesMode.OnHand;
+
+    public bool IsAllMode
+    {
+        get => Mode == IssuesMode.All;
+        set
+        {
+            if (value)
+            {
+                Mode = IssuesMode.All;
+            }
+        }
+    }
+
+    public bool IsOnHandMode
+    {
+        get => Mode == IssuesMode.OnHand;
+        set
+        {
+            if (value)
+            {
+                Mode = IssuesMode.OnHand;
+            }
+        }
+    }
+
+    public bool IsOpenMode
+    {
+        get => Mode == IssuesMode.Open;
+        set
+        {
+            if (value)
+            {
+                Mode = IssuesMode.Open;
+            }
+        }
+    }
+
+    public bool IsIssuesListVisible => Mode != IssuesMode.Open;
+
+    public bool IsPeriodVisible => Mode == IssuesMode.All;
+
+    /// <summary>Opened packages on the shelf (offered first on the next issue).</summary>
+    public ObservableCollection<OpenPackage> OpenPackages { get; } = [];
+
+    [ObservableProperty]
+    public partial int OpenCount { get; private set; }
 
     [ObservableProperty]
     public partial DateTime? FromDate { get; set; }
@@ -108,7 +154,7 @@ public sealed partial class IssuesViewModel : PageViewModel
 
     public override Task<bool> OnNavigatingFromAsync() => Task.FromResult(ConfirmLeave());
 
-    partial void OnOnlyOnHandChanged(bool value) => _ = LoadAsync();
+    partial void OnModeChanged(IssuesMode value) => _ = LoadAsync();
 
     partial void OnFromDateChanged(DateTime? value) => _ = LoadAsync();
 
@@ -132,6 +178,15 @@ public sealed partial class IssuesViewModel : PageViewModel
         }
 
         OnHandCount = OnlyOnHand ? list.Count : (await _issues.GetAsync(new IssueFilter(OnlyOnHand: true))).Count;
+
+        var packages = await _issues.GetOpenPackagesAsync();
+        OpenPackages.Clear();
+        foreach (var package in packages.Where(p => TextSearch.Matches(SearchText, p.Item?.Name, p.SourceIssue?.IssuedTo)))
+        {
+            OpenPackages.Add(package);
+        }
+
+        OpenCount = packages.Count;
         SelectedIssue = Issues.FirstOrDefault(i => i.Id == selectedId);
         RefreshView();
     });
@@ -139,7 +194,7 @@ public sealed partial class IssuesViewModel : PageViewModel
     [RelayCommand]
     private void SetPeriod(string? days)
     {
-        OnlyOnHand = false;
+        Mode = IssuesMode.All;
         FromDate = int.TryParse(days, out var n) && n > 0 ? DateTime.Today.AddDays(-n + 1) : null;
         ToDate = DateTime.Today;
     }
@@ -160,6 +215,38 @@ public sealed partial class IssuesViewModel : PageViewModel
         {
             Editor = await CreateEditorAsync(SelectedIssue);
         }
+    }
+
+    /// <summary>Opened-packages tab: hand this package out.</summary>
+    [RelayCommand]
+    private async Task IssueOpenPackageAsync(OpenPackage? package)
+    {
+        if (package is null || !CanEdit || !ConfirmLeave())
+        {
+            return;
+        }
+
+        Editor = await CreateEditorAsync(null);
+        Editor.Preselect(package);
+    }
+
+    [RelayCommand]
+    private async Task WriteOffAsync(OpenPackage? package)
+    {
+        if (package is null || !CanEdit)
+        {
+            return;
+        }
+
+        var message = string.Format(Strings.Issues_WriteOffConfirm, Formatting.Package(package));
+        if (!_dialogs.Confirm(message, confirmText: Strings.Issues_WriteOff, isDestructive: true))
+        {
+            return;
+        }
+
+        await _issues.WriteOffAsync(package.Id, Strings.Issues_WriteOffNote);
+        _notifications.Success(Strings.Issues_WrittenOff, Formatting.Package(package));
+        await LoadAsync();
     }
 
     /// <summary>Row action: open the issue with the return form focused.</summary>
@@ -204,8 +291,9 @@ public sealed partial class IssuesViewModel : PageViewModel
         var units = await _units.GetAllAsync(includeArchived: true);
         var recipients = await _issues.GetRecipientsAsync();
         var stock = (await _analytics.LoadAsync()).Statuses.ToDictionary(s => s.Item.Id, s => s.EstimatedStock);
+        var open = issue is null ? await _issues.GetOpenPackagesAsync() : [];
 
-        var editor = new IssueEditorViewModel(issue, items, locations, units, recipients, stock, CanEdit);
+        var editor = new IssueEditorViewModel(issue, items, locations, units, recipients, stock, CanEdit, open);
         editor.SaveRequested += async (_, _) => await SaveAsync(editor);
         editor.CancelRequested += (_, _) => Editor = null;
         editor.DeleteRequested += async (_, _) => await DeleteAsync(editor);
@@ -306,10 +394,18 @@ public sealed partial class IssuesViewModel : PageViewModel
     }
 }
 
+public enum IssuesMode
+{
+    All,
+    OnHand,
+    Open,
+}
+
 public sealed partial class IssueEditorViewModel : ObservableObject
 {
     private readonly Issue? _original;
     private readonly IReadOnlyDictionary<int, decimal> _stock;
+    private readonly IReadOnlyList<OpenPackage> _openPackages;
 
     public IssueEditorViewModel(
         Issue? issue,
@@ -318,8 +414,10 @@ public sealed partial class IssueEditorViewModel : ObservableObject
         IReadOnlyList<Unit> units,
         IReadOnlyList<string> recipients,
         IReadOnlyDictionary<int, decimal> stock,
-        bool canEdit)
+        bool canEdit,
+        IReadOnlyList<OpenPackage>? openPackages = null)
     {
+        _openPackages = openPackages ?? [];
         _original = issue;
         _stock = stock;
         Items = items;
@@ -450,10 +548,65 @@ public sealed partial class IssueEditorViewModel : ObservableObject
 
     public string? StockWarning => ExceedsStock ? string.Format(Strings.Issues_ExceedsStock, StockText) : null;
 
+    /// <summary>Opened packages of the selected item, oldest first: they should be used up before new ones.</summary>
+    public IReadOnlyList<OpenPackage> ItemOpenPackages =>
+        IsNew && Item is not null ? [.. _openPackages.Where(p => p.ItemId == Item.Id)] : [];
+
+    public bool HasOpenPackages => ItemOpenPackages.Count > 0 && OpenPackage is null;
+
+    public string? OpenPackagesHint => ItemOpenPackages.Count switch
+    {
+        0 => null,
+        1 => string.Format(Strings.Issues_OpenHintOne, Formatting.Package(ItemOpenPackages[0])),
+        var n => string.Format(Strings.Issues_OpenHintMany, n),
+    };
+
+    /// <summary>The opened package being handed out (null = a new one).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasOpenPackages), nameof(IsOpenPackageSelected), nameof(OpenPackageText))]
+    public partial OpenPackage? OpenPackage { get; set; }
+
+    public bool IsOpenPackageSelected => OpenPackage is not null;
+
+    public string? OpenPackageText => OpenPackage is null ? null : string.Format(Strings.Issues_OpenSelected, Formatting.Package(OpenPackage));
+
+    [RelayCommand]
+    private void UseOpenPackage(OpenPackage? package)
+    {
+        if (package is null)
+        {
+            return;
+        }
+
+        OpenPackage = package;
+        Quantity.SetItem(Item);
+        Quantity.Unit = Quantity.ItemUnit;
+        Quantity.Text = NumberInput.Format(package.Quantity);
+    }
+
+    [RelayCommand]
+    private void UseNewPackage()
+    {
+        OpenPackage = null;
+        Quantity.Text = string.Empty;
+    }
+
+    /// <summary>Starts a new issue of a given opened package.</summary>
+    public void Preselect(OpenPackage package)
+    {
+        Item = Items.FirstOrDefault(i => i.Id == package.ItemId);
+        UseOpenPackage(_openPackages.FirstOrDefault(p => p.Id == package.Id) ?? package);
+        IsDirty = false;
+    }
+
     partial void OnItemChanged(Item? value)
     {
+        OpenPackage = null;
         Quantity.SetItem(value);
         ReturnQuantity.SetItem(value);
+        OnPropertyChanged(nameof(ItemOpenPackages));
+        OnPropertyChanged(nameof(HasOpenPackages));
+        OnPropertyChanged(nameof(OpenPackagesHint));
     }
 
     private void OnQuantityChanged()
@@ -530,6 +683,7 @@ public sealed partial class IssueEditorViewModel : ObservableObject
             Note = Note,
             ExpectReturn = ExpectReturn,
             ReturnedQuantity = _original?.ReturnedQuantity,
+            OpenPackageId = OpenPackage?.Id,
         };
         return true;
     }

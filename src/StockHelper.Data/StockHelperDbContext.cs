@@ -18,6 +18,8 @@ public sealed class StockHelperDbContext(DbContextOptions<StockHelperDbContext> 
 
     public DbSet<Issue> Issues => Set<Issue>();
 
+    public DbSet<OpenPackage> OpenPackages => Set<OpenPackage>();
+
     public DbSet<StockTake> StockTakes => Set<StockTake>();
 
     public DbSet<StockTakeLine> StockTakeLines => Set<StockTakeLine>();

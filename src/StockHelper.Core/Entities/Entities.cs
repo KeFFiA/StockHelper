@@ -195,6 +195,43 @@ public sealed class Issue : AuditableEntity, IEnteredInUnit
     public bool IsOnHand => ExpectReturn && !IsReturned;
 
     public decimal NetQuantity => Quantity - (ReturnedQuantity ?? 0);
+
+    /// <summary>The opened package this issue handed out again (null for a new, full package).</summary>
+    public int? OpenPackageId { get; set; }
+
+    public OpenPackage? OpenPackage { get; set; }
+}
+
+/// <summary>
+/// A partly used package that came back to stock (e.g. a 5 l can with about 2 l left).
+/// It is offered first on the next issue of the item. Its quantity is already part of the stock.
+/// </summary>
+public sealed class OpenPackage : AuditableEntity
+{
+    public int ItemId { get; set; }
+
+    public Item? Item { get; set; }
+
+    /// <summary>Package unit the contents came in (null when issued in the item's own unit).</summary>
+    public int? UnitId { get; set; }
+
+    public Unit? Unit { get; set; }
+
+    /// <summary>Remaining contents in the item's unit.</summary>
+    public decimal Quantity { get; set; }
+
+    /// <summary>The issue whose return created this package.</summary>
+    public int SourceIssueId { get; set; }
+
+    public Issue? SourceIssue { get; set; }
+
+    /// <summary>UTC moment it came back.</summary>
+    public DateTime OpenedAt { get; set; }
+
+    /// <summary>UTC moment it was issued again or written off; null while it is on the shelf.</summary>
+    public DateTime? ClosedAt { get; set; }
+
+    public bool IsOpen => ClosedAt is null;
 }
 
 public enum StockTakeStatus

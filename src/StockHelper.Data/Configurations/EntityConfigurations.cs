@@ -99,6 +99,20 @@ internal sealed class IssueConfiguration : IEntityTypeConfiguration<Issue>
         b.HasIndex(e => e.Date);
         b.HasIndex(e => new { e.ItemId, e.Date });
         b.HasIndex(e => e.ReturnedAt);
+        b.HasOne(e => e.OpenPackage).WithMany().HasForeignKey(e => e.OpenPackageId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+internal sealed class OpenPackageConfiguration : IEntityTypeConfiguration<OpenPackage>
+{
+    public void Configure(EntityTypeBuilder<OpenPackage> b)
+    {
+        b.ConfigureAudit();
+        b.Ignore(e => e.IsOpen);
+        b.HasOne(e => e.Item).WithMany().HasForeignKey(e => e.ItemId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne(e => e.Unit).WithMany().HasForeignKey(e => e.UnitId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne(e => e.SourceIssue).WithMany().HasForeignKey(e => e.SourceIssueId).OnDelete(DeleteBehavior.Restrict);
+        b.HasIndex(e => new { e.ItemId, e.ClosedAt });
     }
 }
 

@@ -92,7 +92,16 @@ public sealed class BackupTests : IDisposable
         {
             await db.Database.ExecuteSqlRawAsync("DELETE FROM __EFMigrationsHistory");
             await db.Database.ExecuteSqlRawAsync("INSERT INTO __EFMigrationsHistory VALUES ('00000000000000_Old', '10.0.0')");
-            await db.Database.ExecuteSqlRawAsync("DROP TABLE Issues; DROP TABLE StockTakeLines; DROP TABLE StockTakes; DROP TABLE Receipts; DROP TABLE Items; DROP TABLE Users; DROP TABLE Categories; DROP TABLE Units; DROP TABLE StorageLocations;");
+            // Drop every application table so the full schema is "pending" again.
+            var tables = await db.Database.SqlQueryRaw<string>(
+                "SELECT name AS Value FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name <> '__EFMigrationsHistory'").ToListAsync();
+            await db.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = OFF;");
+            foreach (var table in tables)
+            {
+#pragma warning disable EF1002 // Table names come from sqlite_master, not from user input.
+                await db.Database.ExecuteSqlRawAsync($"DROP TABLE \"{table}\";");
+#pragma warning restore EF1002
+            }
         }
 
         await initializer.InitializeAsync(seed);

@@ -6,6 +6,8 @@
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
              xmlns:core="clr-namespace:StockHelper.Core.Services;assembly=StockHelper.Core"
              xmlns:res="clr-namespace:StockHelper.App.Resources"
+             xmlns:controls="clr-namespace:StockHelper.App.Controls"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:DashboardViewModel}">
     <UserControl.Resources>
@@ -123,6 +125,21 @@
                     </StackPanel>
                 </HeaderedContentControl>
             </Grid>
+
+            <!-- Monthly consumption -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16" b:Motion.OnLoaded="FadeUp">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,16">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Button.Subtle}" Command="{Binding GoToReportsCommand}"
+                                Content="{x:Static res:Strings.Dashboard_OpenConsumption}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Subtitle}" Text="{x:Static res:Strings.Chart_MonthlyTitle}" />
+                            <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding MonthlySummary}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+                    <controls:BarChart Height="170" ItemsSource="{Binding MonthlyCost}" />
+                </StackPanel>
+            </Border>
 
             <!-- Lists -->
             <Grid>

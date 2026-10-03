@@ -14,5 +14,6 @@
     <conv:DaysConverter x:Key="Days" />
     <conv:EnteredConverter x:Key="Entered" />
     <conv:ReturnedConverter x:Key="Returned" />
+    <conv:PackageActionConverter x:Key="PackageAction" />
     <conv:ZeroToCollapsedConverter x:Key="ZeroToCollapsed" />
 </ResourceDictionary>

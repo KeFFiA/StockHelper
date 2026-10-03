@@ -478,7 +478,7 @@
     <value>Обновить цену позиции в справочнике</value>
   </data>
   <data name="Receipts_AddAnother" xml:space="preserve">
-    <value>Добавить следующее после сохранения</value>
+    <value>Сразу добавить следующее поступление</value>
   </data>
   <data name="Receipts_DeleteConfirm" xml:space="preserve">
     <value>Удалить это поступление? Это повлияет на расчёт расхода.</value>
@@ -1039,7 +1039,7 @@
     <value>Ожидается возврат остатка</value>
   </data>
   <data name="Issues_AddAnother" xml:space="preserve">
-    <value>Оформить следующую выдачу после сохранения</value>
+    <value>Сразу оформить следующую выдачу</value>
   </data>
   <data name="Issues_InStock" xml:space="preserve">
     <value>На складе ≈ {0} {1}</value>
@@ -1301,5 +1301,104 @@
   </data>
   <data name="Tip_CheckUpdates" xml:space="preserve">
     <value>Проверить, есть ли новая версия программы</value>
+  </data>
+  <data name="Issues_Open" xml:space="preserve">
+    <value>Открытые</value>
+  </data>
+  <data name="Issues_OpenedAt" xml:space="preserve">
+    <value>Вернули на склад</value>
+  </data>
+  <data name="Issues_ReturnedBy" xml:space="preserve">
+    <value>Кто сдал</value>
+  </data>
+  <data name="Issues_Left" xml:space="preserve">
+    <value>Осталось</value>
+  </data>
+  <data name="Issues_WriteOff" xml:space="preserve">
+    <value>Списать</value>
+  </data>
+  <data name="Issues_WriteOffConfirm" xml:space="preserve">
+    <value>Списать остаток ({0})? Он будет учтён как расход.</value>
+  </data>
+  <data name="Issues_WriteOffNote" xml:space="preserve">
+    <value>Списание остатка открытой упаковки</value>
+  </data>
+  <data name="Issues_WrittenOff" xml:space="preserve">
+    <value>Остаток списан</value>
+  </data>
+  <data name="Issues_OpenEmptyTitle" xml:space="preserve">
+    <value>Открытых упаковок нет</value>
+  </data>
+  <data name="Issues_OpenEmptyHint" xml:space="preserve">
+    <value>Когда при возврате остаётся часть (например, полбанки краски), она появится здесь и будет предложена при следующей выдаче.</value>
+  </data>
+  <data name="Issues_PackageFormat" xml:space="preserve">
+    <value>открытая {0}, ≈ {1} {2}</value>
+  </data>
+  <data name="Issues_PackageGeneric" xml:space="preserve">
+    <value>упаковка</value>
+  </data>
+  <data name="Issues_FromOpenPackage" xml:space="preserve">
+    <value>из открытой упаковки</value>
+  </data>
+  <data name="Issues_OpenHintOne" xml:space="preserve">
+    <value>На складе есть {0}. Лучше сначала выдать её.</value>
+  </data>
+  <data name="Issues_OpenHintMany" xml:space="preserve">
+    <value>На складе есть открытые упаковки ({0}). Лучше сначала выдать их.</value>
+  </data>
+  <data name="Issues_UseOpen" xml:space="preserve">
+    <value>Выдать: {0}</value>
+  </data>
+  <data name="Issues_OpenSelected" xml:space="preserve">
+    <value>Выдаётся {0}</value>
+  </data>
+  <data name="Issues_UseNew" xml:space="preserve">
+    <value>Выдать новую вместо открытой</value>
+  </data>
+  <data name="Tip_IssuesOpen" xml:space="preserve">
+    <value>Начатые упаковки, вернувшиеся на склад с остатком</value>
+  </data>
+  <data name="Tip_UseOpen" xml:space="preserve">
+    <value>Выдать начатую упаковку — она будет закрыта</value>
+  </data>
+  <data name="Tip_WriteOff" xml:space="preserve">
+    <value>Остаток испорчен или закончился — списать в расход</value>
+  </data>
+  <data name="DomainError_OpenPackageUnavailable" xml:space="preserve">
+    <value>Эта открытая упаковка уже выдана или списана.</value>
+  </data>
+  <data name="DomainError_OpenPackageAlreadyIssued" xml:space="preserve">
+    <value>Остаток из этого возврата уже выдан повторно — сначала удалите ту выдачу.</value>
+  </data>
+  <data name="Chart_Minimum" xml:space="preserve">
+    <value>мин. {0}</value>
+  </data>
+  <data name="Chart_StockAt" xml:space="preserve">
+    <value>{0:dd.MM.yyyy HH:mm} — {1} {2}</value>
+  </data>
+  <data name="Chart_MonthTooltip" xml:space="preserve">
+    <value>{0:MMMM yyyy}: расход на {1:N2}</value>
+  </data>
+  <data name="Chart_MonthlyTitle" xml:space="preserve">
+    <value>Расход по месяцам</value>
+  </data>
+  <data name="Chart_MonthlySummary" xml:space="preserve">
+    <value>В этом месяце: {0:N0} · в прошлом: {1:N0} (по текущим ценам)</value>
+  </data>
+  <data name="Chart_StockTitle" xml:space="preserve">
+    <value>Остаток за 4 месяца</value>
+  </data>
+  <data name="Chart_StockHint" xml:space="preserve">
+    <value>Точки — инвентаризации. Пунктир — минимальный остаток. Наведите курсор, чтобы увидеть значение.</value>
+  </data>
+  <data name="Compact_Thousand" xml:space="preserve">
+    <value>{0:0.#} тыс.</value>
+  </data>
+  <data name="Compact_Million" xml:space="preserve">
+    <value>{0:0.#} млн</value>
+  </data>
+  <data name="Dashboard_OpenConsumption" xml:space="preserve">
+    <value>Отчёт о расходе</value>
   </data>
 </root>

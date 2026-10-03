@@ -61,7 +61,7 @@
                 </StackPanel>
             </Border.ToolTip>
             <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="Glyph" Style="{StaticResource Icon}" FontSize="10" Margin="0,0,5,0" Text="{StaticResource Icon.Trend}" />
+                <Ellipse Style="{StaticResource Badge.Dot}" />
                 <TextBlock x:Name="Label" Text="{Binding DaysLeft, Converter={StaticResource Days}}" />
             </StackPanel>
         </Border>
@@ -74,7 +74,6 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding IsBelowMinimum}" Value="True">
                 <Setter TargetName="Badge" Property="Style" Value="{StaticResource Badge.Danger}" />
-                <Setter TargetName="Glyph" Property="Text" Value="{StaticResource Icon.Warning}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>

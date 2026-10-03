@@ -29,6 +29,8 @@ public enum DomainErrorCode
     IncompatibleUnit,
     InvalidUnitFactor,
     PackageOfPackage,
+    OpenPackageUnavailable,
+    OpenPackageAlreadyIssued,
 }
 
 public class DomainException(DomainErrorCode code, string? details = null)

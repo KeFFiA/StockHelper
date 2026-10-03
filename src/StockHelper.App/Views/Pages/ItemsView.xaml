@@ -59,7 +59,7 @@
                             <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                         </DataGrid.InputBindings>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" MinWidth="200" SortMemberPath="Item.Name">
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" MinWidth="180" SortMemberPath="Item.Name">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Margin="8,0" VerticalAlignment="Center">
@@ -72,9 +72,9 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Code}" Width="*" Binding="{Binding Item.Code}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Code}" Width="*" MinWidth="90" Binding="{Binding Item.Code}"
                                                 ElementStyle="{StaticResource Cell.Secondary}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Category}" Width="1.2*" Binding="{Binding Item.Category.Name}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Category}" Width="1.2*" MinWidth="130" Binding="{Binding Item.Category.Name}"
                                                 ElementStyle="{StaticResource Cell.Text}" />
                             <DataGridTextColumn Header="{x:Static res:Strings.Items_Unit}" Width="Auto" MinWidth="70" Binding="{Binding Item.Unit.Name}"
                                                 ElementStyle="{StaticResource Cell.Secondary}" />

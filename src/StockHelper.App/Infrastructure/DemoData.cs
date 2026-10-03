@@ -100,8 +100,8 @@ public sealed class DemoData(
             foreach (var (item, sample) in created)
             {
                 var used = sample.DailyUse * 30 * (decimal)(0.7 + random.NextDouble() * 0.6);
-                var received = sample.Restock && month > 1 && stock[item.Id] - used < sample.MinStock * 2 ? Math.Ceiling(sample.DailyUse * 30) : 0;
                 var isPaint = item.Name.StartsWith("Краска");
+                var received = sample.Restock && (month > 1 || isPaint) && stock[item.Id] - used < sample.MinStock * 2 ? Math.Ceiling(sample.DailyUse * 30) : 0;
                 if (isPaint && received > 0)
                 {
                     received = 10 * Math.Ceiling(received / 10);
@@ -128,6 +128,22 @@ public sealed class DemoData(
                     var day = 1;
                     while (net + 2 < used && day < 27)
                     {
+                        // An opened can goes first and is used up.
+                        if ((await issues.GetOpenPackagesAsync(item.Id)).FirstOrDefault() is { } open)
+                        {
+                            await issues.AddAsync(new Issue
+                            {
+                                ItemId = item.Id,
+                                Quantity = open.Quantity,
+                                OpenPackageId = open.Id,
+                                Date = countDate.AddDays(day).AddHours(1),
+                                IssuedTo = painters[random.Next(painters.Length)],
+                            });
+                            net += open.Quantity;
+                            day += 3;
+                            continue;
+                        }
+
                         var issue = await issues.AddAsync(new Issue
                         {
                             ItemId = item.Id,
@@ -139,7 +155,7 @@ public sealed class DemoData(
                             ExpectReturn = true,
                             StorageLocationId = warehouse.Id,
                         });
-                        var back = Math.Round((decimal)(random.NextDouble() * 3), 1);
+                        var back = Math.Round(0.5m + (decimal)(random.NextDouble() * 2.5), 1);
                         await issues.ReturnAsync(issue.Id, back, countDate.AddDays(day + 2).AddHours(8));
                         net += 5 - back;
                         day += 5 + random.Next(4);

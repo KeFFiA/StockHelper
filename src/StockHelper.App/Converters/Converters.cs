@@ -159,3 +159,15 @@ public sealed class ReturnedConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+
+/// <summary>"Выдать открытую Банка 5 л, ≈ 2 л" for an opened package.</summary>
+public sealed class PackageActionConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is Core.Entities.OpenPackage package
+            ? string.Format(Resources.Strings.Issues_UseOpen, Infrastructure.Formatting.Package(package))
+            : null;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}

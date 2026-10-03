@@ -3,7 +3,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
                     xmlns:res="clr-namespace:StockHelper.App.Resources"
-                    xmlns:b="clr-namespace:StockHelper.App.Behaviors">
+                    xmlns:b="clr-namespace:StockHelper.App.Behaviors"
+                    xmlns:controls="clr-namespace:StockHelper.App.Controls">
 
     <!-- Common footer: Save / Cancel. -->
     <DataTemplate x:Key="EditorErrorTemplate">
@@ -64,6 +65,14 @@
     <!-- ===== Item ===== -->
     <DataTemplate DataType="{x:Type pages:ItemEditorViewModel}">
         <StackPanel>
+            <StackPanel Margin="0,0,0,20" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{x:Static res:Strings.Chart_StockTitle}" />
+                <TextBlock Style="{StaticResource Text.Caption}" Text="{x:Static res:Strings.Chart_StockHint}" Margin="0,2,0,8" TextWrapping="Wrap" />
+                <controls:StockChart Height="150" Points="{Binding StockHistory}" Minimum="{Binding MinStockValue}" Unit="{Binding UnitName}"
+                                     LineBrush="{DynamicResource AccentFillColorDefaultBrush}" MinimumBrush="{DynamicResource SystemFillColorCriticalBrush}"
+                                     GridBrush="{DynamicResource Brush.Divider}" LabelBrush="{DynamicResource TextFillColorSecondaryBrush}" />
+                <Border Style="{StaticResource Divider}" Margin="0,16,0,0" />
+            </StackPanel>
             <StackPanel IsEnabled="{Binding CanEdit}">
                 <StackPanel Style="{StaticResource Field}">
                     <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Items_Name}" />
@@ -188,7 +197,7 @@
                 </ComboBox>
                 <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding RoleDescription}" TextWrapping="Wrap" Margin="0,6,0,0" />
             </StackPanel>
-            <CheckBox Content="{x:Static res:Strings.Users_IsActive}" IsChecked="{Binding IsActive}" Margin="{StaticResource Space.FieldBottom}"
+            <CheckBox Style="{StaticResource CheckBox.Wrap}" Content="{x:Static res:Strings.Users_IsActive}" IsChecked="{Binding IsActive}" Margin="{StaticResource Space.FieldBottom}"
                       Visibility="{Binding IsNew, Converter={StaticResource InverseBoolToVisibility}}" />
 
             <Border Style="{StaticResource Divider}" Margin="0,0,0,16" />
@@ -261,8 +270,8 @@
                     <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Items_Note}" />
                     <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="56" />
                 </StackPanel>
-                <CheckBox Content="{x:Static res:Strings.Receipts_UpdateItemPrice}" IsChecked="{Binding UpdateItemPrice}" Margin="0,0,0,8" />
-                <CheckBox Content="{x:Static res:Strings.Receipts_AddAnother}" IsChecked="{Binding AddAnother}" Margin="0,0,0,16"
+                <CheckBox Style="{StaticResource CheckBox.Wrap}" Content="{x:Static res:Strings.Receipts_UpdateItemPrice}" IsChecked="{Binding UpdateItemPrice}" Margin="0,0,0,8" />
+                <CheckBox Style="{StaticResource CheckBox.Wrap}" Content="{x:Static res:Strings.Receipts_AddAnother}" IsChecked="{Binding AddAnother}" Margin="0,0,0,16"
                           Visibility="{Binding IsNew, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
 
@@ -335,6 +344,35 @@
                                Visibility="{Binding StockText, Converter={StaticResource NullToCollapsed}}"
                                ToolTip="{x:Static res:Strings.Reports_EstimatedNote}" />
                 </StackPanel>
+
+                <!-- Opened packages should go first: suggest them. -->
+                <Border Style="{StaticResource InfoBar.Warning}" Visibility="{Binding HasOpenPackages, Converter={StaticResource BoolToVisibility}}"
+                        b:Motion.OnVisible="FadeUp">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock Style="{StaticResource Icon}" Text="{StaticResource Icon.Info}" Margin="0,1,8,0" VerticalAlignment="Top" />
+                            <TextBlock Text="{Binding OpenPackagesHint}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                        </DockPanel>
+                        <ItemsControl ItemsSource="{Binding ItemOpenPackages}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource Button.SubtleIcon}" Tag="{StaticResource Icon.Issue}" Margin="-10,0,0,0"
+                                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                            Content="{Binding Converter={StaticResource PackageAction}}"
+                                            Command="{Binding DataContext.UseOpenPackageCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" ToolTip="{x:Static res:Strings.Tip_UseOpen}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource InfoBar.Info}" Visibility="{Binding IsOpenPackageSelected, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding OpenPackageText}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                        <Button Style="{StaticResource Button.Subtle}" Content="{x:Static res:Strings.Issues_UseNew}" HorizontalAlignment="Left"
+                                Margin="-10,4,0,0" Command="{Binding UseNewPackageCommand}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                    </StackPanel>
+                </Border>
                 <ContentControl Content="{Binding Quantity}" ContentTemplate="{StaticResource QuantityInputTemplate}" Focusable="False"
                                 Margin="{StaticResource Space.FieldBottom}" />
                 <Border Style="{StaticResource InfoBar.Warning}" Visibility="{Binding StockWarning, Converter={StaticResource NullToCollapsed}}">
@@ -368,9 +406,9 @@
                     <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Items_Note}" />
                     <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="48" />
                 </StackPanel>
-                <CheckBox Content="{x:Static res:Strings.Issues_ExpectReturn}" IsChecked="{Binding ExpectReturn}" Margin="0,0,0,8"
+                <CheckBox Style="{StaticResource CheckBox.Wrap}" Content="{x:Static res:Strings.Issues_ExpectReturn}" IsChecked="{Binding ExpectReturn}" Margin="0,0,0,8"
                           ToolTip="{x:Static res:Strings.Tip_ExpectReturn}" />
-                <CheckBox Content="{x:Static res:Strings.Issues_AddAnother}" IsChecked="{Binding AddAnother}" Margin="0,0,0,16"
+                <CheckBox Style="{StaticResource CheckBox.Wrap}" Content="{x:Static res:Strings.Issues_AddAnother}" IsChecked="{Binding AddAnother}" Margin="0,0,0,16"
                           Visibility="{Binding IsNew, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
 

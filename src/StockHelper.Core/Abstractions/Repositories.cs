@@ -73,8 +73,14 @@ public interface IIssueRepository
     /// <summary>Registers the return of the remainder (in item units, 0..issued).</summary>
     Task ReturnAsync(int issueId, decimal returnedQuantity, DateTime returnedAtUtc, CancellationToken ct = default);
 
-    /// <summary>Cancels a registered return.</summary>
+    /// <summary>Cancels a registered return (not possible when its open package was already issued again).</summary>
     Task CancelReturnAsync(int issueId, CancellationToken ct = default);
+
+    /// <summary>Opened packages on the shelf (oldest first), optionally for one item.</summary>
+    Task<IReadOnlyList<OpenPackage>> GetOpenPackagesAsync(int? itemId = null, CancellationToken ct = default);
+
+    /// <summary>Writes off what is left in an opened package (dried paint...): recorded as a consumed issue.</summary>
+    Task WriteOffAsync(int openPackageId, string? note, CancellationToken ct = default);
 
     Task DeleteAsync(int id, CancellationToken ct = default);
 }
