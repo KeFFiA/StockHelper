@@ -73,6 +73,8 @@ public static class AppHost
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IExportService, ExcelExportService>();
         services.AddSingleton<SessionCoordinator>();
+        services.AddSingleton<IAnalyticsService, AnalyticsService>();
+        services.AddTransient<DemoData>();
 
         services.AddSingleton<ShellViewModel>();
         services.AddSingleton<MainWindow>();
@@ -83,6 +85,7 @@ public static class AppHost
         services.AddTransient<CatalogsViewModel>();
         services.AddTransient<ReceiptsViewModel>();
         services.AddTransient<StockTakesViewModel>();
+        services.AddTransient<ReportsViewModel>();
         services.AddSingleton<StockTakeSessionFactory>();
         services.AddTransient<UsersViewModel>();
     }

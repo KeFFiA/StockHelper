@@ -83,7 +83,7 @@
     <sys:String x:Key="Icon.Update">&#xE895;</sys:String>
     <sys:String x:Key="Icon.Check">&#xE73E;</sys:String>
     <sys:String x:Key="Icon.ChevronRight">&#xE76C;</sys:String>
-    <sys:String x:Key="Icon.Trend">&#xE8EF;</sys:String>
+    <sys:String x:Key="Icon.Trend">&#xE823;</sys:String>
     <sys:String x:Key="Icon.Money">&#xE825;</sys:String>
     <sys:String x:Key="Icon.Folder">&#xE8B7;</sys:String>
     <sys:String x:Key="Icon.Tag">&#xE8EC;</sys:String>

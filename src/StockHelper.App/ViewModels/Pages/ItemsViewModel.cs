@@ -10,6 +10,7 @@ using StockHelper.Core.Abstractions;
 using StockHelper.Core.Entities;
 using StockHelper.Core.Errors;
 using StockHelper.Core.Security;
+using StockHelper.Core.Services;
 
 namespace StockHelper.App.ViewModels.Pages;
 
@@ -26,6 +27,7 @@ public sealed partial class ItemsViewModel : PageViewModel
     private readonly INotificationService _notifications;
     private readonly IExportService _export;
     private readonly ICurrentUserService _currentUser;
+    private readonly IAnalyticsService _analytics;
 
     public ItemsViewModel(
         IItemRepository items,
@@ -34,7 +36,8 @@ public sealed partial class ItemsViewModel : PageViewModel
         IDialogService dialogs,
         INotificationService notifications,
         IExportService export,
-        ICurrentUserService currentUser)
+        ICurrentUserService currentUser,
+        IAnalyticsService analytics)
     {
         _items = items;
         _categories = categories;
@@ -43,6 +46,7 @@ public sealed partial class ItemsViewModel : PageViewModel
         _notifications = notifications;
         _export = export;
         _currentUser = currentUser;
+        _analytics = analytics;
 
         ItemsView = CollectionViewSource.GetDefaultView(Items);
         ItemsView.Filter = Filter;
@@ -52,7 +56,7 @@ public sealed partial class ItemsViewModel : PageViewModel
 
     public bool CanEdit => _currentUser.Has(Permission.ManageCatalog);
 
-    public ObservableCollection<Item> Items { get; } = [];
+    public ObservableCollection<ItemRow> Items { get; } = [];
 
     public ICollectionView ItemsView { get; }
 
@@ -69,7 +73,7 @@ public sealed partial class ItemsViewModel : PageViewModel
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(EditCommand))]
-    public partial Item? SelectedItem { get; set; }
+    public partial ItemRow? SelectedItem { get; set; }
 
     [ObservableProperty]
     public partial ItemEditorViewModel? Editor { get; set; }
@@ -90,14 +94,15 @@ public sealed partial class ItemsViewModel : PageViewModel
     [RelayCommand]
     private Task LoadAsync() => RunBusyAsync(async () =>
     {
-        var selectedId = SelectedItem?.Id;
+        var selectedId = SelectedItem?.Item.Id;
         var items = await _items.GetAllAsync(includeArchived: true);
         var categories = await _categories.GetAllAsync(includeArchived: false);
+        var statuses = (await _analytics.LoadAsync()).Statuses.ToDictionary(s => s.Item.Id);
 
         Items.Clear();
         foreach (var item in items)
         {
-            Items.Add(item);
+            Items.Add(new ItemRow(item, statuses.GetValueOrDefault(item.Id)));
         }
 
         var filterId = CategoryFilter?.Id;
@@ -108,7 +113,7 @@ public sealed partial class ItemsViewModel : PageViewModel
         }
 
         CategoryFilter = FilterCategories.FirstOrDefault(c => c.Id == filterId);
-        SelectedItem = Items.FirstOrDefault(i => i.Id == selectedId);
+        SelectedItem = Items.FirstOrDefault(i => i.Item.Id == selectedId);
         RefreshView();
     });
 
@@ -134,22 +139,24 @@ public sealed partial class ItemsViewModel : PageViewModel
             return;
         }
 
-        Editor = await CreateEditorAsync(SelectedItem);
+        Editor = await CreateEditorAsync(SelectedItem.Item);
     }
 
     [RelayCommand]
     private Task ExportAsync() => _export.ExportAsync(
         Strings.Nav_Items,
-        ItemsView.Cast<Item>().ToList(),
+        ItemsView.Cast<ItemRow>().ToList(),
         [
-            new ExportColumn<Item>(Strings.Items_Name, i => i.Name),
-            new ExportColumn<Item>(Strings.Items_Code, i => i.Code),
-            new ExportColumn<Item>(Strings.Items_Category, i => i.Category?.Name),
-            new ExportColumn<Item>(Strings.Items_Unit, i => i.Unit?.Name),
-            new ExportColumn<Item>(Strings.Items_MinStock, i => i.MinStock, ExportFormat.Quantity),
-            new ExportColumn<Item>(Strings.Items_Price, i => i.Price, ExportFormat.Money),
-            new ExportColumn<Item>(Strings.Items_Note, i => i.Note),
-            new ExportColumn<Item>(Strings.Common_Status, i => i.IsArchived ? Strings.Common_Archived : Strings.Common_Active),
+            new ExportColumn<ItemRow>(Strings.Items_Name, r => r.Item.Name),
+            new ExportColumn<ItemRow>(Strings.Items_Code, r => r.Item.Code),
+            new ExportColumn<ItemRow>(Strings.Items_Category, r => r.Item.Category?.Name),
+            new ExportColumn<ItemRow>(Strings.Items_Unit, r => r.Item.Unit?.Name),
+            new ExportColumn<ItemRow>(Strings.Reports_EstimatedStock, r => r.Status?.EstimatedStock, ExportFormat.Quantity),
+            new ExportColumn<ItemRow>(Strings.Items_MinStock, r => r.Item.MinStock, ExportFormat.Quantity),
+            new ExportColumn<ItemRow>(Strings.Reports_DaysLeft, r => r.Status?.DaysLeft is { } d ? Math.Floor(d) : null, ExportFormat.Integer),
+            new ExportColumn<ItemRow>(Strings.Items_Price, r => r.Item.Price, ExportFormat.Money),
+            new ExportColumn<ItemRow>(Strings.Items_Note, r => r.Item.Note),
+            new ExportColumn<ItemRow>(Strings.Common_Status, r => r.Item.IsArchived ? Strings.Common_Archived : Strings.Common_Active),
         ]);
 
     private bool HasSelection() => SelectedItem is not null;
@@ -197,7 +204,7 @@ public sealed partial class ItemsViewModel : PageViewModel
             Editor = null;
             _notifications.Success(item.Id == 0 ? Strings.Items_Created : Strings.Common_Saved, saved.Name);
             await LoadAsync();
-            SelectedItem = Items.FirstOrDefault(i => i.Id == saved.Id);
+            SelectedItem = Items.FirstOrDefault(i => i.Item.Id == saved.Id);
         }
         catch (DomainException ex)
         {
@@ -254,7 +261,7 @@ public sealed partial class ItemsViewModel : PageViewModel
 
     private bool Filter(object obj)
     {
-        if (obj is not Item item)
+        if (obj is not ItemRow { Item: var item })
         {
             return false;
         }
@@ -278,6 +285,9 @@ public sealed partial class ItemsViewModel : PageViewModel
         OnPropertyChanged(nameof(Summary));
     }
 }
+
+/// <summary>Catalog row with the calculated stock position (null for archived items).</summary>
+public sealed record ItemRow(Item Item, ItemStockStatus? Status);
 
 public sealed partial class ItemEditorViewModel : ObservableObject
 {

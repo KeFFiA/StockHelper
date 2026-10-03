@@ -59,29 +59,47 @@
                             <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                         </DataGrid.InputBindings>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" MinWidth="200" SortMemberPath="Name">
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" MinWidth="200" SortMemberPath="Item.Name">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Margin="8,0" VerticalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding Name}" />
+                                            <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding Item.Name}" />
                                             <Border Style="{StaticResource Badge}" Margin="8,0,0,0"
-                                                    Visibility="{Binding IsArchived, Converter={StaticResource BoolToVisibility}}">
+                                                    Visibility="{Binding Item.IsArchived, Converter={StaticResource BoolToVisibility}}">
                                                 <TextBlock Text="{x:Static res:Strings.Common_Archived}" />
                                             </Border>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Code}" Width="*" Binding="{Binding Code}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Code}" Width="*" Binding="{Binding Item.Code}"
                                                 ElementStyle="{StaticResource Cell.Secondary}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Category}" Width="1.2*" Binding="{Binding Category.Name}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Category}" Width="1.2*" Binding="{Binding Item.Category.Name}"
                                                 ElementStyle="{StaticResource Cell.Text}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Unit}" Width="Auto" MinWidth="70" Binding="{Binding Unit.Name}"
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Unit}" Width="Auto" MinWidth="70" Binding="{Binding Item.Unit.Name}"
                                                 ElementStyle="{StaticResource Cell.Secondary}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_MinStock}" Width="Auto" MinWidth="100" SortMemberPath="MinStock" HeaderStyle="{StaticResource Grid.HeaderRight}"
-                                                Binding="{Binding MinStock, Converter={StaticResource Decimal}}" ElementStyle="{StaticResource Cell.Number}" />
-                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Price}" Width="Auto" MinWidth="96" SortMemberPath="Price" HeaderStyle="{StaticResource Grid.HeaderRight}"
-                                                Binding="{Binding Price, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}"
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_EstimatedStock}" Width="Auto" MinWidth="120"
+                                                    SortMemberPath="Status.EstimatedStock" HeaderStyle="{StaticResource Grid.HeaderRight}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource Cell.Number}" FontWeight="SemiBold"
+                                                   Text="{Binding Status.EstimatedStock, Converter={StaticResource Decimal}}"
+                                                   ToolTip="{x:Static res:Strings.Reports_EstimatedNote}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_Forecast}" Width="Auto" MinWidth="130" SortMemberPath="Status.DaysLeft">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Margin="8,0" Content="{Binding Status}" ContentTemplate="{StaticResource DaysLeftBadge}" Focusable="False"
+                                                        Visibility="{Binding Status, Converter={StaticResource NullToCollapsed}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_MinStock}" Width="Auto" MinWidth="100" SortMemberPath="Item.MinStock" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                                Binding="{Binding Item.MinStock, Converter={StaticResource Decimal}}" ElementStyle="{StaticResource Cell.Number}" />
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Price}" Width="Auto" MinWidth="96" SortMemberPath="Item.Price" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                                Binding="{Binding Item.Price, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}"
                                                 ElementStyle="{StaticResource Cell.Number}" />
                         </DataGrid.Columns>
                     </DataGrid>

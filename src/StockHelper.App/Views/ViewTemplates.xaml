@@ -23,8 +23,34 @@
     <DataTemplate DataType="{x:Type pages:StockTakesViewModel}">
         <views:StockTakesView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type pages:ReportsViewModel}">
+        <views:ReportsView />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type pages:UsersViewModel}">
         <views:UsersView />
+    </DataTemplate>
+
+    <!-- ===== Analytics ===== -->
+    <!-- Forecast badge for an ItemStockStatus: below minimum / running out / ok / no data. -->
+    <DataTemplate x:Key="DaysLeftBadge">
+        <Border x:Name="Badge" Style="{StaticResource Badge.Success}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="Glyph" Style="{StaticResource Icon}" FontSize="10" Margin="0,0,5,0" Text="{StaticResource Icon.Trend}" />
+                <TextBlock x:Name="Label" Text="{Binding DaysLeft, Converter={StaticResource Days}}" />
+            </StackPanel>
+        </Border>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding DaysLeft}" Value="{x:Null}">
+                <Setter TargetName="Badge" Property="Style" Value="{StaticResource Badge}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsRunningOut}" Value="True">
+                <Setter TargetName="Badge" Property="Style" Value="{StaticResource Badge.Warning}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsBelowMinimum}" Value="True">
+                <Setter TargetName="Badge" Property="Style" Value="{StaticResource Badge.Danger}" />
+                <Setter TargetName="Glyph" Property="Text" Value="{StaticResource Icon.Warning}" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 
     <!-- ===== Shell ===== -->

@@ -55,6 +55,12 @@
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
     </Style>
 
+    <Style x:Key="Text.KpiValue" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Display}" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
     <Style x:Key="Text.Wrap" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="TextTrimming" Value="None" />

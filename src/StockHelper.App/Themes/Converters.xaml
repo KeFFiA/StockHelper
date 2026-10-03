@@ -11,4 +11,5 @@
     <conv:ResourceKeyToValueConverter x:Key="ResourceKeyToValue" />
     <conv:EnumDisplayConverter x:Key="EnumDisplay" />
     <conv:DecimalConverter x:Key="Decimal" />
+    <conv:DaysConverter x:Key="Days" />
 </ResourceDictionary>

@@ -19,10 +19,17 @@ public partial class App : Application
     {
         _args = args;
 
-        // WPF bindings use en-US by default; format numbers and dates with the user's regional settings.
+        // The UI is Russian, so dates and numbers use Russian formatting regardless of the Windows region.
+        var culture = CultureInfo.GetCultureInfo(AppCulture.Name);
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+        CultureInfo.CurrentCulture = culture;
+        CultureInfo.CurrentUICulture = culture;
+
+        // WPF bindings use en-US unless the language is set explicitly.
         FrameworkElement.LanguageProperty.OverrideMetadata(
             typeof(FrameworkElement),
-            new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+            new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
     }
 
     public static IServiceProvider Services =>

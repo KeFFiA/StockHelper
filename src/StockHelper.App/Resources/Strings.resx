@@ -600,4 +600,205 @@
   <data name="StockTakes_DeleteConfirm" xml:space="preserve">
     <value>Удалить незавершённую инвентаризацию со всеми введёнными данными?</value>
   </data>
+  <data name="Nav_Reports" xml:space="preserve">
+    <value>Отчёты</value>
+  </data>
+  <data name="Period_365" xml:space="preserve">
+    <value>Год</value>
+  </data>
+  <data name="Days_Format" xml:space="preserve">
+    <value>≈ {0} дн.</value>
+  </data>
+  <data name="Days_LessThanOne" xml:space="preserve">
+    <value>меньше дня</value>
+  </data>
+  <data name="Days_MoreThanYear" xml:space="preserve">
+    <value>больше года</value>
+  </data>
+  <data name="Days_Unknown" xml:space="preserve">
+    <value>нет данных</value>
+  </data>
+  <data name="Dashboard_GreetingMorning" xml:space="preserve">
+    <value>Доброе утро</value>
+  </data>
+  <data name="Dashboard_GreetingDay" xml:space="preserve">
+    <value>Добрый день</value>
+  </data>
+  <data name="Dashboard_GreetingEvening" xml:space="preserve">
+    <value>Добрый вечер</value>
+  </data>
+  <data name="Dashboard_GreetingNight" xml:space="preserve">
+    <value>Доброй ночи</value>
+  </data>
+  <data name="Dashboard_ActiveItems" xml:space="preserve">
+    <value>Активных позиций</value>
+  </data>
+  <data name="Dashboard_BelowMinimum" xml:space="preserve">
+    <value>Ниже минимума</value>
+  </data>
+  <data name="Dashboard_RunningOutTitle" xml:space="preserve">
+    <value>Закончатся за {0} дн.</value>
+  </data>
+  <data name="Dashboard_LastStockTake" xml:space="preserve">
+    <value>Последняя инвентаризация</value>
+  </data>
+  <data name="Dashboard_NoStockTake" xml:space="preserve">
+    <value>ещё не проводилась</value>
+  </data>
+  <data name="Dashboard_Today" xml:space="preserve">
+    <value>сегодня</value>
+  </data>
+  <data name="Dashboard_DaysAgo" xml:space="preserve">
+    <value>{0} дн. назад</value>
+  </data>
+  <data name="Dashboard_BelowMinimumTitle" xml:space="preserve">
+    <value>Ниже минимального остатка</value>
+  </data>
+  <data name="Dashboard_ForecastTitle" xml:space="preserve">
+    <value>Скоро закончатся</value>
+  </data>
+  <data name="Dashboard_OpenPurchaseList" xml:space="preserve">
+    <value>Список на закупку</value>
+  </data>
+  <data name="Dashboard_OpenForecast" xml:space="preserve">
+    <value>Весь прогноз</value>
+  </data>
+  <data name="Dashboard_AllAboveMinimum" xml:space="preserve">
+    <value>Все позиции выше минимума</value>
+  </data>
+  <data name="Dashboard_NoForecast" xml:space="preserve">
+    <value>Прогноз появится после двух завершённых инвентаризаций</value>
+  </data>
+  <data name="Dashboard_Stock" xml:space="preserve">
+    <value>Остаток</value>
+  </data>
+  <data name="Dashboard_Min" xml:space="preserve">
+    <value>мин.</value>
+  </data>
+  <data name="Dashboard_FirstStockTakeHint" xml:space="preserve">
+    <value>Чтобы программа начала считать расход и прогноз, проведите первую инвентаризацию: она станет базовой точкой. Расход появится после второй.</value>
+  </data>
+  <data name="Reports_Subtitle" xml:space="preserve">
+    <value>Средний расход — за последние {0} дн. · горизонт закупки — {1} дн.</value>
+  </data>
+  <data name="Reports_ExportAll" xml:space="preserve">
+    <value>Все отчёты</value>
+  </data>
+  <data name="Reports_AllFileName" xml:space="preserve">
+    <value>Отчёты StockHelper</value>
+  </data>
+  <data name="Reports_Stock" xml:space="preserve">
+    <value>Остатки и прогноз</value>
+  </data>
+  <data name="Reports_StockHint" xml:space="preserve">
+    <value>Расчётный остаток = последняя инвентаризация + поступления после неё. Это оценка, а не фактический пересчёт.</value>
+  </data>
+  <data name="Reports_StockSummary" xml:space="preserve">
+    <value>Позиций: {0} · ниже минимума: {1} · заканчиваются: {2}</value>
+  </data>
+  <data name="Reports_Purchase" xml:space="preserve">
+    <value>Список на закупку</value>
+  </data>
+  <data name="Reports_PurchaseHint" xml:space="preserve">
+    <value>Позиции с расчётным остатком ниже минимального или с прогнозом короче горизонта закупки. Рекомендуемое количество покрывает минимум и расход на горизонт.</value>
+  </data>
+  <data name="Reports_PurchaseSummary" xml:space="preserve">
+    <value>Позиций: {0} · ориентировочно на {1:N2}</value>
+  </data>
+  <data name="Reports_PurchaseEmpty" xml:space="preserve">
+    <value>Закупать пока нечего</value>
+  </data>
+  <data name="Reports_Consumption" xml:space="preserve">
+    <value>Расход за период</value>
+  </data>
+  <data name="Reports_ConsumptionHint" xml:space="preserve">
+    <value>Расход между завершёнными инвентаризациями, закончившимися в выбранном периоде. Стоимость — по текущей цене позиции.</value>
+  </data>
+  <data name="Reports_ConsumptionSummary" xml:space="preserve">
+    <value>Позиций: {0} · стоимость расхода: {1:N2} · с расхождениями: {2}</value>
+  </data>
+  <data name="Reports_ConsumptionEmpty" xml:space="preserve">
+    <value>Нет данных о расходе за период. Расход считается между двумя завершёнными инвентаризациями.</value>
+  </data>
+  <data name="Reports_History" xml:space="preserve">
+    <value>История</value>
+  </data>
+  <data name="Reports_HistoryHint" xml:space="preserve">
+    <value>Расход по каждой позиции между последовательными инвентаризациями. Отрицательный расход — расхождение: факт больше ожидаемого.</value>
+  </data>
+  <data name="Reports_HistorySummary" xml:space="preserve">
+    <value>Завершённых инвентаризаций: {0} · расхождений: {1}</value>
+  </data>
+  <data name="Reports_HistoryEmpty" xml:space="preserve">
+    <value>История появится после второй завершённой инвентаризации.</value>
+  </data>
+  <data name="Reports_HistoryExportNote" xml:space="preserve">
+    <value>Фактические остатки (сумма по местам хранения) на каждую завершённую инвентаризацию</value>
+  </data>
+  <data name="Reports_EstimatedNote" xml:space="preserve">
+    <value>Расчётный остаток: последняя инвентаризация + поступления после неё</value>
+  </data>
+  <data name="Reports_EstimatedStock" xml:space="preserve">
+    <value>Остаток (расч.)</value>
+  </data>
+  <data name="Reports_NoBaseline" xml:space="preserve">
+    <value>без инвентаризации</value>
+  </data>
+  <data name="Reports_LastCount" xml:space="preserve">
+    <value>Последний факт</value>
+  </data>
+  <data name="Reports_LastCountDate" xml:space="preserve">
+    <value>Дата факта</value>
+  </data>
+  <data name="Reports_ReceivedSince" xml:space="preserve">
+    <value>Поступило после</value>
+  </data>
+  <data name="Reports_AvgDaily" xml:space="preserve">
+    <value>Расход в день</value>
+  </data>
+  <data name="Reports_DaysLeft" xml:space="preserve">
+    <value>Хватит на, дн.</value>
+  </data>
+  <data name="Reports_Forecast" xml:space="preserve">
+    <value>Прогноз</value>
+  </data>
+  <data name="Reports_RunOutDate" xml:space="preserve">
+    <value>Закончится</value>
+  </data>
+  <data name="Reports_Suggested" xml:space="preserve">
+    <value>Купить</value>
+  </data>
+  <data name="Reports_Reason" xml:space="preserve">
+    <value>Причина</value>
+  </data>
+  <data name="Reports_ConsumptionQty" xml:space="preserve">
+    <value>Расход</value>
+  </data>
+  <data name="Reports_Cost" xml:space="preserve">
+    <value>Стоимость</value>
+  </data>
+  <data name="Reports_Days" xml:space="preserve">
+    <value>Дней</value>
+  </data>
+  <data name="Reports_Discrepancy" xml:space="preserve">
+    <value>Расхождение</value>
+  </data>
+  <data name="Reports_DiscrepancyBadge" xml:space="preserve">
+    <value>Расхождение</value>
+  </data>
+  <data name="Reports_DiscrepancyHint" xml:space="preserve">
+    <value>Отрицательный расход: при пересчёте оказалось больше, чем ожидалось. Проверьте поступления и данные инвентаризации.</value>
+  </data>
+  <data name="Reports_Period" xml:space="preserve">
+    <value>Период</value>
+  </data>
+  <data name="Reports_Opening" xml:space="preserve">
+    <value>Было</value>
+  </data>
+  <data name="Reports_Received" xml:space="preserve">
+    <value>Пришло</value>
+  </data>
+  <data name="Reports_Closing" xml:space="preserve">
+    <value>Стало</value>
+  </data>
 </root>

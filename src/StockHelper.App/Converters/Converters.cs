@@ -113,3 +113,18 @@ public sealed class DecimalConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+
+/// <summary>Formats a forecast in days: "≈ 12 дн.", "&lt; 1 дн.", "&gt; 1 года".</summary>
+public sealed class DaysConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => value switch
+    {
+        decimal d when d < 1 => Resources.Strings.Days_LessThanOne,
+        decimal d when d > 365 => Resources.Strings.Days_MoreThanYear,
+        decimal d => string.Format(culture, Resources.Strings.Days_Format, Math.Floor(d)),
+        _ => Resources.Strings.Days_Unknown,
+    };
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}

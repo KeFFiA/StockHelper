@@ -4,9 +4,169 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
+             xmlns:core="clr-namespace:StockHelper.Core.Services;assembly=StockHelper.Core"
+             xmlns:res="clr-namespace:StockHelper.App.Resources"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:DashboardViewModel}">
-    <Grid Margin="{StaticResource Space.Page}">
-        <TextBlock Style="{StaticResource Text.Title}" Text="{Binding Title}" />
-    </Grid>
+    <UserControl.Resources>
+        <!-- KPI tile: Tag = icon glyph, Header = caption, Content = value. -->
+        <Style x:Key="Kpi" TargetType="HeaderedContentControl">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="HeaderedContentControl">
+                        <Border Style="{StaticResource Card}" Margin="0,0,16,0">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Left" Width="44" Height="44" CornerRadius="22" VerticalAlignment="Top" Margin="0,0,14,0">
+                                    <Grid>
+                                        <Border CornerRadius="22" Background="{TemplateBinding Foreground}" Opacity="0.14" />
+                                        <TextBlock Style="{StaticResource Icon}" FontSize="18" HorizontalAlignment="Center"
+                                                   Text="{TemplateBinding Tag}" Foreground="{TemplateBinding Foreground}" />
+                                    </Grid>
+                                </Border>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Text.Secondary}" Text="{TemplateBinding Header}" TextWrapping="Wrap" />
+                                    <ContentPresenter Margin="0,4,0,0" TextElement.FontSize="26" TextElement.FontWeight="SemiBold"
+                                                      TextElement.FontFamily="{StaticResource Font.Display}"
+                                                      TextElement.Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="StatusRow" DataType="{x:Type core:ItemStockStatus}">
+            <Border Padding="0,10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding Item.Name}" />
+                        <TextBlock Style="{StaticResource Text.Caption}">
+                            <Run Text="{x:Static res:Strings.Dashboard_Stock}" />
+                            <Run Text="{Binding EstimatedStock, Mode=OneWay, Converter={StaticResource Decimal}}" FontWeight="SemiBold" />
+                            <Run Text="{Binding Item.Unit.Name, Mode=OneWay}" />
+                            <Run Text="·" />
+                            <Run Text="{x:Static res:Strings.Dashboard_Min}" />
+                            <Run Text="{Binding Item.MinStock, Mode=OneWay, Converter={StaticResource Decimal}}" />
+                        </TextBlock>
+                    </StackPanel>
+                    <ContentControl Grid.Column="1" Content="{Binding}" ContentTemplate="{StaticResource DaysLeftBadge}" VerticalAlignment="Center" Focusable="False" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{StaticResource Space.Page}">
+            <!-- Greeting + quick actions -->
+            <DockPanel Margin="0,0,0,24">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Receipts}" Content="{x:Static res:Strings.Receipts_Add}"
+                            Command="{Binding GoToReceiptsCommand}" Visibility="{Binding CanAddReceipt, Converter={StaticResource BoolToVisibility}}" />
+                    <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.StockTakes}" Margin="{StaticResource Space.ButtonGap}"
+                            Content="{x:Static res:Strings.Nav_StockTakes}" Command="{Binding GoToStockTakesCommand}"
+                            Visibility="{Binding CanStartStockTake, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Title}" Text="{Binding Greeting}" />
+                    <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Today}" Margin="0,4,0,0" />
+                </StackPanel>
+            </DockPanel>
+
+            <!-- First-run hint -->
+            <Border Style="{StaticResource InfoBar.Info}" Visibility="{Binding HasNoBaseline, Converter={StaticResource BoolToVisibility}}" Margin="0,0,0,20">
+                <DockPanel>
+                    <TextBlock Style="{StaticResource Icon}" Text="{StaticResource Icon.Info}" Margin="0,0,10,0"
+                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Top" />
+                    <TextBlock Text="{x:Static res:Strings.Dashboard_FirstStockTakeHint}" TextWrapping="Wrap" />
+                </DockPanel>
+            </Border>
+
+            <!-- KPIs -->
+            <Grid Margin="0,0,-16,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <HeaderedContentControl Style="{StaticResource Kpi}" Tag="{StaticResource Icon.Items}"
+                                        Header="{x:Static res:Strings.Dashboard_ActiveItems}" Content="{Binding ActiveItems}" />
+                <HeaderedContentControl Grid.Column="1" Style="{StaticResource Kpi}" Tag="{StaticResource Icon.Warning}"
+                                        Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                                        Header="{x:Static res:Strings.Dashboard_BelowMinimum}" Content="{Binding BelowMinimumCount}" />
+                <HeaderedContentControl Grid.Column="2" Style="{StaticResource Kpi}" Tag="{StaticResource Icon.Trend}"
+                                        Foreground="{DynamicResource SystemFillColorCautionBrush}"
+                                        Header="{Binding RunningOutTitle}" Content="{Binding RunningOutCount}" />
+                <HeaderedContentControl Grid.Column="3" Tag="{StaticResource Icon.Calendar}"
+                                        Header="{x:Static res:Strings.Dashboard_LastStockTake}">
+                    <HeaderedContentControl.Style>
+                        <Style TargetType="HeaderedContentControl" BasedOn="{StaticResource Kpi}">
+                            <Setter Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStockTakeStale}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </HeaderedContentControl.Style>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.KpiValue}"
+                                   Text="{Binding LastStockTakeDate, Converter={StaticResource UtcToLocal}, ConverterParameter=d, TargetNullValue=—}" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding LastStockTakeHint}" />
+                    </StackPanel>
+                </HeaderedContentControl>
+            </Grid>
+
+            <!-- Lists -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Subtle}" Command="{Binding GoToReportsCommand}"
+                                    Content="{x:Static res:Strings.Dashboard_OpenPurchaseList}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                            <TextBlock Style="{StaticResource Text.Subtitle}" Text="{x:Static res:Strings.Dashboard_BelowMinimumTitle}" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <ItemsControl ItemsSource="{Binding BelowMinimum}" ItemTemplate="{StaticResource StatusRow}" />
+                        <StackPanel Margin="0,24" HorizontalAlignment="Center"
+                                    Visibility="{Binding BelowMinimum.Count, Converter={StaticResource EmptyToVisible}}">
+                            <TextBlock Style="{StaticResource Icon}" FontSize="28" Text="{StaticResource Icon.Success}" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource SystemFillColorSuccessBrush}" />
+                            <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.Dashboard_AllAboveMinimum}" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Subtle}" Command="{Binding GoToReportsCommand}"
+                                    Content="{x:Static res:Strings.Dashboard_OpenForecast}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                            <TextBlock Style="{StaticResource Text.Subtitle}" Text="{x:Static res:Strings.Dashboard_ForecastTitle}" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <ItemsControl ItemsSource="{Binding RunningOut}" ItemTemplate="{StaticResource StatusRow}" />
+                        <StackPanel Margin="0,24" HorizontalAlignment="Center"
+                                    Visibility="{Binding RunningOut.Count, Converter={StaticResource EmptyToVisible}}">
+                            <TextBlock Style="{StaticResource Icon}" FontSize="28" Text="{StaticResource Icon.Trend}" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                            <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.Dashboard_NoForecast}" Margin="0,8,0,0"
+                                       TextWrapping="Wrap" TextAlignment="Center" MaxWidth="320" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

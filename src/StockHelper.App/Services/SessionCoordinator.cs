@@ -1,5 +1,6 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using StockHelper.App.Infrastructure;
 using StockHelper.App.Resources;
 using StockHelper.App.ViewModels;
 using StockHelper.App.Views;
@@ -22,6 +23,11 @@ public sealed class SessionCoordinator(
     {
         theme.Apply(settings.Current.Theme);
         await databaseInitializer.InitializeAsync(CreateSeedData());
+
+        if (Environment.GetCommandLineArgs().Contains("--demo", StringComparer.OrdinalIgnoreCase))
+        {
+            await services.GetRequiredService<DemoData>().SeedAsync();
+        }
 
         if (!await ShowAuthAsync())
         {
