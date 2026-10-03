@@ -1,7 +1,8 @@
 name: Release
 
-# Push a tag vX.Y.Z to build, test, pack with Velopack and publish to GitHub Releases.
-# Installed apps pick the new release up automatically.
+# Push a tag vX.Y.Z on main to build, test, pack with Velopack and publish to GitHub Releases.
+# Installed apps pick the new release up automatically. Release notes come from the matching
+# "## X.Y.Z" section of src/StockHelper.App/Resources/Changelog.md.
 on:
   push:
     tags: ['v*.*.*']
@@ -17,6 +18,8 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -29,6 +32,31 @@ jobs:
           $version = "${{ github.ref_name }}".TrimStart('v')
           if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') { throw "Tag must be vX.Y.Z, got '${{ github.ref_name }}'" }
           "value=$version" >> $env:GITHUB_OUTPUT
+
+      # Releases are cut from main only; dev is for work in progress.
+      - name: Check tag is on main
+        shell: pwsh
+        run: |
+          git merge-base --is-ancestor $env:GITHUB_SHA origin/main
+          if ($LASTEXITCODE -ne 0) { throw "Tag ${{ github.ref_name }} is not on main" }
+
+      - name: Release notes from changelog
+        shell: pwsh
+        run: |
+          $version = '${{ steps.version.outputs.value }}'
+          $lines = Get-Content src/StockHelper.App/Resources/Changelog.md -Encoding utf8
+          $start = [array]::FindIndex($lines, [Predicate[string]]{ param($l) $l -match "^## +$([regex]::Escape($version))(\s|$)" })
+          if ($start -lt 0) { throw "Changelog.md has no '## $version' section" }
+          $end = [array]::FindIndex($lines, $start + 1, [Predicate[string]]{ param($l) $l -match '^## ' })
+          if ($end -lt 0) { $end = $lines.Length }
+          $notes = $lines[($start + 1)..($end - 1)] -join "`n"
+          $footer = @(
+            '', '---', '',
+            '**Установка:** скачайте и запустите `StockHelper-win-Setup.exe`. Установленные программы обновятся сами.',
+            '',
+            '**Документация:** [общая](https://github.com/${{ github.repository }}/blob/main/docs/general.md) · [кладовщик](https://github.com/${{ github.repository }}/blob/main/docs/storekeeper.md) · [руководитель](https://github.com/${{ github.repository }}/blob/main/docs/manager.md) · [администратор](https://github.com/${{ github.repository }}/blob/main/docs/administrator.md)'
+          ) -join "`n"
+          Set-Content release-notes.md ($notes.Trim() + "`n" + $footer) -Encoding utf8
 
       - name: Restore tools
         run: dotnet tool restore
@@ -69,6 +97,7 @@ jobs:
             --packTitle StockHelper `
             --packAuthors StockHelper `
             --icon src/StockHelper.App/Assets/app.ico `
+            --releaseNotes release-notes.md `
             -o releases `
             @sign
 
@@ -81,3 +110,8 @@ jobs:
           --releaseName "StockHelper ${{ steps.version.outputs.value }}"
           --tag ${{ github.ref_name }}
           -o releases
+
+      - name: Release description
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit ${{ github.ref_name }} --notes-file release-notes.md

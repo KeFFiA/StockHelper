@@ -2,7 +2,11 @@
 
 Desktop app for tracking consumables: item catalog, stock-taking, automatic consumption calculation, stock forecasting and Excel export.
 
-The UI is in Russian; code, commits and docs are in English.
+The UI is in Russian; code and commits are in English.
+
+**User guides (Russian):** [overview](docs/README.md) · [general](docs/general.md) · [storekeeper](docs/storekeeper.md) · [manager](docs/manager.md) · [administrator](docs/administrator.md)
+
+**Download:** [latest release](https://github.com/KeFFiA/StockHelper/releases/latest) — `StockHelper-win-Setup.exe`.
 
 ## Features
 
@@ -94,15 +98,29 @@ Styles and design tokens (typography, spacing, radii, icons, control styles) liv
 `src/StockHelper.App/Themes/`. Views reference tokens and styles only — no hardcoded colors or sizes.
 Colors come from the WPF Fluent theme and follow the Windows light/dark mode and accent color.
 
+## Branches
+
+- `dev` — day-to-day work; feature branches merge here.
+- `main` — releases only. Installed apps update from releases tagged on `main`.
+
 ## Releases
 
-Versioning follows SemVer. Pushing a tag `vX.Y.Z` builds, tests, packs the app with Velopack and
-publishes it to GitHub Releases (`StockHelper-win-Setup.exe` is the installer); installed apps
-download the update in the background and offer to restart.
+Versioning follows SemVer. Every release must have a changelog entry.
+
+1. Add a `## X.Y.Z — <date>` section (Russian, user-facing) to `src/StockHelper.App/Resources/Changelog.md`.
+   The app shows it once after the update; the same section becomes the GitHub release description.
+2. Bump `<Version>` in `Directory.Build.props`.
+3. Merge `dev` into `main`, tag and push:
 
 ```powershell
-git tag v0.1.0
-git push origin v0.1.0
+git checkout main
+git merge --ff-only dev
+git tag v1.0.0
+git push origin main v1.0.0
 ```
+
+The tag triggers `.github/workflows/release.yml`: tests, self-contained publish, Velopack pack and
+upload to GitHub Releases (`StockHelper-win-Setup.exe` is the installer). Installed apps download the
+update in the background and offer to restart.
 
 Code signing: add a `SIGN_PARAMS` repository secret with signtool arguments; without it packages are unsigned.
