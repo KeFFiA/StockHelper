@@ -1476,4 +1476,10 @@
   <data name="Tip_Changelog" xml:space="preserve">
     <value>Что нового в каждой версии программы</value>
   </data>
+  <data name="Demo_SignInAs" xml:space="preserve">
+    <value>Демо-версия — войти как</value>
+  </data>
+  <data name="Demo_Hint" xml:space="preserve">
+    <value>Данные вымышленные. Пароль всех учётных записей — demo. Демо-версия хранит данные отдельно и не затрагивает рабочую базу.</value>
+  </data>
 </root>

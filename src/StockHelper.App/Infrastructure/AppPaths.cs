@@ -5,11 +5,11 @@ namespace StockHelper.App.Infrastructure;
 /// </summary>
 public static class AppPaths
 {
-    /// <summary>%APPDATA%\StockHelper, or STOCKHELPER_DATA_DIR when set (tests, demos, portable use).</summary>
+    /// <summary>%APPDATA%\StockHelper (StockHelper-Demo for the demo build), or STOCKHELPER_DATA_DIR when set (tests, demos, portable use).</summary>
     public static string DataDirectory { get; } =
         Environment.GetEnvironmentVariable("STOCKHELPER_DATA_DIR") is { Length: > 0 } custom
             ? custom
-            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StockHelper");
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppInfo.IsDemo ? "StockHelper-Demo" : "StockHelper");
 
     public static string DatabaseFile => Path.Combine(DataDirectory, "stockhelper.db");
 

@@ -6,6 +6,8 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>StockHelper.App</RootNamespace>
     <AssemblyName>StockHelper</AssemblyName>
+    <!-- dotnet publish -p:DemoBuild=true: separate data folder, sample data and one-click demo accounts. -->
+    <DefineConstants Condition="'$(DemoBuild)' == 'true'">$(DefineConstants);DEMO</DefineConstants>
     <StartupObject>StockHelper.App.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>

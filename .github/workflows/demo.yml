@@ -1,0 +1,91 @@
+name: Demo
+
+# Push to the demo branch to rebuild the customer demo: a single portable StockHelper-Demo.exe
+# with sample data and one-click accounts, published as the "demo" pre-release.
+# Pre-releases are ignored by installed apps (updates come from releases on main only).
+on:
+  push:
+    branches: [demo]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: demo
+  cancel-in-progress: true
+
+jobs:
+  demo:
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test
+        run: dotnet test StockHelper.sln -c Release
+
+      - name: Version
+        id: version
+        shell: pwsh
+        run: |
+          $version = (dotnet msbuild src/StockHelper.App/StockHelper.App.csproj -getProperty:Version).Trim()
+          "value=$version-demo" >> $env:GITHUB_OUTPUT
+
+      - name: Publish single-file demo
+        shell: pwsh
+        run: |
+          dotnet publish src/StockHelper.App/StockHelper.App.csproj `
+            -c Release -r win-x64 --self-contained `
+            -p:DemoBuild=true `
+            -p:Version=${{ steps.version.outputs.value }} `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:DebugType=none `
+            -o publish
+          Copy-Item publish/StockHelper.exe StockHelper-Demo.exe
+
+      - name: Release notes
+        shell: pwsh
+        run: |
+          $notes = @'
+          Демо-версия StockHelper для знакомства с программой. Данные вымышленные.
+
+          ### Как запустить
+          1. Скачайте **StockHelper-Demo.exe** ниже (раздел Assets) и запустите — установка не нужна.
+          2. Если Windows покажет окно «Система Windows защитила ваш компьютер», нажмите **Подробнее → Выполнить в любом случае**.
+          3. На экране входа выберите роль — **Администратор**, **Руководитель** или **Кладовщик** — программа войдёт сама. Пароль всех учётных записей — `demo`.
+
+          ### Что внутри
+          - 10 позиций расходников, поступления, выдачи с возвратами и открытыми упаковками, 4 ежемесячные инвентаризации.
+          - Все разделы, отчёты и графики работают так же, как в рабочей версии.
+
+          ### Важно
+          - Демо-версия хранит данные в отдельной папке `%APPDATA%\StockHelper-Demo` и не затрагивает рабочую базу.
+          - Чтобы начать заново с исходными примерами, закройте программу и удалите эту папку.
+          - Демо-версия не обновляется автоматически. Для работы установите обычную версию со страницы [последнего релиза](https://github.com/${{ github.repository }}/releases/latest).
+
+          Сборка `${{ steps.version.outputs.value }}` из коммита ${{ github.sha }}.
+          '@
+          Set-Content demo-notes.md $notes -Encoding utf8
+
+      # One rolling pre-release: recreate it so the asset and the tag always match the demo branch.
+      - name: Publish pre-release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete demo --cleanup-tag --yes 2>$null
+          $global:LASTEXITCODE = 0
+          gh release create demo StockHelper-Demo.exe `
+            --prerelease `
+            --target ${{ github.sha }} `
+            --title "StockHelper — демо-версия" `
+            --notes-file demo-notes.md

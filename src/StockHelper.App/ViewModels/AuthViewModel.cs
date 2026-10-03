@@ -40,6 +40,20 @@ public sealed partial class AuthViewModel(IAuthService auth, ISettingsService se
 
     public string Version => AppInfo.Version;
 
+    public bool IsDemo => AppInfo.IsDemo;
+
+    public IReadOnlyList<DemoAccount> DemoAccounts { get; } = AppInfo.IsDemo
+        ? DemoData.Accounts.Select(a => new DemoAccount(a.Login, a.DisplayName, Converters.EnumDisplay.Get(a.Role))).ToList()
+        : [];
+
+    [RelayCommand]
+    private Task SignInAsDemoAsync(DemoAccount account)
+    {
+        Login = account.Login;
+        Password = AppInfo.DemoPassword;
+        return SubmitAsync();
+    }
+
     public async Task InitializeAsync()
     {
         IsSetup = await auth.IsSetupRequiredAsync();
@@ -94,3 +108,5 @@ public sealed partial class AuthViewModel(IAuthService auth, ISettingsService se
         }
     }
 }
+
+public sealed record DemoAccount(string Login, string DisplayName, string Role);

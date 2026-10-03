@@ -28,7 +28,13 @@ public sealed class SessionCoordinator(
         await databaseInitializer.InitializeAsync(CreateSeedData());
         backups.Prune(settings.Current.BackupsToKeep);
 
-        if (Environment.GetCommandLineArgs().Contains("--demo", StringComparer.OrdinalIgnoreCase))
+        if (AppInfo.IsDemo)
+        {
+            var demo = services.GetRequiredService<DemoData>();
+            await demo.SeedUsersAsync();
+            await demo.SeedAsync();
+        }
+        else if (Environment.GetCommandLineArgs().Contains("--demo", StringComparer.OrdinalIgnoreCase))
         {
             await services.GetRequiredService<DemoData>().SeedAsync();
         }

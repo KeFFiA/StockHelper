@@ -82,6 +82,31 @@
 
                 <ProgressBar IsIndeterminate="True" Margin="0,16,0,0"
                              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+
+                <!-- Demo build: one-click sign-in for each role -->
+                <StackPanel Margin="0,24,0,0" Visibility="{Binding IsDemo, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Demo_SignInAs}" />
+                    <ItemsControl ItemsSource="{Binding DemoAccounts}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource Button.Standard}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                        Padding="12,8" Margin="0,0,0,6"
+                                        Command="{Binding DataContext.SignInAsDemoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Style="{StaticResource Text.Secondary}" Text="{Binding Login}" Margin="12,0,0,0" />
+                                        <TextBlock>
+                                            <Run Text="{Binding Role, Mode=OneWay}" FontWeight="SemiBold" />
+                                            <Run Text="·" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                            <Run Text="{Binding DisplayName, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </DockPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,4,0,0" Text="{x:Static res:Strings.Demo_Hint}" />
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>
