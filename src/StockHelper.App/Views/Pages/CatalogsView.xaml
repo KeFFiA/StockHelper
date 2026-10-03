@@ -19,9 +19,11 @@
                 <DockPanel Style="{StaticResource Toolbar}">
                     <controls:SearchBox Text="{Binding SearchText, Mode=TwoWay}" Placeholder="{x:Static res:Strings.Common_Search}" />
                     <CheckBox Content="{x:Static res:Strings.Common_ShowArchived}" IsChecked="{Binding ShowArchived}" Margin="16,0,0,0" VerticalAlignment="Center" />
-                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Add}"
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Add}" Margin="{StaticResource Space.ButtonGap}"
                             Content="{x:Static res:Strings.Common_Add}" Command="{Binding AddCommand}"
                             Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibility}}" />
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Export}"
+                            Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" />
                 </DockPanel>
 
                 <Grid Grid.Row="1">

@@ -22,17 +22,18 @@ public sealed partial class CatalogsViewModel : PageViewModel
         ILookupRepository<StorageLocation> locations,
         IDialogService dialogs,
         INotificationService notifications,
+        IExportService export,
         ICurrentUserService currentUser)
     {
         Sections =
         [
-            new LookupSectionViewModel<Category>(categories, dialogs, notifications,
+            new LookupSectionViewModel<Category>(categories, dialogs, notifications, export,
                 Strings.Catalogs_Categories, Strings.Catalogs_CategoryNew, "Icon.Tag",
                 currentUser.Has(Permission.ManageCatalog), hasDescription: false, Strings.Catalogs_CategoryHint),
-            new LookupSectionViewModel<Unit>(units, dialogs, notifications,
+            new LookupSectionViewModel<Unit>(units, dialogs, notifications, export,
                 Strings.Catalogs_Units, Strings.Catalogs_UnitNew, "Icon.Ruler",
                 currentUser.Has(Permission.ManageCatalog), hasDescription: false, Strings.Catalogs_UnitHint),
-            new LookupSectionViewModel<StorageLocation>(locations, dialogs, notifications,
+            new LookupSectionViewModel<StorageLocation>(locations, dialogs, notifications, export,
                 Strings.Catalogs_Locations, Strings.Catalogs_LocationNew, "Icon.Location",
                 currentUser.Has(Permission.ManageLocations), hasDescription: true, Strings.Catalogs_LocationHint),
         ];
@@ -123,11 +124,13 @@ public sealed partial class LookupSectionViewModel<T> : LookupSectionViewModel w
     private readonly ILookupRepository<T> _repository;
     private readonly IDialogService _dialogs;
     private readonly INotificationService _notifications;
+    private readonly IExportService _export;
 
     public LookupSectionViewModel(
         ILookupRepository<T> repository,
         IDialogService dialogs,
         INotificationService notifications,
+        IExportService export,
         string title,
         string newTitle,
         string iconKey,
@@ -139,7 +142,18 @@ public sealed partial class LookupSectionViewModel<T> : LookupSectionViewModel w
         _repository = repository;
         _dialogs = dialogs;
         _notifications = notifications;
+        _export = export;
     }
+
+    [RelayCommand]
+    private Task ExportAsync() => _export.ExportAsync(
+        Title,
+        RowsView.Cast<LookupRow>().ToList(),
+        [
+            new ExportColumn<LookupRow>(Strings.Common_Name, r => r.Name),
+            new ExportColumn<LookupRow>(Strings.Common_Description, r => r.Description),
+            new ExportColumn<LookupRow>(Strings.Common_Status, r => r.IsArchived ? Strings.Common_Archived : Strings.Common_Active),
+        ]);
 
     [RelayCommand]
     public override Task LoadAsync() => RunBusyAsync(async () =>
