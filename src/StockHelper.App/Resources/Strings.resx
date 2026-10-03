@@ -712,7 +712,7 @@
     <value>Расход за период</value>
   </data>
   <data name="Reports_ConsumptionHint" xml:space="preserve">
-    <value>Для позиций с выдачами расход = выдано − вернули за период; «Неучтено» — недостача, найденная инвентаризацией. Для позиций без выдач расход считается между инвентаризациями. Стоимость — по текущей цене.</value>
+    <value>Для позиций с выдачами расход = выдано − вернули за период; «Неучтено» — недостача, найденная инвентаризацией. Для позиций без выдач расход считается между инвентаризациями. Стоимость — по ценам того времени: по цене последнего поступления на дату расхода.</value>
   </data>
   <data name="Reports_ConsumptionSummary" xml:space="preserve">
     <value>Позиций: {0} · стоимость расхода: {1:C2} · с расхождениями: {2}</value>
@@ -1384,7 +1384,7 @@
     <value>Расход по месяцам</value>
   </data>
   <data name="Chart_MonthlySummary" xml:space="preserve">
-    <value>В этом месяце: {0:C0} · в прошлом: {1:C0} (по текущим ценам)</value>
+    <value>В этом месяце: {0:C0} · в прошлом: {1:C0}</value>
   </data>
   <data name="Chart_StockTitle" xml:space="preserve">
     <value>Остаток за 3 месяца</value>
@@ -1475,5 +1475,11 @@
   </data>
   <data name="Tip_Changelog" xml:space="preserve">
     <value>Что нового в каждой версии программы</value>
+  </data>
+  <data name="Demo_SignInAs" xml:space="preserve">
+    <value>Демо-версия — войти как</value>
+  </data>
+  <data name="Demo_Hint" xml:space="preserve">
+    <value>Данные вымышленные. Пароль всех учётных записей — demo. Демо-версия хранит данные отдельно и не затрагивает рабочую базу.</value>
   </data>
 </root>

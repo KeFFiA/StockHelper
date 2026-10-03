@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using StockHelper.Core.Abstractions;
 using StockHelper.Core.Entities;
+using StockHelper.Core.Security;
 
 namespace StockHelper.App.Infrastructure;
 
@@ -16,8 +17,39 @@ public sealed class DemoData(
     IReceiptRepository receipts,
     IStockTakeRepository stockTakes,
     IIssueRepository issues,
+    IUserRepository users,
+    IPasswordHasher hasher,
     ILogger<DemoData> logger)
 {
+    /// <summary>Sample accounts of the demo build, one per role (password: <see cref="AppInfo.DemoPassword"/>).</summary>
+    public static readonly (string Login, string DisplayName, UserRole Role)[] Accounts =
+    [
+        ("admin", "Алексей Смирнов", UserRole.Administrator),
+        ("manager", "Ольга Петрова", UserRole.Manager),
+        ("storekeeper", "Иван Кузнецов", UserRole.Storekeeper),
+    ];
+
+    /// <summary>Creates the sample accounts when the database has no users yet.</summary>
+    public async Task SeedUsersAsync()
+    {
+        if (await users.AnyAsync())
+        {
+            return;
+        }
+
+        foreach (var (login, displayName, role) in Accounts)
+        {
+            await users.AddAsync(new User
+            {
+                Login = login,
+                DisplayName = displayName,
+                Role = role,
+                IsActive = true,
+                PasswordHash = hasher.Hash(AppInfo.DemoPassword),
+            });
+        }
+    }
+
     private sealed record Sample(string Name, string Category, string Unit, decimal Price, decimal MinStock, decimal DailyUse, decimal Start, bool Restock = true);
 
     private static readonly Sample[] Samples =
@@ -113,7 +145,8 @@ public sealed class DemoData(
                     {
                         ItemId = item.Id,
                         Quantity = received,
-                        Price = sample.Price,
+                        // Prices grow a little every month: older purchases were cheaper than the catalog price.
+                        Price = Math.Round(sample.Price * (1 - 0.04m * (month - 1)), 2),
                         UnitId = isPaint ? can10.Id : null,
                         UnitQuantity = isPaint ? received / 10 : null,
                         Date = countDate.AddDays(10 + random.Next(10)),

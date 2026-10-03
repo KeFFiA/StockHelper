@@ -4,7 +4,8 @@ Desktop app for tracking consumables: item catalog, stock-taking, automatic cons
 
 **User guides (Russian):** [overview](docs/README.md) · [general](docs/general.md) · [storekeeper](docs/storekeeper.md) · [manager](docs/manager.md) · [administrator](docs/administrator.md)
 
-**Download:** [latest release](https://github.com/KeFFiA/StockHelper/releases/latest) — `StockHelper-win-Setup.exe`.
+**Download:** [latest release](https://github.com/KeFFiA/StockHelper/releases/latest) — `StockHelper-win-Setup.exe` ·
+[demo version](https://github.com/KeFFiA/StockHelper/releases/tag/demo) — `StockHelper-Demo.exe` with sample data.
 
 ## Features
 
@@ -100,6 +101,10 @@ Colors come from the WPF Fluent theme and follow the Windows light/dark mode and
 
 - `dev` — day-to-day work; feature branches merge here.
 - `main` — releases only. Installed apps update from releases tagged on `main`.
+- `demo` — customer demo. Every push rebuilds `StockHelper-Demo.exe` (portable, sample data, one-click
+  accounts for each role, password `demo`, data in `%APPDATA%\StockHelper-Demo`) and publishes it as the
+  [`demo` pre-release](https://github.com/KeFFiA/StockHelper/releases/tag/demo). To refresh it:
+  `git push origin dev:demo` (or `main:demo`). Local demo build: `dotnet build src/StockHelper.App -p:DemoBuild=true`.
 
 ## Releases
 

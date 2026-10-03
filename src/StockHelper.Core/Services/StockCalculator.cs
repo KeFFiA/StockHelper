@@ -76,6 +76,68 @@ public sealed record ForecastOptions(int PurchaseHorizonDays, int ForecastWindow
 /// </summary>
 public static class StockCalculator
 {
+    /// <summary>
+    /// Unit price of the item at a moment: the price of the latest receipt at or before it. Before the first receipt —
+    /// the price of the earliest receipt; without receipts — the current price from the catalog.
+    /// Receipts without a price (0) are ignored. Historical costs use it so that past consumption keeps the prices of its time.
+    /// </summary>
+    public static decimal PriceAt(StockSnapshot snapshot, Item item, DateTime atUtc)
+    {
+        Receipt? latest = null;
+        Receipt? earliest = null;
+        foreach (var receipt in snapshot.Receipts)
+        {
+            if (receipt.ItemId != item.Id || receipt.Price <= 0)
+            {
+                continue;
+            }
+
+            if (receipt.Date <= atUtc && (latest is null || receipt.Date > latest.Date || (receipt.Date == latest.Date && receipt.Id > latest.Id)))
+            {
+                latest = receipt;
+            }
+
+            if (earliest is null || receipt.Date < earliest.Date)
+            {
+                earliest = receipt;
+            }
+        }
+
+        return (latest ?? earliest)?.Price ?? item.Price;
+    }
+
+    /// <summary>Cost of net issues in (from, to]: each issue at the price of its date; a return gives back the price of its issue.</summary>
+    public static decimal NetIssuedCost(StockSnapshot snapshot, Item item, DateTime fromUtc, DateTime toUtc)
+    {
+        var cost = 0m;
+        foreach (var issue in snapshot.Issues.Where(i => i.ItemId == item.Id))
+        {
+            var inRange = issue.Date > fromUtc && issue.Date <= toUtc;
+            var returnedInRange = issue.ReturnedAt is { } returnedAt && returnedAt > fromUtc && returnedAt <= toUtc;
+            if (!inRange && !returnedInRange)
+            {
+                continue;
+            }
+
+            var price = PriceAt(snapshot, item, issue.Date);
+            if (inRange)
+            {
+                cost += issue.Quantity * price;
+            }
+
+            if (returnedInRange)
+            {
+                cost -= (issue.ReturnedQuantity ?? 0) * price;
+            }
+        }
+
+        return cost;
+    }
+
+    /// <summary>Cost of the consumption between two counts: at the price in the middle of the period.</summary>
+    public static decimal PeriodCost(StockSnapshot snapshot, Item item, ConsumptionPeriod period) =>
+        period.Consumption * PriceAt(snapshot, item, period.From + (period.To - period.From) / 2);
+
     /// <summary>True when the item has any issues: consumption then comes from issues, not from counts.</summary>
     public static bool UsesIssues(StockSnapshot snapshot, int itemId) => snapshot.Issues.Any(i => i.ItemId == itemId);
 
@@ -228,7 +290,7 @@ public static class StockCalculator
     /// <summary>
     /// Consumption per item in (<paramref name="fromUtc"/>, <paramref name="toUtc"/>]. Issue-based items: issued − returned in the range,
     /// plus the unaccounted shortage found by stock-takes in the range. Others: periods between counts that end in the range.
-    /// Cost uses the current item price.
+    /// Cost uses the prices of the time (<see cref="PriceAt"/>), not the current price.
     /// </summary>
     public static IReadOnlyList<ItemConsumption> GetConsumption(StockSnapshot snapshot, DateTime fromUtc, DateTime toUtc)
     {
@@ -252,7 +314,7 @@ public static class StockCalculator
                 var days = Math.Max(1m, (decimal)(toUtc - start).TotalDays);
                 var unaccounted = -periods.Sum(p => p.Difference);
                 result.Add(new ItemConsumption(
-                    item, consumption, consumption * item.Price, days, consumption / days,
+                    item, consumption, NetIssuedCost(snapshot, item, fromUtc, toUtc), days, consumption / days,
                     periods.Any(p => p.IsDiscrepancy), periods, true, issued, returned, unaccounted));
             }
             else
@@ -265,7 +327,7 @@ public static class StockCalculator
                 var consumption = periods.Sum(p => p.Consumption);
                 var days = periods.Sum(p => p.Days);
                 result.Add(new ItemConsumption(
-                    item, consumption, consumption * item.Price, days, days > 0 ? consumption / days : null,
+                    item, consumption, periods.Sum(p => PeriodCost(snapshot, item, p)), days, days > 0 ? consumption / days : null,
                     periods.Any(p => p.IsDiscrepancy), periods));
             }
         }

@@ -20,11 +20,13 @@ public sealed record StockPoint(DateTime AtUtc, decimal Stock, StockPointKind Ki
 public static class ChartCalculator
 {
     /// <summary>
-    /// Cost of consumption in (<paramref name="fromUtc"/>, <paramref name="toUtc"/>] at current prices.
+    /// Cost of consumption in (<paramref name="fromUtc"/>, <paramref name="toUtc"/>] at the prices of the time.
     /// Issue-based items: issues − returns in the range. Others: the overlapping share of each period between counts.
     /// </summary>
     public static decimal ConsumptionCost(StockSnapshot snapshot, DateTime fromUtc, DateTime toUtc) =>
-        snapshot.Items.Sum(item => ConsumptionQuantity(snapshot, item.Id, fromUtc, toUtc) * item.Price);
+        snapshot.Items.Sum(item => StockCalculator.UsesIssues(snapshot, item.Id)
+            ? StockCalculator.NetIssuedCost(snapshot, item, fromUtc, toUtc)
+            : StockCalculator.GetPeriods(snapshot, item.Id).Sum(p => OverlapShare(p, fromUtc, toUtc) * StockCalculator.PeriodCost(snapshot, item, p)));
 
     /// <summary>
     /// Consumed quantity of one item in (<paramref name="fromUtc"/>, <paramref name="toUtc"/>]: net issues for issue-based items,
@@ -38,20 +40,15 @@ public static class ChartCalculator
                 - snapshot.Issues.Where(i => i.ItemId == itemId && i.ReturnedAt > fromUtc && i.ReturnedAt <= toUtc).Sum(i => i.ReturnedQuantity ?? 0);
         }
 
-        var quantity = 0m;
-        foreach (var period in StockCalculator.GetPeriods(snapshot, itemId))
-        {
-            var start = period.From > fromUtc ? period.From : fromUtc;
-            var end = period.To < toUtc ? period.To : toUtc;
-            if (end <= start || period.Days <= 0)
-            {
-                continue;
-            }
+        return StockCalculator.GetPeriods(snapshot, itemId).Sum(p => p.Consumption * OverlapShare(p, fromUtc, toUtc));
+    }
 
-            quantity += period.Consumption * (decimal)(end - start).TotalDays / period.Days;
-        }
-
-        return quantity;
+    /// <summary>Share of the period between counts that falls into (from, to].</summary>
+    private static decimal OverlapShare(ConsumptionPeriod period, DateTime fromUtc, DateTime toUtc)
+    {
+        var start = period.From > fromUtc ? period.From : fromUtc;
+        var end = period.To < toUtc ? period.To : toUtc;
+        return end <= start || period.Days <= 0 ? 0 : (decimal)(end - start).TotalDays / period.Days;
     }
 
     /// <summary>Stock of one item over time: a point after every count, receipt, issue and return in the range.</summary>
