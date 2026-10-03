@@ -10,6 +10,7 @@ using StockHelper.Core.Abstractions;
 using StockHelper.Core.Entities;
 using StockHelper.Core.Errors;
 using StockHelper.Core.Security;
+using StockHelper.Core.Services;
 
 namespace StockHelper.App.ViewModels.Pages;
 
@@ -18,6 +19,7 @@ public sealed partial class ReceiptsViewModel : PageViewModel
     private readonly IReceiptRepository _receipts;
     private readonly IItemRepository _items;
     private readonly ILookupRepository<StorageLocation> _locations;
+    private readonly ILookupRepository<Unit> _units;
     private readonly IDialogService _dialogs;
     private readonly INotificationService _notifications;
     private readonly IExportService _export;
@@ -27,6 +29,7 @@ public sealed partial class ReceiptsViewModel : PageViewModel
         IReceiptRepository receipts,
         IItemRepository items,
         ILookupRepository<StorageLocation> locations,
+        ILookupRepository<Unit> units,
         IDialogService dialogs,
         INotificationService notifications,
         IExportService export,
@@ -35,6 +38,7 @@ public sealed partial class ReceiptsViewModel : PageViewModel
         _receipts = receipts;
         _items = items;
         _locations = locations;
+        _units = units;
         _dialogs = dialogs;
         _notifications = notifications;
         _export = export;
@@ -179,7 +183,8 @@ public sealed partial class ReceiptsViewModel : PageViewModel
         var locations = (await _locations.GetAllAsync(includeArchived: true))
             .Where(l => !l.IsArchived || l.Id == receipt?.StorageLocationId).ToList();
 
-        var editor = new ReceiptEditorViewModel(receipt, items, locations, CanEdit);
+        var units = await _units.GetAllAsync(includeArchived: true);
+        var editor = new ReceiptEditorViewModel(receipt, items, locations, units, CanEdit);
         editor.SaveRequested += async (_, _) => await SaveAsync(editor);
         editor.CancelRequested += (_, _) => Editor = null;
         editor.DeleteRequested += async (_, _) => await DeleteAsync(editor);
@@ -256,16 +261,23 @@ public sealed partial class ReceiptEditorViewModel : ObservableObject
 {
     private readonly Receipt? _original;
 
-    public ReceiptEditorViewModel(Receipt? receipt, IReadOnlyList<Item> items, IReadOnlyList<StorageLocation> locations, bool canEdit)
+    public ReceiptEditorViewModel(
+        Receipt? receipt,
+        IReadOnlyList<Item> items,
+        IReadOnlyList<StorageLocation> locations,
+        IReadOnlyList<Unit> units,
+        bool canEdit)
     {
         _original = receipt;
         Items = items;
         Locations = [new LocationOption(null, Strings.Receipts_NoLocation), .. locations.Select(l => new LocationOption(l.Id, l.Name))];
         CanEdit = canEdit;
+        Quantity = new QuantityInput(units);
+        Quantity.Changed += OnQuantityChanged;
 
         Item = items.FirstOrDefault(i => i.Id == receipt?.ItemId);
-        Quantity = receipt is null ? string.Empty : NumberInput.Format(receipt.Quantity);
-        Price = receipt is null ? string.Empty : NumberInput.Format(receipt.Price);
+        Quantity.SetItem(Item, receipt?.UnitId, receipt?.UnitQuantity, receipt?.Quantity);
+        Price = receipt is null ? string.Empty : NumberInput.Format(receipt.Price * Quantity.Factor);
         (Date, Time) = receipt is null ? (DateTime.Today, DateTime.Now.ToString("HH:mm")) : DateTimeInput.Split(receipt.Date);
         Location = Locations.FirstOrDefault(l => l.Id == receipt?.StorageLocationId) ?? Locations[0];
         Note = receipt?.Note ?? string.Empty;
@@ -293,16 +305,15 @@ public sealed partial class ReceiptEditorViewModel : ObservableObject
 
     public IReadOnlyList<LocationOption> Locations { get; }
 
+    public QuantityInput Quantity { get; }
+
     public bool IsDirty { get; private set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(UnitName), nameof(AmountText))]
+    [NotifyPropertyChangedFor(nameof(AmountText))]
     public partial Item? Item { get; set; }
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(AmountText))]
-    public partial string Quantity { get; set; }
-
+    /// <summary>Price per selected unit (per can when a can is selected).</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AmountText))]
     public partial string Price { get; set; }
@@ -328,20 +339,43 @@ public sealed partial class ReceiptEditorViewModel : ObservableObject
     [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
 
-    public string? UnitName => Item?.Unit?.Name;
+    public string PriceLabel => string.Format(Strings.Receipts_PricePer, Quantity.Unit?.Name ?? "…");
 
     public string AmountText =>
-        NumberInput.TryParse(Quantity, out var q) && NumberInput.TryParse(Price, out var p)
+        NumberInput.TryParse(Quantity.Text, out var q) && NumberInput.TryParse(Price, out var p)
             ? string.Format(Strings.Receipts_AmountPreview, q * p)
             : string.Empty;
 
     partial void OnItemChanged(Item? value)
     {
-        // Suggest the current catalog price for a new receipt.
-        if (IsNew && value is not null && string.IsNullOrWhiteSpace(Price))
+        Quantity.SetItem(value);
+
+        // Suggest the current catalog price (converted to the selected unit) for a new receipt.
+        if (IsNew && value is not null)
         {
-            Price = NumberInput.Format(value.Price);
+            Price = NumberInput.Format(value.Price * Quantity.Factor);
         }
+    }
+
+    private Unit? _lastUnit;
+
+    private void OnQuantityChanged(object? sender, EventArgs e)
+    {
+        // Keep the price consistent when switching between "л" and "Банка 10 л".
+        if (!ReferenceEquals(_lastUnit, Quantity.Unit))
+        {
+            if (_lastUnit is not null && Quantity.Unit is not null && Quantity.ItemUnit is not null && NumberInput.TryParse(Price, out var price))
+            {
+                var perItemUnit = price / UnitConverter.ToItemUnits(1, _lastUnit, Quantity.ItemUnit);
+                Price = NumberInput.Format(Math.Round(perItemUnit * Quantity.Factor, 4));
+            }
+
+            _lastUnit = Quantity.Unit;
+            OnPropertyChanged(nameof(PriceLabel));
+        }
+
+        IsDirty = true;
+        OnPropertyChanged(nameof(AmountText));
     }
 
     /// <summary>Carries date, location and options over to the next receipt of a batch.</summary>
@@ -375,7 +409,7 @@ public sealed partial class ReceiptEditorViewModel : ObservableObject
             return false;
         }
 
-        if (!NumberInput.TryParse(Quantity, out var quantity) || quantity <= 0)
+        if (!Quantity.TryGetItemQuantity(out var quantity) || quantity <= 0)
         {
             ErrorMessage = Strings.DomainError_QuantityMustBePositive;
             return false;
@@ -400,7 +434,9 @@ public sealed partial class ReceiptEditorViewModel : ObservableObject
             ConcurrencyStamp = _original?.ConcurrencyStamp ?? Guid.Empty,
             ItemId = Item.Id,
             Quantity = quantity,
-            Price = price,
+            Price = Math.Round(price / Quantity.Factor, 4),
+            UnitId = Quantity.EnteredUnitId,
+            UnitQuantity = Quantity.EnteredQuantity,
             Date = dateUtc,
             StorageLocationId = Location.Id,
             Note = Note,
@@ -411,7 +447,7 @@ public sealed partial class ReceiptEditorViewModel : ObservableObject
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
-        if (e.PropertyName is nameof(Item) or nameof(Quantity) or nameof(Price) or nameof(Date) or nameof(Time) or nameof(Location) or nameof(Note))
+        if (e.PropertyName is nameof(Item) or nameof(Price) or nameof(Date) or nameof(Time) or nameof(Location) or nameof(Note))
         {
             IsDirty = true;
         }

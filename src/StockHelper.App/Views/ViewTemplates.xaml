@@ -30,6 +30,9 @@
     <DataTemplate DataType="{x:Type pages:SettingsViewModel}">
         <views:SettingsView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type pages:IssuesViewModel}">
+        <views:IssuesView />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type pages:UsersViewModel}">
         <views:UsersView />
     </DataTemplate>
@@ -38,6 +41,25 @@
     <!-- Forecast badge for an ItemStockStatus: below minimum / running out / ok / no data. -->
     <DataTemplate x:Key="DaysLeftBadge">
         <Border x:Name="Badge" Style="{StaticResource Badge.Success}">
+            <Border.ToolTip>
+                <StackPanel MaxWidth="320">
+                    <TextBlock FontWeight="SemiBold" Text="{x:Static res:Strings.Tip_ForecastTitle}" Margin="0,0,0,4" />
+                    <TextBlock TextWrapping="Wrap">
+                        <Run Text="{x:Static res:Strings.Tip_ForecastStock}" />
+                        <Run Text="{Binding EstimatedStock, Mode=OneWay, Converter={StaticResource Decimal}}" FontWeight="SemiBold" />
+                        <Run Text="{Binding Item.Unit.Name, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap">
+                        <Run Text="{x:Static res:Strings.Tip_ForecastRate}" />
+                        <Run Text="{Binding AverageDailyConsumption, Mode=OneWay, Converter={StaticResource Decimal}, ConverterParameter=#\,0.##, TargetNullValue=—}" FontWeight="SemiBold" />
+                        <Run Text="{Binding Item.Unit.Name, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap">
+                        <Run Text="{x:Static res:Strings.Tip_ForecastMin}" />
+                        <Run Text="{Binding Item.MinStock, Mode=OneWay, Converter={StaticResource Decimal}}" FontWeight="SemiBold" />
+                    </TextBlock>
+                </StackPanel>
+            </Border.ToolTip>
             <StackPanel Orientation="Horizontal">
                 <TextBlock x:Name="Glyph" Style="{StaticResource Icon}" FontSize="10" Margin="0,0,5,0" Text="{StaticResource Icon.Trend}" />
                 <TextBlock x:Name="Label" Text="{Binding DaysLeft, Converter={StaticResource Days}}" />

@@ -40,8 +40,31 @@ public static class GlobalExceptionHandler
             Log.Error(actual, "Unhandled exception");
         }
 
-        _dialogs?.ShowError(GetUserMessage(actual));
+        // The same failure can repeat many times in a row (e.g. during a layout pass): show it once.
+        var message = GetUserMessage(actual);
+        var now = DateTime.UtcNow;
+        if (_lastShownMessage == message && now - _lastShownAt < TimeSpan.FromSeconds(3) || _isShowing)
+        {
+            return;
+        }
+
+        _lastShownMessage = message;
+        _lastShownAt = now;
+        _isShowing = true;
+        try
+        {
+            _dialogs?.ShowError(message);
+        }
+        finally
+        {
+            _isShowing = false;
+            _lastShownAt = DateTime.UtcNow;
+        }
     }
+
+    private static string? _lastShownMessage;
+    private static DateTime _lastShownAt;
+    private static bool _isShowing;
 
     private static void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {

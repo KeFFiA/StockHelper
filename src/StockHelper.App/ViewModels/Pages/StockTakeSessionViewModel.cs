@@ -19,6 +19,7 @@ public sealed class StockTakeSessionFactory(
     IStockTakeRepository stockTakes,
     IItemRepository items,
     ILookupRepository<StorageLocation> locations,
+    ILookupRepository<Unit> units,
     IStockDataReader stockData,
     IDialogService dialogs,
     INotificationService notifications,
@@ -27,7 +28,7 @@ public sealed class StockTakeSessionFactory(
     ILogger<StockTakeSessionViewModel> logger)
 {
     public StockTakeSessionViewModel Create(int stockTakeId) =>
-        new(stockTakeId, stockTakes, items, locations, stockData, dialogs, notifications, export, currentUser, logger);
+        new(stockTakeId, stockTakes, items, locations, units, stockData, dialogs, notifications, export, currentUser, logger);
 }
 
 /// <summary>Counting screen: one row per item, quantities are entered per storage location and saved immediately.</summary>
@@ -37,6 +38,7 @@ public sealed partial class StockTakeSessionViewModel : ViewModelBase
     private readonly IStockTakeRepository _stockTakes;
     private readonly IItemRepository _items;
     private readonly ILookupRepository<StorageLocation> _locations;
+    private readonly ILookupRepository<Unit> _units;
     private readonly IStockDataReader _stockData;
     private readonly IDialogService _dialogs;
     private readonly INotificationService _notifications;
@@ -56,6 +58,7 @@ public sealed partial class StockTakeSessionViewModel : ViewModelBase
         IStockTakeRepository stockTakes,
         IItemRepository items,
         ILookupRepository<StorageLocation> locations,
+        ILookupRepository<Unit> units,
         IStockDataReader stockData,
         IDialogService dialogs,
         INotificationService notifications,
@@ -63,6 +66,7 @@ public sealed partial class StockTakeSessionViewModel : ViewModelBase
         ICurrentUserService currentUser,
         ILogger logger)
     {
+        _units = units;
         _stockTakeId = stockTakeId;
         _stockTakes = stockTakes;
         _items = items;
@@ -156,11 +160,14 @@ public sealed partial class StockTakeSessionViewModel : ViewModelBase
         var items = allItems.Where(i => IsDraft ? !i.IsArchived || countedItemIds.Contains(i.Id) : countedItemIds.Contains(i.Id));
 
         var expected = await LoadExpectedAsync(stockTake.Date);
+        var allUnits = await _units.GetAllAsync(includeArchived: true);
 
         Rows.Clear();
         foreach (var item in items)
         {
-            var row = new StockTakeRow(item, expected.TryGetValue(item.Id, out var e) ? e : null);
+            var itemUnit = allUnits.FirstOrDefault(u => u.Id == item.UnitId);
+            var units = itemUnit is null ? [] : UnitConverter.CompatibleUnits(itemUnit, allUnits);
+            var row = new StockTakeRow(item, expected.TryGetValue(item.Id, out var e) ? e : null, itemUnit, units);
             row.CommitRequested += async (_, _) => await CommitAsync(row);
             Rows.Add(row);
         }
@@ -306,7 +313,7 @@ public sealed partial class StockTakeSessionViewModel : ViewModelBase
                 return;
             }
 
-            quantity = parsed;
+            quantity = row.ToItemUnits(parsed);
         }
 
         var key = (row.ItemId, location.Id);
@@ -314,7 +321,7 @@ public sealed partial class StockTakeSessionViewModel : ViewModelBase
         row.Error = null;
         if (current == quantity)
         {
-            row.CountText = NumberInput.Format(quantity);
+            row.SetCountHere(quantity);
             return;
         }
 
@@ -402,8 +409,13 @@ public sealed partial class StockTakeRow : ObservableObject
 {
     private System.Windows.Threading.DispatcherTimer? _savedTimer;
 
-    public StockTakeRow(Item item, decimal? expected)
+    private decimal? _here;
+
+    public StockTakeRow(Item item, decimal? expected, Unit? itemUnit = null, IReadOnlyList<Unit>? units = null)
     {
+        ItemUnit = itemUnit;
+        Units = units ?? [];
+        CountUnit = itemUnit;
         ItemId = item.Id;
         Name = item.Name;
         Code = item.Code;
@@ -425,6 +437,36 @@ public sealed partial class StockTakeRow : ObservableObject
     public string? UnitName { get; }
 
     public decimal? Expected { get; }
+
+    public Unit? ItemUnit { get; }
+
+    /// <summary>Item unit and its packages: count "3 банки по 5 л" directly.</summary>
+    public IReadOnlyList<Unit> Units { get; }
+
+    public bool HasUnitChoice => Units.Count > 1;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CountHint))]
+    public partial Unit? CountUnit { get; set; }
+
+    /// <summary>"= 15 л" when counting in packages.</summary>
+    public string? CountHint => _here is { } here && CountUnit is not null && ItemUnit is not null && CountUnit.Id != ItemUnit.Id
+        ? string.Format(Strings.Quantity_Converted, NumberInput.Format(here), ItemUnit.Name)
+        : null;
+
+    partial void OnCountUnitChanged(Unit? value) => SetCountHere(_here);
+
+    public decimal ToItemUnits(decimal quantity) =>
+        CountUnit is null || ItemUnit is null ? quantity : UnitConverter.ToItemUnits(quantity, CountUnit, ItemUnit);
+
+    /// <summary>Shows the stored quantity (item units) in the selected counting unit.</summary>
+    public void SetCountHere(decimal? here)
+    {
+        _here = here;
+        CountText = here is null ? string.Empty
+            : NumberInput.Format(CountUnit is null || ItemUnit is null ? here.Value : UnitConverter.FromItemUnits(here.Value, CountUnit, ItemUnit));
+        OnPropertyChanged(nameof(CountHint));
+    }
 
     [ObservableProperty]
     public partial string CountText { get; set; } = string.Empty;
@@ -455,7 +497,7 @@ public sealed partial class StockTakeRow : ObservableObject
 
     public void SetValues(decimal? here, decimal? total, bool editable)
     {
-        CountText = NumberInput.Format(here);
+        SetCountHere(here);
         IsCountedHere = here is not null;
         Total = total;
         IsEditable = editable;

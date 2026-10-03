@@ -58,6 +58,7 @@
     <sys:String x:Key="Icon.Home">&#xE80F;</sys:String>
     <sys:String x:Key="Icon.Items">&#xE7B8;</sys:String>
     <sys:String x:Key="Icon.Receipts">&#xE896;</sys:String>
+    <sys:String x:Key="Icon.Issue">&#xE898;</sys:String>
     <sys:String x:Key="Icon.StockTakes">&#xE9D5;</sys:String>
     <sys:String x:Key="Icon.Reports">&#xE9D2;</sys:String>
     <sys:String x:Key="Icon.Catalogs">&#xE8F1;</sys:String>

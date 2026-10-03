@@ -180,6 +180,35 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_IssuedReturned}" Width="Auto" MinWidth="130" SortMemberPath="Issued"
+                                                        HeaderStyle="{StaticResource Grid.HeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="8,0" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                        Visibility="{Binding UsesIssues, Converter={StaticResource BoolToVisibility}}"
+                                                        ToolTip="{x:Static res:Strings.Tip_IssuedReturned}">
+                                                <TextBlock HorizontalAlignment="Right" Text="{Binding Issued, Converter={StaticResource Decimal}}" />
+                                                <TextBlock Style="{StaticResource Text.Caption}" HorizontalAlignment="Right"
+                                                           Text="{Binding Returned, Converter={StaticResource Decimal}, StringFormat=− {0}}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_Unaccounted}" Width="Auto" MinWidth="120" SortMemberPath="Unaccounted"
+                                                        HeaderStyle="{StaticResource Grid.HeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock x:Name="Value" Style="{StaticResource Cell.Number}" Text="{Binding Unaccounted, Converter={StaticResource Decimal}}"
+                                                       ToolTip="{x:Static res:Strings.Tip_Unaccounted}"
+                                                       Visibility="{Binding UsesIssues, Converter={StaticResource BoolToVisibility}}" />
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding HasDiscrepancy}" Value="True">
+                                                    <Setter TargetName="Value" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="{x:Static res:Strings.Reports_Cost}" Width="Auto" MinWidth="110" SortMemberPath="Cost"
                                                     HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                     Binding="{Binding Cost, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}" ElementStyle="{StaticResource Cell.Number}" />
@@ -227,7 +256,7 @@
                     <Grid>
                         <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding RowsView}">
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="2*" MinWidth="180" SortMemberPath="ItemName">
+                                <DataGridTemplateColumn Header="{x:Static res:Strings.Items_Name}" Width="*" MinWidth="150" SortMemberPath="ItemName">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Margin="8,6" VerticalAlignment="Center">
@@ -237,7 +266,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_Period}" Width="Auto" MinWidth="180" SortMemberPath="Period.To">
+                                <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_Period}" Width="Auto" MinWidth="150" SortMemberPath="Period.To">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBlock Style="{StaticResource Cell.Secondary}">
@@ -248,13 +277,29 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_Opening}" Width="Auto" MinWidth="90" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_Opening}" Width="Auto" MinWidth="72" HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                     Binding="{Binding Period.OpeningStock, Converter={StaticResource Decimal}}" ElementStyle="{StaticResource Cell.Number}" />
-                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_Received}" Width="Auto" MinWidth="90" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_Received}" Width="Auto" MinWidth="72" HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                     Binding="{Binding Period.Received, Converter={StaticResource Decimal}, ConverterParameter=+#\,0.####;−#\,0.####;0}"
                                                     ElementStyle="{StaticResource Cell.Number}" />
-                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_Closing}" Width="Auto" MinWidth="90" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_IssuedShort}" Width="Auto" MinWidth="72" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                                    Binding="{Binding Period.Issued, Converter={StaticResource Decimal}, ConverterParameter=−#\,0.####;+#\,0.####;0}"
+                                                    ElementStyle="{StaticResource Cell.Number}" />
+                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_Expected}" Width="Auto" MinWidth="80" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                                    Binding="{Binding Period.Expected, Converter={StaticResource Decimal}}" ElementStyle="{StaticResource Cell.Number}" />
+                                <DataGridTextColumn Header="{x:Static res:Strings.Reports_Closing}" Width="Auto" MinWidth="72" HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                     Binding="{Binding Period.ClosingStock, Converter={StaticResource Decimal}}" ElementStyle="{StaticResource Cell.Number}" />
+                                <DataGridTemplateColumn Header="{x:Static res:Strings.StockTakes_Difference}" Width="Auto" MinWidth="96" SortMemberPath="Period.Difference"
+                                                        HeaderStyle="{StaticResource Grid.HeaderRight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Style="{StaticResource Badge.Warning}" HorizontalAlignment="Right" Margin="8,0" ToolTip="{x:Static res:Strings.Tip_Difference}"
+                                                    Visibility="{Binding Period.IsDiscrepancy, Converter={StaticResource BoolToVisibility}}">
+                                                <TextBlock Text="{Binding Period.Difference, Converter={StaticResource Decimal}, ConverterParameter=+#\,0.####;−#\,0.####;0}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_ConsumptionQty}" Width="Auto" MinWidth="120" SortMemberPath="Period.Consumption"
                                                         HeaderStyle="{StaticResource Grid.HeaderRight}">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -296,12 +341,10 @@
 
         <HeaderedContentControl Style="{StaticResource PageHeader}" Header="{Binding Title}" Tag="{Binding Subtitle}">
             <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Refresh}" ToolTip="{x:Static res:Strings.Common_Refresh}"
+                <Button Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Refresh}" ToolTip="{x:Static res:Strings.Tip_Refresh}"
                         Command="{Binding LoadCommand}" Margin="0,0,8,0" />
-                <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Export}" Content="{x:Static res:Strings.Reports_ExportAll}"
-                        Command="{Binding ExportAllCommand}" />
-                <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Export}" Margin="{StaticResource Space.ButtonGap}"
-                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" />
+                <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Export}"
+                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" ToolTip="{x:Static res:Strings.Tip_ReportsExport}" />
             </StackPanel>
         </HeaderedContentControl>
 

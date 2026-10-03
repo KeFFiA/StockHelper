@@ -85,6 +85,7 @@ public static class AppHost
         services.AddTransient<ItemsViewModel>();
         services.AddTransient<CatalogsViewModel>();
         services.AddTransient<ReceiptsViewModel>();
+        services.AddTransient<IssuesViewModel>();
         services.AddTransient<StockTakesViewModel>();
         services.AddTransient<ReportsViewModel>();
         services.AddSingleton<StockTakeSessionFactory>();

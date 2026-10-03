@@ -26,10 +26,14 @@ public partial class App : Application
         CultureInfo.CurrentCulture = culture;
         CultureInfo.CurrentUICulture = culture;
 
+        // Tooltips appear quickly and stay long enough to read.
+        System.Windows.Controls.ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(450));
+        System.Windows.Controls.ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(20000));
+
         // WPF bindings use en-US unless the language is set explicitly.
-        FrameworkElement.LanguageProperty.OverrideMetadata(
-            typeof(FrameworkElement),
-            new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
+        var language = XmlLanguage.GetLanguage(culture.IetfLanguageTag);
+        FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(language));
+        FrameworkContentElement.LanguageProperty.OverrideMetadata(typeof(System.Windows.Documents.TextElement), new FrameworkPropertyMetadata(language));
     }
 
     public static IServiceProvider Services =>

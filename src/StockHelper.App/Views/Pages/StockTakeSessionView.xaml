@@ -11,7 +11,7 @@
     <UserControl.Resources>
         <!-- Column layout shared by the header and every row. -->
         <GridLength x:Key="Col.Unit">72</GridLength>
-        <GridLength x:Key="Col.Count">150</GridLength>
+        <GridLength x:Key="Col.Count">230</GridLength>
         <GridLength x:Key="Col.Number">120</GridLength>
 
         <Style x:Key="RowContainer" TargetType="ListBoxItem">
@@ -54,18 +54,18 @@
         <!-- Header -->
         <DockPanel Margin="0,0,0,16">
             <Button DockPanel.Dock="Left" Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Back}" Margin="-6,0,8,0" VerticalAlignment="Center"
-                    ToolTip="{x:Static res:Strings.Common_Back}" Command="{Binding BackCommand}" />
+                    ToolTip="{x:Static res:Strings.Tip_Back}" Command="{Binding BackCommand}" />
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Delete}" ToolTip="{x:Static res:Strings.StockTakes_DeleteDraft}"
                         Command="{Binding DeleteCommand}" Foreground="{DynamicResource SystemFillColorCriticalBrush}"
                         Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibility}}" />
                 <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Export}" Margin="8,0,0,0"
-                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" />
+                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" ToolTip="{x:Static res:Strings.Tip_Export}" />
                 <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Unlock}" Margin="8,0,0,0"
-                        Content="{x:Static res:Strings.StockTakes_Reopen}" Command="{Binding ReopenCommand}"
+                        Content="{x:Static res:Strings.StockTakes_Reopen}" Command="{Binding ReopenCommand}" ToolTip="{x:Static res:Strings.Tip_Reopen}"
                         Visibility="{Binding CanReopen, Converter={StaticResource BoolToVisibility}}" />
                 <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Check}" Margin="8,0,0,0"
-                        Content="{x:Static res:Strings.StockTakes_Complete}" Command="{Binding CompleteCommand}"
+                        Content="{x:Static res:Strings.StockTakes_Complete}" Command="{Binding CompleteCommand}" ToolTip="{x:Static res:Strings.Tip_Complete}"
                         Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -165,11 +165,11 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{x:Static res:Strings.Items_Name}" />
                         <TextBlock Grid.Column="1" Text="{x:Static res:Strings.Items_Unit}" />
-                        <TextBlock Grid.Column="2" Text="{x:Static res:Strings.StockTakes_CountHere}" HorizontalAlignment="Right" Margin="0,0,12,0" />
-                        <TextBlock Grid.Column="3" Text="{x:Static res:Strings.StockTakes_Total}" HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="2" Text="{x:Static res:Strings.StockTakes_CountHere}" HorizontalAlignment="Right" Margin="0,0,12,0" ToolTip="{x:Static res:Strings.Tip_CountHere}" />
+                        <TextBlock Grid.Column="3" Text="{x:Static res:Strings.StockTakes_Total}" HorizontalAlignment="Right" ToolTip="{x:Static res:Strings.Tip_TotalAllLocations}" />
                         <TextBlock Grid.Column="4" Text="{x:Static res:Strings.StockTakes_Expected}" HorizontalAlignment="Right"
                                    ToolTip="{x:Static res:Strings.StockTakes_ExpectedHint}" />
-                        <TextBlock Grid.Column="5" Text="{x:Static res:Strings.StockTakes_Difference}" HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="5" Text="{x:Static res:Strings.StockTakes_Difference}" HorizontalAlignment="Right" ToolTip="{x:Static res:Strings.Tip_Difference}" />
                     </Grid>
                 </Border>
 
@@ -196,20 +196,32 @@
                                     </StackPanel>
                                     <TextBlock Grid.Column="1" Style="{StaticResource Text.Secondary}" Text="{Binding UnitName}" VerticalAlignment="Center" />
                                     <Grid Grid.Column="2" Margin="0,0,4,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="24" />
                                         </Grid.ColumnDefinitions>
+                                        <ComboBox Grid.Column="1" Margin="6,0,0,0" MinWidth="80" ItemsSource="{Binding Units}" DisplayMemberPath="Name"
+                                                  SelectedItem="{Binding CountUnit}" IsEnabled="{Binding IsEditable}" IsTabStop="False"
+                                                  ToolTip="{x:Static res:Strings.StockTakes_CountUnitHint}"
+                                                  Visibility="{Binding HasUnitChoice, Converter={StaticResource BoolToVisibility}}" />
+                                        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource Text.Caption}" Text="{Binding CountHint}" HorizontalAlignment="Right"
+                                                   Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                                   Visibility="{Binding CountHint, Converter={StaticResource NullToCollapsed}}" />
                                         <TextBox x:Name="CountBox" Text="{Binding CountText, UpdateSourceTrigger=PropertyChanged}"
                                                  IsReadOnly="{Binding IsEditable, Converter={StaticResource InverseBool}}"
                                                  HorizontalContentAlignment="Right"
                                                  PreviewKeyDown="OnCountKeyDown" LostKeyboardFocus="OnCountLostFocus" GotKeyboardFocus="OnCountGotFocus"
                                                  ToolTip="{Binding Error}" />
-                                        <TextBlock Grid.Column="1" Style="{StaticResource Icon}" Text="{StaticResource Icon.Check}" FontSize="{StaticResource FontSize.Caption}"
+                                        <TextBlock Grid.Column="2" Style="{StaticResource Icon}" Text="{StaticResource Icon.Check}" FontSize="{StaticResource FontSize.Caption}"
                                                    HorizontalAlignment="Center" IsHitTestVisible="False"
                                                    Foreground="{DynamicResource SystemFillColorSuccessBrush}"
                                                    Visibility="{Binding JustSaved, Converter={StaticResource BoolToVisibility}}" />
-                                        <TextBlock Grid.Column="1" Style="{StaticResource Icon}" Text="{StaticResource Icon.Error}" FontSize="{StaticResource FontSize.Caption}"
+                                        <TextBlock Grid.Column="2" Style="{StaticResource Icon}" Text="{StaticResource Icon.Error}" FontSize="{StaticResource FontSize.Caption}"
                                                    HorizontalAlignment="Center" ToolTip="{Binding Error}"
                                                    Foreground="{DynamicResource SystemFillColorCriticalBrush}"
                                                    Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />

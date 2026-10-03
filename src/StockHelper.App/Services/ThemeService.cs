@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using StockHelper.App.Infrastructure;
 using StockHelper.Core.Abstractions;
@@ -33,12 +34,13 @@ public sealed class ThemeService : IThemeService
 
         if (!_listening)
         {
-            // "As in system": follow Windows when the user switches light/dark mode.
+            // "As in system": follow Windows light/dark mode. The event also fires for unrelated settings
+            // (keyboard layout, accent color...), so react later, outside WPF's own theme update, and only on a real change.
             SystemEvents.UserPreferenceChanged += (_, e) =>
             {
                 if (e.Category == UserPreferenceCategory.General && _theme == AppTheme.System)
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
+                    Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>
                     {
                         WindowTheme.SetTheme(_theme);
                         ApplyPalette();
@@ -59,10 +61,11 @@ public sealed class ThemeService : IThemeService
             return;
         }
 
+        // Appended after the theme dictionaries so WPF's theme manager never mistakes it for its own.
         var palette = new ResourceDictionary { Source = source };
         if (existing is null)
         {
-            dictionaries.Insert(0, palette);
+            dictionaries.Add(palette);
         }
         else
         {

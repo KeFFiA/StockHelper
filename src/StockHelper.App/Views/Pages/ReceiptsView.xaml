@@ -18,9 +18,9 @@
         <HeaderedContentControl Style="{StaticResource PageHeader}" Header="{Binding Title}" Tag="{Binding Summary}">
             <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Export}"
-                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" />
+                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" ToolTip="{x:Static res:Strings.Tip_Export}" />
                 <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Add}" Margin="{StaticResource Space.ButtonGap}"
-                        Content="{x:Static res:Strings.Receipts_Add}" Command="{Binding AddCommand}"
+                        Content="{x:Static res:Strings.Receipts_Add}" Command="{Binding AddCommand}" ToolTip="{x:Static res:Strings.Tip_ReceiptAdd}"
                         Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
         </HeaderedContentControl>
@@ -43,7 +43,7 @@
             </Border>
 
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Refresh}"
-                    ToolTip="{x:Static res:Strings.Common_Refresh}" Command="{Binding LoadCommand}" />
+                    ToolTip="{x:Static res:Strings.Tip_Refresh}" Command="{Binding LoadCommand}" />
         </DockPanel>
 
         <Grid Grid.Row="2">
@@ -78,10 +78,15 @@
                                                     HeaderStyle="{StaticResource Grid.HeaderRight}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Style="{StaticResource Cell.Number}">
-                                            <Run Text="{Binding Quantity, Converter={StaticResource Decimal}, Mode=OneWay}" FontWeight="SemiBold" />
-                                            <Run Text="{Binding Item.Unit.Name, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                                        </TextBlock>
+                                        <StackPanel Margin="8,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Right">
+                                                <Run Text="{Binding Quantity, Converter={StaticResource Decimal}, Mode=OneWay}" FontWeight="SemiBold" />
+                                                <Run Text="{Binding Item.Unit.Name, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource Text.Caption}" HorizontalAlignment="Right"
+                                                       Text="{Binding Converter={StaticResource Entered}}"
+                                                       Visibility="{Binding UnitId, Converter={StaticResource NullToCollapsed}}" />
+                                        </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using StockHelper.App.Services;
 
 namespace StockHelper.App.Views.Dialogs;
@@ -28,15 +29,17 @@ public partial class DialogWindow : Window
         {
             DialogKind.Error => ("Icon.Error", "SystemFillColorCriticalBrush"),
             DialogKind.Warning => ("Icon.Warning", "SystemFillColorCautionBrush"),
-            DialogKind.Question => ("Icon.Info", "AccentTextFillColorPrimaryBrush"),
-            _ => ("Icon.Info", "AccentTextFillColorPrimaryBrush"),
+            _ => ("Icon.Info", "AccentFillColorDefaultBrush"),
         };
         IconText.Text = (string)FindResource(iconKey);
         IconText.SetResourceReference(ForegroundProperty, brushKey);
+        IconCircle.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, brushKey);
 
         if (destructive)
         {
-            // Destructive actions must not be confirmed by a stray Enter press.
+            // Only destructive actions get a red button, and Enter does not confirm them by accident.
+            PrimaryButton.SetResourceReference(BackgroundProperty, "SystemFillColorCriticalBrush");
+            PrimaryButton.SetResourceReference(BorderBrushProperty, "SystemFillColorCriticalBrush");
             PrimaryButton.IsDefault = false;
             SecondaryButton.IsDefault = true;
         }
@@ -45,4 +48,12 @@ public partial class DialogWindow : Window
     }
 
     private void OnPrimaryClick(object sender, RoutedEventArgs e) => DialogResult = true;
+
+    private void OnDrag(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ButtonState == MouseButtonState.Pressed)
+        {
+            DragMove();
+        }
+    }
 }

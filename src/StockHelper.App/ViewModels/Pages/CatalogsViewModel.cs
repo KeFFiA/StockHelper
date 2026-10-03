@@ -54,7 +54,7 @@ public sealed partial class CatalogsViewModel : PageViewModel
     partial void OnSelectedSectionChanged(LookupSectionViewModel value) => _ = value.LoadAsync();
 }
 
-public sealed class LookupRow(LookupEntity entity)
+public sealed class LookupRow(LookupEntity entity, string? description = null)
 {
     public LookupEntity Entity { get; } = entity;
 
@@ -62,7 +62,7 @@ public sealed class LookupRow(LookupEntity entity)
 
     public string Name => Entity.Name;
 
-    public string? Description => (Entity as StorageLocation)?.Description;
+    public string? Description { get; } = description ?? (entity as StorageLocation)?.Description;
 
     public bool IsArchived => Entity.IsArchived;
 }
@@ -163,11 +163,29 @@ public sealed partial class LookupSectionViewModel<T> : LookupSectionViewModel w
         Rows.Clear();
         foreach (var entity in entities)
         {
-            Rows.Add(new LookupRow(entity));
+            Rows.Add(new LookupRow(entity, DescribeUnit(entity, entities)));
         }
 
         SelectedRow = Rows.FirstOrDefault(r => r.Id == selectedId);
     });
+
+    /// <summary>"= 5 л" for package units, "базовая единица" for units with packages.</summary>
+    private static string? DescribeUnit(T entity, IReadOnlyList<T> all)
+    {
+        if (entity is not Unit unit)
+        {
+            return null;
+        }
+
+        if (unit.BaseUnitId is { } baseId)
+        {
+            var baseUnit = all.OfType<Unit>().FirstOrDefault(u => u.Id == baseId);
+            return string.Format(Strings.Units_PackageDescription, NumberInput.Format(unit.Factor), baseUnit?.Name);
+        }
+
+        var packages = all.OfType<Unit>().Where(u => u.BaseUnitId == unit.Id).Select(u => u.Name).ToList();
+        return packages.Count == 0 ? null : string.Format(Strings.Units_BaseDescription, string.Join(", ", packages));
+    }
 
     public override bool ConfirmLeave() =>
         Editor is not { IsDirty: true } || _dialogs.Confirm(Strings.Common_DiscardChanges, confirmText: Strings.Common_Discard);
@@ -192,7 +210,10 @@ public sealed partial class LookupSectionViewModel<T> : LookupSectionViewModel w
 
     private LookupEditorViewModel CreateEditor(T? entity)
     {
-        var editor = new LookupEditorViewModel(entity, entity is null ? NewTitle : Strings.Common_EditHeading, CanEdit, HasDescription);
+        var baseUnits = typeof(T) == typeof(Unit)
+            ? Rows.Select(r => r.Entity).OfType<Unit>().Where(u => u.BaseUnitId is null && u.Id != entity?.Id && !u.IsArchived).ToList()
+            : null;
+        var editor = new LookupEditorViewModel(entity, entity is null ? NewTitle : Strings.Common_EditHeading, CanEdit, HasDescription, baseUnits);
         editor.SaveRequested += async (_, _) => await SaveAsync(editor, entity);
         editor.CancelRequested += (_, _) => Editor = null;
         editor.ArchiveRequested += async (_, _) => await ToggleArchiveAsync(editor);
@@ -218,6 +239,21 @@ public sealed partial class LookupSectionViewModel<T> : LookupSectionViewModel w
         if (entity is StorageLocation location)
         {
             location.Description = editor.Description;
+        }
+
+        if (entity is Unit unit)
+        {
+            unit.BaseUnitId = editor.BaseUnit?.Id;
+            if (unit.BaseUnitId is not null)
+            {
+                if (!NumberInput.TryParse(editor.Factor, out var factor) || factor <= 0)
+                {
+                    editor.ErrorMessage = Strings.DomainError_InvalidUnitFactor;
+                    return;
+                }
+
+                unit.Factor = factor;
+            }
         }
 
         try
@@ -271,8 +307,13 @@ public sealed partial class LookupEditorViewModel : ObservableObject
 {
     private readonly LookupEntity? _original;
 
-    public LookupEditorViewModel(LookupEntity? entity, string heading, bool canEdit, bool hasDescription)
+    public LookupEditorViewModel(LookupEntity? entity, string heading, bool canEdit, bool hasDescription, IReadOnlyList<Unit>? baseUnits = null)
     {
+        BaseUnits = baseUnits ?? [];
+        HasPackage = baseUnits is not null;
+        var unit = entity as Unit;
+        BaseUnit = BaseUnits.FirstOrDefault(u => u.Id == unit?.BaseUnitId);
+        Factor = unit?.BaseUnitId is null ? string.Empty : NumberInput.Format(unit.Factor);
         _original = entity;
         Heading = heading;
         CanEdit = canEdit;
@@ -306,7 +347,30 @@ public sealed partial class LookupEditorViewModel : ObservableObject
 
     public bool IsDirty { get; private set; }
 
+    /// <summary>Units section: a unit can be a package of a base unit.</summary>
+    public bool HasPackage { get; }
+
+    public IReadOnlyList<Unit> BaseUnits { get; }
+
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsPackage), nameof(PackagePreview))]
+    public partial Unit? BaseUnit { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PackagePreview))]
+    public partial string Factor { get; set; }
+
+    public bool IsPackage => BaseUnit is not null;
+
+    public string PackagePreview => BaseUnit is null
+        ? string.Empty
+        : string.Format(Strings.Units_Preview, string.IsNullOrWhiteSpace(Name) ? "…" : Name.Trim(), Factor, BaseUnit.Name);
+
+    [RelayCommand]
+    private void ClearBaseUnit() => BaseUnit = null;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PackagePreview))]
     public partial string Name { get; set; }
 
     [ObservableProperty]
@@ -330,7 +394,7 @@ public sealed partial class LookupEditorViewModel : ObservableObject
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
-        if (e.PropertyName is nameof(Name) or nameof(Description))
+        if (e.PropertyName is nameof(Name) or nameof(Description) or nameof(BaseUnit) or nameof(Factor))
         {
             IsDirty = true;
         }

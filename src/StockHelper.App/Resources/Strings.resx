@@ -16,10 +16,10 @@
     <value>StockHelper</value>
   </data>
   <data name="Error_Title" xml:space="preserve">
-    <value>Ошибка</value>
+    <value>Что-то пошло не так</value>
   </data>
   <data name="Error_Unexpected" xml:space="preserve">
-    <value>Произошла непредвиденная ошибка. Подробности записаны в журнал.</value>
+    <value>Действие не выполнено из-за внутренней ошибки. Данные не потеряны — попробуйте ещё раз. Подробности записаны в журнал.</value>
   </data>
   <data name="Error_Startup" xml:space="preserve">
     <value>Не удалось запустить программу. Подробности записаны в журнал.</value>
@@ -682,7 +682,7 @@
     <value>Средний расход — за последние {0} дн. · горизонт закупки — {1} дн.</value>
   </data>
   <data name="Reports_ExportAll" xml:space="preserve">
-    <value>Все отчёты</value>
+    <value>Все отчёты одним файлом</value>
   </data>
   <data name="Reports_AllFileName" xml:space="preserve">
     <value>Отчёты StockHelper</value>
@@ -712,7 +712,7 @@
     <value>Расход за период</value>
   </data>
   <data name="Reports_ConsumptionHint" xml:space="preserve">
-    <value>Расход между завершёнными инвентаризациями, закончившимися в выбранном периоде. Стоимость — по текущей цене позиции.</value>
+    <value>Для позиций с выдачами расход = выдано − вернули за период; «Неучтено» — недостача, найденная инвентаризацией. Для позиций без выдач расход считается между инвентаризациями. Стоимость — по текущей цене.</value>
   </data>
   <data name="Reports_ConsumptionSummary" xml:space="preserve">
     <value>Позиций: {0} · стоимость расхода: {1:N2} · с расхождениями: {2}</value>
@@ -724,7 +724,7 @@
     <value>История</value>
   </data>
   <data name="Reports_HistoryHint" xml:space="preserve">
-    <value>Расход по каждой позиции между последовательными инвентаризациями. Отрицательный расход — расхождение: факт больше ожидаемого.</value>
+    <value>Что было, пришло и выдано между инвентаризациями, сколько ожидалось и сколько оказалось на самом деле. Расхождение — разница между фактом и ожиданием.</value>
   </data>
   <data name="Reports_HistorySummary" xml:space="preserve">
     <value>Завершённых инвентаризаций: {0} · расхождений: {1}</value>
@@ -968,5 +968,338 @@
   </data>
   <data name="Hotkey_ToggleMenu" xml:space="preserve">
     <value>Свернуть или развернуть меню</value>
+  </data>
+  <data name="Nav_Issues" xml:space="preserve">
+    <value>Выдачи</value>
+  </data>
+  <data name="Issues_Summary" xml:space="preserve">
+    <value>Записей: {0} · на руках: {1}</value>
+  </data>
+  <data name="Issues_Add" xml:space="preserve">
+    <value>Выдать</value>
+  </data>
+  <data name="Issues_NewHeading" xml:space="preserve">
+    <value>Выдача</value>
+  </data>
+  <data name="Issues_EditHeading" xml:space="preserve">
+    <value>Выдача</value>
+  </data>
+  <data name="Issues_Created" xml:space="preserve">
+    <value>Выдано</value>
+  </data>
+  <data name="Issues_Issued" xml:space="preserve">
+    <value>Выдано</value>
+  </data>
+  <data name="Issues_EnteredAs" xml:space="preserve">
+    <value>Упаковка</value>
+  </data>
+  <data name="Issues_To" xml:space="preserve">
+    <value>Кому выдано</value>
+  </data>
+  <data name="Issues_Returned" xml:space="preserve">
+    <value>Вернули</value>
+  </data>
+  <data name="Issues_ReturnedAt" xml:space="preserve">
+    <value>Дата возврата</value>
+  </data>
+  <data name="Issues_Net" xml:space="preserve">
+    <value>Израсходовано</value>
+  </data>
+  <data name="Issues_All" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="Issues_OnHand" xml:space="preserve">
+    <value>На руках</value>
+  </data>
+  <data name="Issues_SearchPlaceholder" xml:space="preserve">
+    <value>Позиция, получатель, примечание…</value>
+  </data>
+  <data name="Issues_StatusIssued" xml:space="preserve">
+    <value>Израсходовано</value>
+  </data>
+  <data name="Issues_StatusOnHand" xml:space="preserve">
+    <value>На руках</value>
+  </data>
+  <data name="Issues_StatusReturned" xml:space="preserve">
+    <value>Вернули {0}</value>
+  </data>
+  <data name="Issues_ReturnShort" xml:space="preserve">
+    <value>Вернуть</value>
+  </data>
+  <data name="Issues_EmptyTitle" xml:space="preserve">
+    <value>Выдач пока нет</value>
+  </data>
+  <data name="Issues_EmptyHint" xml:space="preserve">
+    <value>Оформите выдачу, когда сотрудник забирает расходник. Если вещь вернут (например, начатую банку краски), отметьте возврат с примерным остатком.</value>
+  </data>
+  <data name="Issues_FromLocation" xml:space="preserve">
+    <value>Откуда выдано</value>
+  </data>
+  <data name="Issues_ExpectReturn" xml:space="preserve">
+    <value>Ожидается возврат остатка</value>
+  </data>
+  <data name="Issues_AddAnother" xml:space="preserve">
+    <value>Оформить следующую выдачу после сохранения</value>
+  </data>
+  <data name="Issues_InStock" xml:space="preserve">
+    <value>На складе ≈ {0} {1}</value>
+  </data>
+  <data name="Issues_ExceedsStock" xml:space="preserve">
+    <value>Выдаётся больше, чем числится на складе ({0}). Проверьте количество или проведите инвентаризацию.</value>
+  </data>
+  <data name="Issues_IssueAnyway" xml:space="preserve">
+    <value>Всё равно выдать</value>
+  </data>
+  <data name="Issues_ReturnTitle" xml:space="preserve">
+    <value>Возврат остатка</value>
+  </data>
+  <data name="Issues_ReturnHint" xml:space="preserve">
+    <value>Сколько примерно осталось и вернулось на склад. Остальное будет учтено как расход.</value>
+  </data>
+  <data name="Issues_ReturnDate" xml:space="preserve">
+    <value>Дата возврата</value>
+  </data>
+  <data name="Issues_Return" xml:space="preserve">
+    <value>Вернуть на склад</value>
+  </data>
+  <data name="Issues_ReturnNothing" xml:space="preserve">
+    <value>Ничего не осталось</value>
+  </data>
+  <data name="Issues_ReturnedNotice" xml:space="preserve">
+    <value>Возврат принят</value>
+  </data>
+  <data name="Issues_ReturnedText" xml:space="preserve">
+    <value>Вернули {0} {1} — {2:g}. Израсходовано: {3}.</value>
+  </data>
+  <data name="Issues_CancelReturn" xml:space="preserve">
+    <value>Отменить возврат</value>
+  </data>
+  <data name="Issues_CancelReturnConfirm" xml:space="preserve">
+    <value>Отменить возврат? Вещь снова будет числиться на руках.</value>
+  </data>
+  <data name="Issues_DeleteConfirm" xml:space="preserve">
+    <value>Удалить эту выдачу? Это повлияет на расчёт остатка и расхода.</value>
+  </data>
+  <data name="Receipts_PricePer" xml:space="preserve">
+    <value>Цена за {0}</value>
+  </data>
+  <data name="Receipts_PriceHint" xml:space="preserve">
+    <value>Цена за выбранную единицу или упаковку. В справочник сохраняется цена за базовую единицу позиции.</value>
+  </data>
+  <data name="Quantity_Converted" xml:space="preserve">
+    <value>= {0} {1}</value>
+  </data>
+  <data name="Quantity_UnitHint" xml:space="preserve">
+    <value>Единица или упаковка. Количество пересчитывается в единицу позиции.</value>
+  </data>
+  <data name="Units_BaseUnit" xml:space="preserve">
+    <value>Это упаковка из единицы</value>
+  </data>
+  <data name="Units_IsBase" xml:space="preserve">
+    <value>— базовая единица —</value>
+  </data>
+  <data name="Units_BaseUnitHint" xml:space="preserve">
+    <value>Оставьте пустым для базовой единицы (л, кг, шт). Для упаковки выберите, из чего она состоит: «Банка 5 л» — из «л».</value>
+  </data>
+  <data name="Units_MakeBase" xml:space="preserve">
+    <value>Сделать базовой единицей</value>
+  </data>
+  <data name="Units_Factor" xml:space="preserve">
+    <value>Сколько базовых единиц в одной упаковке</value>
+  </data>
+  <data name="Units_Preview" xml:space="preserve">
+    <value>1 {0} = {1} {2}</value>
+  </data>
+  <data name="Units_PackageDescription" xml:space="preserve">
+    <value>= {0} {1}</value>
+  </data>
+  <data name="Units_BaseDescription" xml:space="preserve">
+    <value>Упаковки: {0}</value>
+  </data>
+  <data name="DomainError_ReturnExceedsIssued" xml:space="preserve">
+    <value>Возвращено не может быть больше, чем выдано.</value>
+  </data>
+  <data name="DomainError_AlreadyReturned" xml:space="preserve">
+    <value>Возврат по этой выдаче уже оформлен.</value>
+  </data>
+  <data name="DomainError_IncompatibleUnit" xml:space="preserve">
+    <value>Эта единица уже используется позициями — нельзя менять её базовую единицу.</value>
+  </data>
+  <data name="DomainError_InvalidUnitFactor" xml:space="preserve">
+    <value>Укажите, сколько базовых единиц в упаковке (число больше нуля).</value>
+  </data>
+  <data name="DomainError_PackageOfPackage" xml:space="preserve">
+    <value>Упаковка может состоять только из базовой единицы, а базовая единица с упаковками не может стать упаковкой.</value>
+  </data>
+  <data name="Tip_Export" xml:space="preserve">
+    <value>Выгрузить таблицу в Excel (Ctrl+E)</value>
+  </data>
+  <data name="Tip_Refresh" xml:space="preserve">
+    <value>Обновить данные (F5)</value>
+  </data>
+  <data name="Tip_IssueAdd" xml:space="preserve">
+    <value>Оформить выдачу расходника сотруднику (Ctrl+N)</value>
+  </data>
+  <data name="Tip_IssuesAll" xml:space="preserve">
+    <value>Все выдачи за выбранный период</value>
+  </data>
+  <data name="Tip_IssuesOnHand" xml:space="preserve">
+    <value>Выданное с ожиданием возврата, которое ещё не вернули</value>
+  </data>
+  <data name="Tip_IssueConsumed" xml:space="preserve">
+    <value>Выдано полностью, возврат не ожидается</value>
+  </data>
+  <data name="Tip_IssueOnHand" xml:space="preserve">
+    <value>Ожидается возврат остатка</value>
+  </data>
+  <data name="Tip_IssueReturn" xml:space="preserve">
+    <value>Оформить возврат остатка на склад</value>
+  </data>
+  <data name="Tip_ItemSearch" xml:space="preserve">
+    <value>Начните вводить название, чтобы найти позицию</value>
+  </data>
+  <data name="Tip_Recipient" xml:space="preserve">
+    <value>Сотрудник или участок. Выберите из ранее введённых или введите новое</value>
+  </data>
+  <data name="Tip_Time" xml:space="preserve">
+    <value>Время в формате ЧЧ:ММ</value>
+  </data>
+  <data name="Tip_ExpectReturn" xml:space="preserve">
+    <value>Позиция будет в списке «На руках», пока не отметите возврат</value>
+  </data>
+  <data name="Tip_ReturnNothing" xml:space="preserve">
+    <value>Всё израсходовано, на склад ничего не вернулось</value>
+  </data>
+  <data name="Issues_ReturnSummary" xml:space="preserve">
+    <value>{0}: выдано {1} {2}{3} — {4}, {5:g}</value>
+  </data>
+  <data name="Issues_NoRecipient" xml:space="preserve">
+    <value>получатель не указан</value>
+  </data>
+  <data name="Issues_ShowDetails" xml:space="preserve">
+    <value>Подробнее о выдаче</value>
+  </data>
+  <data name="Issues_ReturnQuantity" xml:space="preserve">
+    <value>Осталось и вернулось</value>
+  </data>
+  <data name="StockTakes_CountUnitHint" xml:space="preserve">
+    <value>Считать в единицах или упаковках: например, 3 банки по 5 л — программа пересчитает в литры</value>
+  </data>
+  <data name="Reports_ExportTitle" xml:space="preserve">
+    <value>Экспорт в Excel</value>
+  </data>
+  <data name="Reports_ExportMessage" xml:space="preserve">
+    <value>Что выгрузить?</value>
+  </data>
+  <data name="Reports_ExportCurrent" xml:space="preserve">
+    <value>Текущий отчёт: {0}</value>
+  </data>
+  <data name="Reports_ExportCurrentHint" xml:space="preserve">
+    <value>Только открытый раздел с учётом поиска и периода</value>
+  </data>
+  <data name="Reports_ExportAllHint" xml:space="preserve">
+    <value>Остатки и прогноз, закупка, расход и история — каждый на отдельном листе</value>
+  </data>
+  <data name="Reports_Unaccounted" xml:space="preserve">
+    <value>Неучтено</value>
+  </data>
+  <data name="Reports_IssuedReturned" xml:space="preserve">
+    <value>Выдано / вернули</value>
+  </data>
+  <data name="Reports_IssuedShort" xml:space="preserve">
+    <value>Выдано</value>
+  </data>
+  <data name="Reports_Expected" xml:space="preserve">
+    <value>Ожидалось</value>
+  </data>
+  <data name="Reports_Method" xml:space="preserve">
+    <value>Источник расхода</value>
+  </data>
+  <data name="Reports_MethodIssues" xml:space="preserve">
+    <value>Выдачи</value>
+  </data>
+  <data name="Reports_MethodCounts" xml:space="preserve">
+    <value>Инвентаризации</value>
+  </data>
+  <data name="Tip_ReportsExport" xml:space="preserve">
+    <value>Выгрузить текущий отчёт или все отчёты в Excel (Ctrl+E)</value>
+  </data>
+  <data name="Tip_IssuedReturned" xml:space="preserve">
+    <value>Сколько выдали и сколько вернули остатком за период</value>
+  </data>
+  <data name="Tip_Unaccounted" xml:space="preserve">
+    <value>Недостача по инвентаризации: пропало больше, чем оформлено выдачами</value>
+  </data>
+  <data name="Tip_Difference" xml:space="preserve">
+    <value>Факт минус ожидаемое: «−» — недостача, «+» — излишек</value>
+  </data>
+  <data name="Tip_ItemAdd" xml:space="preserve">
+    <value>Новая позиция в справочнике (Ctrl+N)</value>
+  </data>
+  <data name="Tip_ReceiptAdd" xml:space="preserve">
+    <value>Оформить поступление товара (Ctrl+N)</value>
+  </data>
+  <data name="Tip_UserAdd" xml:space="preserve">
+    <value>Создать учётную запись (Ctrl+N)</value>
+  </data>
+  <data name="Tip_StockTakeStart" xml:space="preserve">
+    <value>Начать пересчёт фактических остатков (Ctrl+N)</value>
+  </data>
+  <data name="Tip_Add" xml:space="preserve">
+    <value>Добавить запись (Ctrl+N)</value>
+  </data>
+  <data name="Tip_Back" xml:space="preserve">
+    <value>Вернуться к списку инвентаризаций</value>
+  </data>
+  <data name="Tip_Reopen" xml:space="preserve">
+    <value>Разрешить изменения в завершённой инвентаризации</value>
+  </data>
+  <data name="Tip_Complete" xml:space="preserve">
+    <value>Зафиксировать результаты пересчёта и пересчитать расход</value>
+  </data>
+  <data name="Tip_TotalAllLocations" xml:space="preserve">
+    <value>Сумма по всем местам хранения</value>
+  </data>
+  <data name="Tip_CountHere" xml:space="preserve">
+    <value>Фактическое количество в выбранном месте хранения. Enter — сохранить и перейти ниже</value>
+  </data>
+  <data name="Tip_ForecastTitle" xml:space="preserve">
+    <value>Прогноз остатка</value>
+  </data>
+  <data name="Tip_ForecastStock" xml:space="preserve">
+    <value>Расчётный остаток:</value>
+  </data>
+  <data name="Tip_ForecastRate" xml:space="preserve">
+    <value>Средний расход в день:</value>
+  </data>
+  <data name="Tip_ForecastMin" xml:space="preserve">
+    <value>Минимальный остаток:</value>
+  </data>
+  <data name="Tip_KpiActive" xml:space="preserve">
+    <value>Позиции в справочнике, не перенесённые в архив</value>
+  </data>
+  <data name="Tip_KpiBelowMin" xml:space="preserve">
+    <value>Расчётный остаток меньше минимального — нужно закупить</value>
+  </data>
+  <data name="Tip_KpiRunningOut" xml:space="preserve">
+    <value>Закончатся раньше горизонта закупки при текущем среднем расходе</value>
+  </data>
+  <data name="Tip_KpiLastStockTake" xml:space="preserve">
+    <value>Дата последней завершённой инвентаризации. Рекомендуется проводить не реже раза в месяц</value>
+  </data>
+  <data name="Tip_GoReceipts" xml:space="preserve">
+    <value>Открыть раздел поступлений</value>
+  </data>
+  <data name="Tip_GoStockTakes" xml:space="preserve">
+    <value>Открыть инвентаризации или продолжить незавершённую</value>
+  </data>
+  <data name="Tip_BackupCreate" xml:space="preserve">
+    <value>Сохранить копию базы данных прямо сейчас</value>
+  </data>
+  <data name="Tip_BackupRestoreFile" xml:space="preserve">
+    <value>Выбрать файл копии вручную (например, с флешки)</value>
+  </data>
+  <data name="Tip_CheckUpdates" xml:space="preserve">
+    <value>Проверить, есть ли новая версия программы</value>
   </data>
 </root>

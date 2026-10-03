@@ -128,3 +128,34 @@ public sealed class DaysConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+
+/// <summary>Shows how a movement was entered in a package unit ("2 × Банка 10 л").</summary>
+public sealed class EnteredConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is Core.Entities.IEnteredInUnit movement ? Infrastructure.Formatting.Entered(movement) : null;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
+public sealed class ZeroToCollapsedConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is 0 or null ? Visibility.Collapsed : Visibility.Visible;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>"Вернули 2 л" for a returned issue.</summary>
+public sealed class ReturnedConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is Core.Entities.Issue { ReturnedQuantity: { } returned } issue
+            ? string.Format(Resources.Strings.Issues_StatusReturned, $"{Infrastructure.NumberInput.Format(returned)} {issue.Item?.Unit?.Name}".Trim())
+            : null;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}

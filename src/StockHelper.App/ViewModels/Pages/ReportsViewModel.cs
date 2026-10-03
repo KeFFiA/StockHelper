@@ -17,10 +17,13 @@ public sealed partial class ReportsViewModel : PageViewModel
     private readonly IAnalyticsService _analytics;
     private readonly IExportService _export;
 
-    public ReportsViewModel(IAnalyticsService analytics, IExportService export)
+    private readonly IDialogService _dialogs;
+
+    public ReportsViewModel(IAnalyticsService analytics, IExportService export, IDialogService dialogs)
     {
         _analytics = analytics;
         _export = export;
+        _dialogs = dialogs;
         Stock = new StockReportSection();
         Purchase = new PurchaseReportSection();
         Consumption = new ConsumptionReportSection();
@@ -70,13 +73,31 @@ public sealed partial class ReportsViewModel : PageViewModel
         OnPropertyChanged(nameof(Subtitle));
     });
 
+    /// <summary>One export button: asks whether to export the open report or all of them.</summary>
     [RelayCommand]
-    private Task ExportAsync() => Data is null ? Task.CompletedTask : _export.ExportAsync(SelectedSection.Title, [SelectedSection.BuildSheet()]);
+    private async Task ExportAsync()
+    {
+        if (Data is null)
+        {
+            return;
+        }
 
-    [RelayCommand]
-    private Task ExportAllAsync() => Data is null
-        ? Task.CompletedTask
-        : _export.ExportAsync(Strings.Reports_AllFileName, [.. Sections.Select(s => s.BuildSheet())]);
+        var choice = _dialogs.Choose(Strings.Reports_ExportTitle, Strings.Reports_ExportMessage,
+        [
+            new DialogOption(string.Format(Strings.Reports_ExportCurrent, SelectedSection.Title), Strings.Reports_ExportCurrentHint, SelectedSection.IconKey),
+            new DialogOption(Strings.Reports_ExportAll, Strings.Reports_ExportAllHint, "Icon.Excel"),
+        ]);
+
+        switch (choice)
+        {
+            case 0:
+                await _export.ExportAsync(SelectedSection.Title, [SelectedSection.BuildSheet()]);
+                break;
+            case 1:
+                await _export.ExportAsync(Strings.Reports_AllFileName, [.. Sections.Select(s => s.BuildSheet())]);
+                break;
+        }
+    }
 }
 
 public abstract partial class ReportSection : ObservableObject
@@ -270,7 +291,11 @@ public sealed partial class ConsumptionReportSection : ReportSection
             new ExportColumn<ItemConsumption>(Strings.Items_Name, c => c.Item.Name),
             new ExportColumn<ItemConsumption>(Strings.Items_Category, c => c.Item.Category?.Name),
             new ExportColumn<ItemConsumption>(Strings.Items_Unit, c => c.Item.Unit?.Name),
+            new ExportColumn<ItemConsumption>(Strings.Issues_Issued, c => c.UsesIssues ? c.Issued : null, ExportFormat.Quantity),
+            new ExportColumn<ItemConsumption>(Strings.Issues_Returned, c => c.UsesIssues ? c.Returned : null, ExportFormat.Quantity),
             new ExportColumn<ItemConsumption>(Strings.Reports_ConsumptionQty, c => c.Consumption, ExportFormat.Quantity),
+            new ExportColumn<ItemConsumption>(Strings.Reports_Unaccounted, c => c.UsesIssues ? c.Unaccounted : null, ExportFormat.Quantity),
+            new ExportColumn<ItemConsumption>(Strings.Reports_Method, c => c.UsesIssues ? Strings.Reports_MethodIssues : Strings.Reports_MethodCounts),
             new ExportColumn<ItemConsumption>(Strings.Reports_Cost, c => c.Cost, ExportFormat.Money),
             new ExportColumn<ItemConsumption>(Strings.Reports_Days, c => c.Days, ExportFormat.Integer),
             new ExportColumn<ItemConsumption>(Strings.Reports_AvgDaily, c => c.AverageDaily, ExportFormat.Quantity),

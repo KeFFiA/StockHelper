@@ -15,7 +15,7 @@
 
         <HeaderedContentControl Style="{StaticResource PageHeader}" Header="{Binding Title}" Tag="{x:Static res:Strings.Users_Subtitle}">
             <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Add}"
-                    Content="{x:Static res:Strings.Users_Add}" Command="{Binding AddCommand}" />
+                    Content="{x:Static res:Strings.Users_Add}" Command="{Binding AddCommand}" ToolTip="{x:Static res:Strings.Tip_UserAdd}" />
         </HeaderedContentControl>
 
         <Grid Grid.Row="1">

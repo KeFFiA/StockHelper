@@ -12,4 +12,7 @@
     <conv:EnumDisplayConverter x:Key="EnumDisplay" />
     <conv:DecimalConverter x:Key="Decimal" />
     <conv:DaysConverter x:Key="Days" />
+    <conv:EnteredConverter x:Key="Entered" />
+    <conv:ReturnedConverter x:Key="Returned" />
+    <conv:ZeroToCollapsedConverter x:Key="ZeroToCollapsed" />
 </ResourceDictionary>

@@ -68,9 +68,9 @@
             <DockPanel Margin="0,0,0,24">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
                     <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Receipts}" Content="{x:Static res:Strings.Nav_Receipts}"
-                            Command="{Binding GoToReceiptsCommand}" Visibility="{Binding CanAddReceipt, Converter={StaticResource BoolToVisibility}}" />
+                            Command="{Binding GoToReceiptsCommand}" ToolTip="{x:Static res:Strings.Tip_GoReceipts}" Visibility="{Binding CanAddReceipt, Converter={StaticResource BoolToVisibility}}" />
                     <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.StockTakes}" Margin="{StaticResource Space.ButtonGap}"
-                            Content="{x:Static res:Strings.Nav_StockTakes}" Command="{Binding GoToStockTakesCommand}"
+                            Content="{x:Static res:Strings.Nav_StockTakes}" Command="{Binding GoToStockTakesCommand}" ToolTip="{x:Static res:Strings.Tip_GoStockTakes}"
                             Visibility="{Binding CanStartStockTake, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
                 <StackPanel>
@@ -97,15 +97,15 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <HeaderedContentControl Style="{StaticResource Kpi}" Tag="{StaticResource Icon.Items}"
-                                        Header="{x:Static res:Strings.Dashboard_ActiveItems}" Content="{Binding ActiveItems}" />
+                                        Header="{x:Static res:Strings.Dashboard_ActiveItems}" Content="{Binding ActiveItems}" ToolTip="{x:Static res:Strings.Tip_KpiActive}" />
                 <HeaderedContentControl Grid.Column="1" Style="{StaticResource Kpi}" Tag="{StaticResource Icon.Warning}"
                                         Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-                                        Header="{x:Static res:Strings.Dashboard_BelowMinimum}" Content="{Binding BelowMinimumCount}" />
+                                        Header="{x:Static res:Strings.Dashboard_BelowMinimum}" Content="{Binding BelowMinimumCount}" ToolTip="{x:Static res:Strings.Tip_KpiBelowMin}" />
                 <HeaderedContentControl Grid.Column="2" Style="{StaticResource Kpi}" Tag="{StaticResource Icon.Trend}"
                                         Foreground="{DynamicResource SystemFillColorCautionBrush}"
-                                        Header="{Binding RunningOutTitle}" Content="{Binding RunningOutCount}" />
+                                        Header="{Binding RunningOutTitle}" Content="{Binding RunningOutCount}" ToolTip="{x:Static res:Strings.Tip_KpiRunningOut}" />
                 <HeaderedContentControl Grid.Column="3" Tag="{StaticResource Icon.Calendar}"
-                                        Header="{x:Static res:Strings.Dashboard_LastStockTake}">
+                                        Header="{x:Static res:Strings.Dashboard_LastStockTake}" ToolTip="{x:Static res:Strings.Tip_KpiLastStockTake}">
                     <HeaderedContentControl.Style>
                         <Style TargetType="HeaderedContentControl" BasedOn="{StaticResource Kpi}">
                             <Setter Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />

@@ -15,6 +15,7 @@ public sealed class DemoData(
     ILookupRepository<StorageLocation> locations,
     IReceiptRepository receipts,
     IStockTakeRepository stockTakes,
+    IIssueRepository issues,
     ILogger<DemoData> logger)
 {
     private sealed record Sample(string Name, string Category, string Unit, decimal Price, decimal MinStock, decimal DailyUse, decimal Start, bool Restock = true);
@@ -47,6 +48,13 @@ public sealed class DemoData(
         var unitByName = (await units.GetAllAsync(true)).ToDictionary(u => u.Name);
         var warehouse = (await locations.GetAllAsync(false)).First();
         var shelf = await locations.AddAsync(new StorageLocation { Name = "Полка у принтера", Description = "Кабинет 204" });
+
+        // Package units: paint is counted in litres but bought and handed out in cans.
+        var liter = unitByName.TryGetValue("л", out var l) ? l : await units.AddAsync(new Unit { Name = "л" });
+        unitByName["л"] = liter;
+        var can5 = await units.AddAsync(new Unit { Name = "Банка 5 л", BaseUnitId = liter.Id, Factor = 5 });
+        var can10 = await units.AddAsync(new Unit { Name = "Банка 10 л", BaseUnitId = liter.Id, Factor = 10 });
+        string[] painters = ["Иванов, малярный участок", "Петров, ремонтная бригада", "Сидорова, хозчасть"];
 
         var created = new List<(Item Item, Sample Sample)>();
         foreach (var sample in Samples)
@@ -93,6 +101,12 @@ public sealed class DemoData(
             {
                 var used = sample.DailyUse * 30 * (decimal)(0.7 + random.NextDouble() * 0.6);
                 var received = sample.Restock && month > 1 && stock[item.Id] - used < sample.MinStock * 2 ? Math.Ceiling(sample.DailyUse * 30) : 0;
+                var isPaint = item.Name.StartsWith("Краска");
+                if (isPaint && received > 0)
+                {
+                    received = 10 * Math.Ceiling(received / 10);
+                }
+
                 if (received > 0)
                 {
                     await receipts.AddAsync(new Receipt
@@ -100,9 +114,69 @@ public sealed class DemoData(
                         ItemId = item.Id,
                         Quantity = received,
                         Price = sample.Price,
+                        UnitId = isPaint ? can10.Id : null,
+                        UnitQuantity = isPaint ? received / 10 : null,
                         Date = countDate.AddDays(10 + random.Next(10)),
                         StorageLocationId = warehouse.Id,
                     });
+                }
+
+                if (isPaint)
+                {
+                    // Cans of 5 l handed out; what is left in the can comes back.
+                    var net = 0m;
+                    var day = 1;
+                    while (net + 2 < used && day < 27)
+                    {
+                        var issue = await issues.AddAsync(new Issue
+                        {
+                            ItemId = item.Id,
+                            Quantity = 5,
+                            UnitId = can5.Id,
+                            UnitQuantity = 1,
+                            Date = countDate.AddDays(day).AddHours(1),
+                            IssuedTo = painters[random.Next(painters.Length)],
+                            ExpectReturn = true,
+                            StorageLocationId = warehouse.Id,
+                        });
+                        var back = Math.Round((decimal)(random.NextDouble() * 3), 1);
+                        await issues.ReturnAsync(issue.Id, back, countDate.AddDays(day + 2).AddHours(8));
+                        net += 5 - back;
+                        day += 5 + random.Next(4);
+                    }
+
+                    used = net + 0.5m;   // a little goes missing: shown as unaccounted
+                    if (month == 1)
+                    {
+                        await issues.AddAsync(new Issue
+                        {
+                            ItemId = item.Id,
+                            Quantity = 5,
+                            UnitId = can5.Id,
+                            UnitQuantity = 1,
+                            Date = now.AddDays(-2),
+                            IssuedTo = painters[0],
+                            ExpectReturn = true,
+                            Note = "Покраска двери склада",
+                        });
+                        used += 5;
+                    }
+                }
+                else if (item.Name.StartsWith("Перчатки"))
+                {
+                    var pairs = Math.Round(used / 10) * 10;
+                    for (var week = 0; week < 4 && pairs > 0; week++)
+                    {
+                        var batch = week == 3 ? pairs : Math.Min(pairs, 10 * Math.Ceiling(pairs / 40));
+                        await issues.AddAsync(new Issue
+                        {
+                            ItemId = item.Id,
+                            Quantity = batch,
+                            Date = countDate.AddDays(2 + week * 7),
+                            IssuedTo = painters[week % painters.Length],
+                        });
+                        pairs -= batch;
+                    }
                 }
 
                 stock[item.Id] = Math.Max(0, stock[item.Id] - used + received);

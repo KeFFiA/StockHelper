@@ -18,9 +18,9 @@
         <HeaderedContentControl Style="{StaticResource PageHeader}" Header="{Binding Title}" Tag="{Binding Summary}">
             <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Export}"
-                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" />
+                        Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" ToolTip="{x:Static res:Strings.Tip_Export}" />
                 <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Add}" Margin="{StaticResource Space.ButtonGap}"
-                        Content="{x:Static res:Strings.Items_Add}" Command="{Binding AddCommand}"
+                        Content="{x:Static res:Strings.Items_Add}" Command="{Binding AddCommand}" ToolTip="{x:Static res:Strings.Tip_ItemAdd}"
                         Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
         </HeaderedContentControl>
@@ -41,7 +41,7 @@
             <CheckBox Content="{x:Static res:Strings.Common_ShowArchived}" IsChecked="{Binding ShowArchived}" Margin="16,0,0,0" VerticalAlignment="Center" />
 
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Refresh}"
-                    ToolTip="{x:Static res:Strings.Common_Refresh}" Command="{Binding LoadCommand}" />
+                    ToolTip="{x:Static res:Strings.Tip_Refresh}" Command="{Binding LoadCommand}" />
         </DockPanel>
 
         <Grid Grid.Row="2">
@@ -78,8 +78,8 @@
                                                 ElementStyle="{StaticResource Cell.Text}" />
                             <DataGridTextColumn Header="{x:Static res:Strings.Items_Unit}" Width="Auto" MinWidth="70" Binding="{Binding Item.Unit.Name}"
                                                 ElementStyle="{StaticResource Cell.Secondary}" />
-                            <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_EstimatedStock}" Width="Auto" MinWidth="120"
-                                                    SortMemberPath="Status.EstimatedStock" HeaderStyle="{StaticResource Grid.HeaderRight}">
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Reports_EstimatedStock}" Width="Auto" MinWidth="120" HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                                    SortMemberPath="Status.EstimatedStock">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Style="{StaticResource Cell.Number}" FontWeight="SemiBold"

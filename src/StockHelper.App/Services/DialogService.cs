@@ -13,8 +13,14 @@ public enum DialogKind
     Question,
 }
 
+/// <summary>An option of a choice dialog; <c>IconKey</c> refers to an Icon.* token.</summary>
+public sealed record DialogOption(string Title, string Description, string? IconKey = null);
+
 public interface IDialogService
 {
+    /// <summary>Returns the index of the chosen option or null when cancelled.</summary>
+    int? Choose(string title, string message, IReadOnlyList<DialogOption> options);
+
     void ShowInfo(string message, string? title = null);
 
     void ShowError(string message, string? title = null);
@@ -38,6 +44,22 @@ public sealed class DialogService : IDialogService
     public bool Confirm(string message, string? title = null, string? confirmText = null, bool isDestructive = false) =>
         Show(isDestructive ? DialogKind.Warning : DialogKind.Question, title ?? Strings.Dialog_ConfirmTitle, message,
             confirmText ?? Strings.Common_Yes, Strings.Common_Cancel, isDestructive);
+
+    public int? Choose(string title, string message, IReadOnlyList<DialogOption> options)
+    {
+        var window = new ChoiceDialog(title, message, options);
+        var owner = GetOwner();
+        if (owner is not null)
+        {
+            window.Owner = owner;
+        }
+        else
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        return window.ShowDialog() == true ? window.SelectedIndex : null;
+    }
 
     public string? PickSaveFile(string defaultFileName, string filter)
     {

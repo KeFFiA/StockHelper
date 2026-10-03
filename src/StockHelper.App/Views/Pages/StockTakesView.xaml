@@ -21,9 +21,9 @@
             <HeaderedContentControl Style="{StaticResource PageHeader}" Header="{Binding Title}" Tag="{Binding Summary}">
                 <StackPanel Orientation="Horizontal">
                     <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Export}"
-                            Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" />
+                            Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" ToolTip="{x:Static res:Strings.Tip_Export}" />
                     <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.StockTakes}" Margin="{StaticResource Space.ButtonGap}"
-                            Content="{x:Static res:Strings.StockTakes_Start}" Command="{Binding StartCommand}"
+                            Content="{x:Static res:Strings.StockTakes_Start}" Command="{Binding StartCommand}" ToolTip="{x:Static res:Strings.Tip_StockTakeStart}"
                             Visibility="{Binding CanStart, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
             </HeaderedContentControl>

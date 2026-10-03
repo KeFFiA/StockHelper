@@ -125,6 +125,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="10,6" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Template">
@@ -134,7 +135,7 @@
                         <Border Background="{TemplateBinding Background}" CornerRadius="{StaticResource Radius.Control}" />
                         <Border x:Name="Hover" Background="{DynamicResource Brush.Hover}" CornerRadius="{StaticResource Radius.Control}" Opacity="0" />
                         <Border x:Name="Press" Background="{DynamicResource Brush.Pressed}" CornerRadius="{StaticResource Radius.Control}" Opacity="0" />
-                        <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -481,6 +482,8 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource Grid.Header}" />
 
     <Style x:Key="Grid.HeaderRight" TargetType="DataGridColumnHeader" BasedOn="{StaticResource Grid.Header}">
         <Setter Property="HorizontalContentAlignment" Value="Right" />
