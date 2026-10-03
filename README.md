@@ -2,8 +2,6 @@
 
 Desktop app for tracking consumables: item catalog, stock-taking, automatic consumption calculation, stock forecasting and Excel export.
 
-The UI is in Russian; code and commits are in English.
-
 **User guides (Russian):** [overview](docs/README.md) · [general](docs/general.md) · [storekeeper](docs/storekeeper.md) · [manager](docs/manager.md) · [administrator](docs/administrator.md)
 
 **Download:** [latest release](https://github.com/KeFFiA/StockHelper/releases/latest) — `StockHelper-win-Setup.exe` ·
