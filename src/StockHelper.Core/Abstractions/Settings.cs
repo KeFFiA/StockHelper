@@ -23,6 +23,9 @@ public sealed record AppSettings
 
     public string? LastLogin { get; init; }
 
+    /// <summary>Version whose changelog the user has already seen.</summary>
+    public string? LastSeenVersion { get; init; }
+
     /// <summary>Navigation pane shows icons only.</summary>
     public bool IsNavigationCollapsed { get; init; }
 

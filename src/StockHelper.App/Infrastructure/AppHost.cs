@@ -75,6 +75,7 @@ public static class AppHost
         services.AddSingleton<SessionCoordinator>();
         services.AddSingleton<IAnalyticsService, AnalyticsService>();
         services.AddSingleton<IUpdateService, UpdateService>();
+        services.AddSingleton<IChangelogService, ChangelogService>();
         services.AddTransient<DemoData>();
 
         services.AddSingleton<ShellViewModel>();

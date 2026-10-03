@@ -59,6 +59,8 @@
   <ItemGroup>
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <Resource Include="Assets\app.ico" />
+    <!-- User-facing changelog (Russian): shown once after an update and from Settings. -->
+    <EmbeddedResource Include="Resources\Changelog.md" LogicalName="StockHelper.Changelog.md" />
   </ItemGroup>
 
 </Project>

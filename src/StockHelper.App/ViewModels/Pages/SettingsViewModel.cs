@@ -23,6 +23,7 @@ public sealed partial class SettingsViewModel : PageViewModel
     private readonly IDialogService _dialogs;
     private readonly INotificationService _notifications;
     private readonly ICurrentUserService _currentUser;
+    private readonly IChangelogService _changelog;
 
     public SettingsViewModel(
         ISettingsService settings,
@@ -32,8 +33,10 @@ public sealed partial class SettingsViewModel : PageViewModel
         IDialogService dialogs,
         INotificationService notifications,
         ICurrentUserService currentUser,
-        IUpdateService updates)
+        IUpdateService updates,
+        IChangelogService changelog)
     {
+        _changelog = changelog;
         _settings = settings;
         _theme = theme;
         _backups = backups;
@@ -216,6 +219,9 @@ public sealed partial class SettingsViewModel : PageViewModel
             PasswordError = ex.Code == DomainErrorCode.InvalidCredentials ? Strings.Settings_WrongCurrentPassword : ErrorMessages.For(ex);
         }
     }
+
+    [RelayCommand]
+    private void ShowChangelog() => _changelog.ShowAll();
 
     [RelayCommand]
     private static void OpenFolder(string? path)

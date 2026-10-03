@@ -254,6 +254,8 @@
                     </DockPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.History}" Content="{x:Static res:Strings.Changelog_Button}"
+                                Command="{Binding ShowChangelogCommand}" ToolTip="{x:Static res:Strings.Tip_Changelog}" Margin="0,0,8,0" />
                         <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Update}" Content="{x:Static res:Strings.Updates_CheckNow}" ToolTip="{x:Static res:Strings.Tip_CheckUpdates}"
                                 Command="{Binding Updates.CheckNowCommand}" />
                         <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Refresh}" Content="{x:Static res:Strings.Updates_RestartNow}"

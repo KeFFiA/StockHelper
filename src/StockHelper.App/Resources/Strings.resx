@@ -1458,4 +1458,22 @@
   <data name="Chart_BucketTooltipQty" xml:space="preserve">
     <value>{0}: {1} {2}</value>
   </data>
+  <data name="Changelog_Title" xml:space="preserve">
+    <value>Список изменений</value>
+  </data>
+  <data name="Changelog_UpdatedTitle" xml:space="preserve">
+    <value>StockHelper обновлён до версии {0}</value>
+  </data>
+  <data name="Changelog_Subtitle" xml:space="preserve">
+    <value>Что появилось и что изменилось</value>
+  </data>
+  <data name="Changelog_Ok" xml:space="preserve">
+    <value>Понятно</value>
+  </data>
+  <data name="Changelog_Button" xml:space="preserve">
+    <value>Список изменений</value>
+  </data>
+  <data name="Tip_Changelog" xml:space="preserve">
+    <value>Что нового в каждой версии программы</value>
+  </data>
 </root>

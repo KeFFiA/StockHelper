@@ -17,7 +17,8 @@ public sealed class SessionCoordinator(
     IThemeService theme,
     ISettingsService settings,
     IBackupService backups,
-    IUpdateService updates)
+    IUpdateService updates,
+    IChangelogService changelog)
 {
     private MainWindow? _mainWindow;
 
@@ -43,6 +44,7 @@ public sealed class SessionCoordinator(
         _mainWindow.Closed += (_, _) => Application.Current.Shutdown();
         _mainWindow.Show();
         await services.GetRequiredService<ShellViewModel>().StartAsync();
+        await changelog.ShowIfUpdatedAsync();
 
         // Fire and forget: never blocks the UI, errors are logged inside.
         _ = updates.CheckInBackgroundAsync();
