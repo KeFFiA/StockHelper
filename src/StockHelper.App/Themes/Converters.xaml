@@ -1,0 +1,12 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:conv="clr-namespace:StockHelper.App.Converters">
+    <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibility" />
+    <conv:InverseBooleanConverter x:Key="InverseBool" />
+    <conv:NullToVisibilityConverter x:Key="NullToCollapsed" />
+    <conv:NullToVisibilityConverter x:Key="NotNullToCollapsed" Invert="True" />
+    <conv:EmptyToVisibilityConverter x:Key="EmptyToVisible" />
+    <conv:UtcToLocalConverter x:Key="UtcToLocal" />
+    <conv:ResourceKeyToValueConverter x:Key="ResourceKeyToValue" />
+</ResourceDictionary>

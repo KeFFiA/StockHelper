@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <Product>StockHelper</Product>
+    <Company>StockHelper</Company>
+    <Copyright>Copyright © StockHelper</Copyright>
+    <!-- Overridden in CI from the git tag (vX.Y.Z). -->
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+</Project>

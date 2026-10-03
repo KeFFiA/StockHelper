@@ -1,0 +1,72 @@
+<!-- Maps page view models to views and holds shared item templates. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:StockHelper.App.ViewModels"
+                    xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
+                    xmlns:views="clr-namespace:StockHelper.App.Views.Pages"
+                    xmlns:svc="clr-namespace:StockHelper.App.Services">
+
+    <!-- ===== Pages ===== -->
+    <DataTemplate DataType="{x:Type pages:DashboardViewModel}">
+        <views:DashboardView />
+    </DataTemplate>
+
+    <!-- ===== Shell ===== -->
+    <DataTemplate x:Key="NavItemTemplate" DataType="{x:Type vm:NavItem}">
+        <RadioButton Style="{StaticResource NavItem}" GroupName="ShellNavigation"
+                     IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                     Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                     CommandParameter="{Binding}"
+                     ToolTip="{Binding Title}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource Icon}" Text="{Binding IconKey, Converter={StaticResource ResourceKeyToValue}}" Margin="{StaticResource Space.IconGap}" />
+                <TextBlock Style="{StaticResource Text.Body}" Text="{Binding Title}" VerticalAlignment="Center" />
+            </StackPanel>
+        </RadioButton>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ShellUserTemplate" DataType="{x:Type vm:ShellViewModel}" />
+
+    <DataTemplate x:Key="NotificationTemplate" DataType="{x:Type svc:Notification}">
+        <Border x:Name="Root" Style="{StaticResource Card.Compact}" Margin="0,8,0,0" MinWidth="320"
+                Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.18" />
+            </Border.Effect>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="Glyph" Style="{StaticResource Icon}" VerticalAlignment="Top" Margin="0,2,12,0"
+                           Text="{StaticResource Icon.Info}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                <StackPanel Grid.Column="1">
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding Title}" TextWrapping="Wrap" />
+                    <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Message}" TextWrapping="Wrap" Margin="0,2,0,0"
+                               Visibility="{Binding Message, Converter={StaticResource NullToCollapsed}}" />
+                    <Button Style="{StaticResource Button.Accent}" Content="{Binding ActionText}" Command="{Binding ActionCommand}"
+                            HorizontalAlignment="Left" Margin="0,10,0,0"
+                            Visibility="{Binding HasAction, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+                <Button Grid.Column="2" Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Cancel}"
+                        Width="28" Height="28" FontSize="{StaticResource FontSize.Caption}" VerticalAlignment="Top" Margin="8,-4,-8,0"
+                        Command="{Binding DismissCommand}" />
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsSuccess}" Value="True">
+                <Setter TargetName="Glyph" Property="Text" Value="{StaticResource Icon.Success}" />
+                <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsWarning}" Value="True">
+                <Setter TargetName="Glyph" Property="Text" Value="{StaticResource Icon.Warning}" />
+                <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsError}" Value="True">
+                <Setter TargetName="Glyph" Property="Text" Value="{StaticResource Icon.Error}" />
+                <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+</ResourceDictionary>

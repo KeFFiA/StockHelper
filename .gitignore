@@ -1,3 +1,28 @@
 .idea
 .misc
+
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+Releases/
+TestResults/
+*.user
+*.suo
+.vs/
+
+# Generated strongly typed resources (regenerated on build from .resx)
+**/Resources/Strings.Designer.cs
+
+# Local data: databases, logs, user settings
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+logs/
+*.log
+settings.json
+appsettings.Development.json
+
 CLAUDE.md
