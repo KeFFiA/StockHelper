@@ -91,6 +91,31 @@ public sealed partial class ShellViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void New() => Execute(CurrentPage?.NewShortcut);
+
+    [RelayCommand]
+    private void Refresh() => Execute(CurrentPage?.RefreshShortcut);
+
+    [RelayCommand]
+    private void Export() => Execute(CurrentPage?.ExportShortcut);
+
+    /// <summary>Ctrl+1..9: open the n-th section of the menu.</summary>
+    [RelayCommand]
+    private Task NavigateByIndexAsync(string? index)
+    {
+        var items = NavItems.Concat(FooterItems).ToList();
+        return int.TryParse(index, out var i) && i >= 1 && i <= items.Count ? NavigateAsync(items[i - 1]) : Task.CompletedTask;
+    }
+
+    private static void Execute(System.Windows.Input.ICommand? command)
+    {
+        if (command?.CanExecute(null) == true)
+        {
+            command.Execute(null);
+        }
+    }
+
+    [RelayCommand]
     private async Task SignOutAsync()
     {
         if (_navigation.CurrentPage is { } page && !await page.OnNavigatingFromAsync())

@@ -936,4 +936,28 @@
   <data name="Updates_AvailableMessage" xml:space="preserve">
     <value>Версия {0} загружена. Перезапустите программу сейчас или позже — обновление установится при следующем запуске.</value>
   </data>
+  <data name="Settings_Hotkeys" xml:space="preserve">
+    <value>Горячие клавиши</value>
+  </data>
+  <data name="Hotkey_New" xml:space="preserve">
+    <value>Создать запись на текущей странице</value>
+  </data>
+  <data name="Hotkey_Search" xml:space="preserve">
+    <value>Перейти к поиску</value>
+  </data>
+  <data name="Hotkey_Export" xml:space="preserve">
+    <value>Экспорт таблицы в Excel</value>
+  </data>
+  <data name="Hotkey_Refresh" xml:space="preserve">
+    <value>Обновить данные</value>
+  </data>
+  <data name="Hotkey_Navigate" xml:space="preserve">
+    <value>Перейти к разделу меню по номеру</value>
+  </data>
+  <data name="Hotkey_StockTake" xml:space="preserve">
+    <value>Инвентаризация: сохранить и перейти к следующей / предыдущей строке</value>
+  </data>
+  <data name="Hotkey_Escape" xml:space="preserve">
+    <value>Очистить поиск, закрыть панель редактирования</value>
+  </data>
 </root>

@@ -18,6 +18,12 @@ public sealed partial class StockTakesViewModel(
 {
     public override string Title => Strings.Nav_StockTakes;
 
+    public override System.Windows.Input.ICommand? NewShortcut => StartCommand;
+
+    public override System.Windows.Input.ICommand? RefreshShortcut => LoadCommand;
+
+    public override System.Windows.Input.ICommand? ExportShortcut => ExportCommand;
+
     public bool CanEdit => currentUser.Has(Permission.EditStockTakes);
 
     public ObservableCollection<StockTakeSummary> StockTakes { get; } = [];

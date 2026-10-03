@@ -27,6 +27,15 @@ public abstract class PageViewModel : ViewModelBase
 {
     public abstract string Title { get; }
 
+    /// <summary>Ctrl+N: create a new record on this page.</summary>
+    public virtual System.Windows.Input.ICommand? NewShortcut => null;
+
+    /// <summary>F5: reload the page data.</summary>
+    public virtual System.Windows.Input.ICommand? RefreshShortcut => null;
+
+    /// <summary>Ctrl+E: export the page table to Excel.</summary>
+    public virtual System.Windows.Input.ICommand? ExportShortcut => null;
+
     /// <summary>Called every time the page becomes active.</summary>
     public virtual Task OnNavigatedToAsync() => Task.CompletedTask;
 

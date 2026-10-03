@@ -54,6 +54,12 @@ public sealed partial class ItemsViewModel : PageViewModel
 
     public override string Title => Strings.Nav_Items;
 
+    public override System.Windows.Input.ICommand? NewShortcut => AddCommand;
+
+    public override System.Windows.Input.ICommand? RefreshShortcut => LoadCommand;
+
+    public override System.Windows.Input.ICommand? ExportShortcut => ExportCommand;
+
     public bool CanEdit => _currentUser.Has(Permission.ManageCatalog);
 
     public ObservableCollection<ItemRow> Items { get; } = [];

@@ -20,6 +20,10 @@ public sealed partial class UsersViewModel(
 {
     public override string Title => Strings.Nav_Users;
 
+    public override System.Windows.Input.ICommand? NewShortcut => AddCommand;
+
+    public override System.Windows.Input.ICommand? RefreshShortcut => LoadCommand;
+
     public ObservableCollection<User> Users { get; } = [];
 
     [ObservableProperty]

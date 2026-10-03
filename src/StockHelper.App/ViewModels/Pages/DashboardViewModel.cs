@@ -17,6 +17,8 @@ public sealed partial class DashboardViewModel(
 
     public override string Title => Strings.Nav_Dashboard;
 
+    public override System.Windows.Input.ICommand? RefreshShortcut => LoadCommand;
+
     public string Greeting
     {
         get

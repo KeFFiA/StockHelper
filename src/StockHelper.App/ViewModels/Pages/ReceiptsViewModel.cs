@@ -50,6 +50,12 @@ public sealed partial class ReceiptsViewModel : PageViewModel
 
     public override string Title => Strings.Nav_Receipts;
 
+    public override System.Windows.Input.ICommand? NewShortcut => AddCommand;
+
+    public override System.Windows.Input.ICommand? RefreshShortcut => LoadCommand;
+
+    public override System.Windows.Input.ICommand? ExportShortcut => ExportCommand;
+
     public bool CanEdit => _currentUser.Has(Permission.ManageReceipts);
 
     public ObservableCollection<Receipt> Receipts { get; } = [];

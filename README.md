@@ -4,7 +4,7 @@ Desktop app for tracking consumables: item catalog, stock-taking, automatic cons
 
 The UI is in Russian; code, commits and docs are in English.
 
-## Features (planned / in progress)
+## Features
 
 - Item catalog: categories, units, storage locations, minimum stock, price, archiving
 - Receipts (purchases)
@@ -39,10 +39,42 @@ Dependencies: `App → Data → Core`, `App → Core`.
 Requirements: Windows 10/11, [.NET 10 SDK](https://dotnet.microsoft.com/download) (`winget install Microsoft.DotNet.SDK.10`).
 
 ```powershell
+dotnet tool restore
 dotnet build
 dotnet test
 dotnet run --project src/StockHelper.App
 ```
+
+On the first start the app asks to create an administrator account.
+
+### Trying the app with sample data
+
+`--demo` fills an empty database with sample items, receipts and four monthly stock-takes.
+Use `STOCKHELPER_DATA_DIR` to keep it away from your real data:
+
+```powershell
+$env:STOCKHELPER_DATA_DIR = "$env:TEMP\stockhelper-demo"
+dotnet run --project src/StockHelper.App -- --demo
+```
+
+### Keyboard shortcuts
+
+| Keys | Action |
+|---|---|
+| Ctrl+N | New record on the current page |
+| Ctrl+F | Focus search |
+| Ctrl+E | Export the current table to Excel |
+| F5 | Refresh |
+| Ctrl+1…9 | Open a menu section |
+| Enter / ↑ / ↓ | Stock-take: save and move to the next / previous row |
+
+### Database migrations
+
+```powershell
+dotnet ef migrations add <Name> --project src/StockHelper.Data --startup-project src/StockHelper.Data --output-dir Migrations
+```
+
+Migrations are applied on start-up; an existing database is backed up first.
 
 ## User data
 
@@ -65,4 +97,12 @@ Colors come from the WPF Fluent theme and follow the Windows light/dark mode and
 ## Releases
 
 Versioning follows SemVer. Pushing a tag `vX.Y.Z` builds, tests, packs the app with Velopack and
-publishes it to GitHub Releases; installed apps pick up the update automatically.
+publishes it to GitHub Releases (`StockHelper-win-Setup.exe` is the installer); installed apps
+download the update in the background and offer to restart.
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Code signing: add a `SIGN_PARAMS` repository secret with signtool arguments; without it packages are unsigned.

@@ -32,6 +32,10 @@ public sealed partial class ReportsViewModel : PageViewModel
 
     public override string Title => Strings.Nav_Reports;
 
+    public override System.Windows.Input.ICommand? RefreshShortcut => LoadCommand;
+
+    public override System.Windows.Input.ICommand? ExportShortcut => ExportCommand;
+
     public IReadOnlyList<ReportSection> Sections { get; }
 
     public StockReportSection Stock { get; }

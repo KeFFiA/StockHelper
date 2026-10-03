@@ -13,6 +13,21 @@
         FontFamily="{StaticResource Font.Text}"
         FontSize="{StaticResource FontSize.Body}">
 
+    <Window.InputBindings>
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding NewCommand}" />
+        <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}" />
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding ExportCommand}" />
+        <KeyBinding Gesture="Ctrl+D1" Command="{Binding NavigateByIndexCommand}" CommandParameter="1" />
+        <KeyBinding Gesture="Ctrl+D2" Command="{Binding NavigateByIndexCommand}" CommandParameter="2" />
+        <KeyBinding Gesture="Ctrl+D3" Command="{Binding NavigateByIndexCommand}" CommandParameter="3" />
+        <KeyBinding Gesture="Ctrl+D4" Command="{Binding NavigateByIndexCommand}" CommandParameter="4" />
+        <KeyBinding Gesture="Ctrl+D5" Command="{Binding NavigateByIndexCommand}" CommandParameter="5" />
+        <KeyBinding Gesture="Ctrl+D6" Command="{Binding NavigateByIndexCommand}" CommandParameter="6" />
+        <KeyBinding Gesture="Ctrl+D7" Command="{Binding NavigateByIndexCommand}" CommandParameter="7" />
+        <KeyBinding Gesture="Ctrl+D8" Command="{Binding NavigateByIndexCommand}" CommandParameter="8" />
+        <KeyBinding Gesture="Ctrl+D9" Command="{Binding NavigateByIndexCommand}" CommandParameter="9" />
+    </Window.InputBindings>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{StaticResource Size.NavColumn}" />

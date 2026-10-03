@@ -1,4 +1,5 @@
 using System.Windows;
+using StockHelper.App.Infrastructure;
 using StockHelper.Core.Abstractions;
 
 namespace StockHelper.App.Services;
@@ -18,5 +19,6 @@ public sealed class ThemeService : IThemeService
             AppTheme.Dark => ThemeMode.Dark,
             _ => ThemeMode.System,
         };
+        WindowTheme.SetTheme(theme);
     }
 }

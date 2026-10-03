@@ -41,6 +41,7 @@ public partial class App : Application
 
         try
         {
+            WindowTheme.Register();
             _host = AppHost.Build(_args);
             GlobalExceptionHandler.Register(this, _host.Services.GetRequiredService<IDialogService>());
             await _host.StartAsync();
