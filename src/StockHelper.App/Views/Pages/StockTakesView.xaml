@@ -1,0 +1,96 @@
+<UserControl x:Class="StockHelper.App.Views.Pages.StockTakesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
+             xmlns:views="clr-namespace:StockHelper.App.Views.Pages"
+             xmlns:res="clr-namespace:StockHelper.App.Resources"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance pages:StockTakesViewModel}">
+    <Grid>
+        <!-- ===== History ===== -->
+        <Grid Margin="{StaticResource Space.Page}" Visibility="{Binding IsListVisible, Converter={StaticResource BoolToVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <HeaderedContentControl Style="{StaticResource PageHeader}" Header="{Binding Title}" Tag="{Binding Summary}">
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Export}"
+                            Content="{x:Static res:Strings.Common_ExportExcel}" Command="{Binding ExportCommand}" />
+                    <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.StockTakes}" Margin="{StaticResource Space.ButtonGap}"
+                            Content="{x:Static res:Strings.StockTakes_Start}" Command="{Binding StartCommand}"
+                            Visibility="{Binding CanStart, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </HeaderedContentControl>
+
+            <Border Grid.Row="1" Style="{StaticResource InfoBar.Info}" Visibility="{Binding HasDraft, Converter={StaticResource BoolToVisibility}}">
+                <DockPanel>
+                    <TextBlock Style="{StaticResource Icon}" Text="{StaticResource Icon.Info}" Margin="0,0,10,0"
+                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Accent}" Content="{x:Static res:Strings.StockTakes_Continue}"
+                            Command="{Binding ContinueCommand}" />
+                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap">
+                        <Run Text="{x:Static res:Strings.StockTakes_DraftBanner}" />
+                        <Run Text="{Binding Draft.Date, Mode=OneWay, Converter={StaticResource UtcToLocal}, ConverterParameter=g}" FontWeight="SemiBold" />
+                    </TextBlock>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Row="2" Style="{StaticResource Card.Flush}">
+                <Grid>
+                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding StockTakes}" SelectedItem="{Binding SelectedStockTake}">
+                        <DataGrid.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenSelectedCommand}" />
+                            <KeyBinding Key="Enter" Command="{Binding OpenSelectedCommand}" />
+                        </DataGrid.InputBindings>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="{x:Static res:Strings.StockTakes_Date}" Width="Auto" MinWidth="160" SortMemberPath="Date"
+                                                Binding="{Binding Date, Converter={StaticResource UtcToLocal}, ConverterParameter=g}"
+                                                ElementStyle="{StaticResource Cell.Text}" />
+                            <DataGridTemplateColumn Header="{x:Static res:Strings.Common_Status}" Width="140" SortMemberPath="Status">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border x:Name="Badge" Style="{StaticResource Badge.Warning}" Margin="8,0">
+                                            <TextBlock Text="{Binding Status, Converter={StaticResource EnumDisplay}}" />
+                                        </Border>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                <Setter TargetName="Badge" Property="Style" Value="{StaticResource Badge.Success}" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="{x:Static res:Strings.StockTakes_Counted}" Width="Auto" MinWidth="110"
+                                                HeaderStyle="{StaticResource Grid.HeaderRight}"
+                                                Binding="{Binding CountedItems}" ElementStyle="{StaticResource Cell.Number}" />
+                            <DataGridTextColumn Header="{x:Static res:Strings.Items_Note}" Width="*" MinWidth="160" Binding="{Binding Note}"
+                                                ElementStyle="{StaticResource Cell.Secondary}" />
+                            <DataGridTextColumn Header="{x:Static res:Strings.Common_CreatedBy}" Width="Auto" MinWidth="90" Binding="{Binding CreatedBy}"
+                                                ElementStyle="{StaticResource Cell.Secondary}" />
+                            <DataGridTextColumn Header="{x:Static res:Strings.StockTakes_CompletedBy}" Width="Auto" MinWidth="90" Binding="{Binding CompletedBy}"
+                                                ElementStyle="{StaticResource Cell.Secondary}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Style="{StaticResource EmptyState}"
+                                Visibility="{Binding StockTakes.Count, Converter={StaticResource EmptyToVisible}}">
+                        <TextBlock Style="{StaticResource Icon}" FontSize="40" Text="{StaticResource Icon.StockTakes}" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Style="{StaticResource Text.Subtitle}" Text="{x:Static res:Strings.StockTakes_EmptyTitle}" HorizontalAlignment="Center" Margin="0,16,0,4" />
+                        <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.StockTakes_EmptyHint}" HorizontalAlignment="Center"
+                                   TextAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- ===== Counting session ===== -->
+        <views:StockTakeSessionView DataContext="{Binding Session}"
+                                    Visibility="{Binding DataContext.Session, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToCollapsed}}" />
+    </Grid>
+</UserControl>

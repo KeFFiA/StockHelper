@@ -20,6 +20,9 @@
     <DataTemplate DataType="{x:Type pages:ReceiptsViewModel}">
         <views:ReceiptsView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type pages:StockTakesViewModel}">
+        <views:StockTakesView />
+    </DataTemplate>
     <DataTemplate DataType="{x:Type pages:UsersViewModel}">
         <views:UsersView />
     </DataTemplate>

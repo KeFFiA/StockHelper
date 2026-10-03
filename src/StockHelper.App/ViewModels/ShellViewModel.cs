@@ -109,6 +109,7 @@ public sealed partial class ShellViewModel : ViewModelBase
         NavItems.Add(new NavItem(Strings.Nav_Dashboard, "Icon.Home", typeof(DashboardViewModel)));
         NavItems.Add(new NavItem(Strings.Nav_Items, "Icon.Items", typeof(ItemsViewModel)));
         NavItems.Add(new NavItem(Strings.Nav_Receipts, "Icon.Receipts", typeof(ReceiptsViewModel)));
+        NavItems.Add(new NavItem(Strings.Nav_StockTakes, "Icon.StockTakes", typeof(StockTakesViewModel)));
         NavItems.Add(new NavItem(Strings.Nav_Catalogs, "Icon.Catalogs", typeof(CatalogsViewModel)));
 
         if (_currentUser.Has(Permission.ManageUsers))

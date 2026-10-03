@@ -492,4 +492,112 @@
   <data name="Receipts_EmptyHint" xml:space="preserve">
     <value>Добавьте поступление или выберите другой период.</value>
   </data>
+  <data name="Nav_StockTakes" xml:space="preserve">
+    <value>Инвентаризации</value>
+  </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="StockTakeStatus_Draft" xml:space="preserve">
+    <value>Черновик</value>
+  </data>
+  <data name="StockTakeStatus_Completed" xml:space="preserve">
+    <value>Завершена</value>
+  </data>
+  <data name="StockTakes_History" xml:space="preserve">
+    <value>История инвентаризаций</value>
+  </data>
+  <data name="StockTakes_NoneCompleted" xml:space="preserve">
+    <value>Завершённых инвентаризаций пока нет</value>
+  </data>
+  <data name="StockTakes_LastCompleted" xml:space="preserve">
+    <value>Последняя завершённая: {0:g}</value>
+  </data>
+  <data name="StockTakes_Start" xml:space="preserve">
+    <value>Начать инвентаризацию</value>
+  </data>
+  <data name="StockTakes_Continue" xml:space="preserve">
+    <value>Продолжить</value>
+  </data>
+  <data name="StockTakes_DraftBanner" xml:space="preserve">
+    <value>Есть незавершённая инвентаризация от</value>
+  </data>
+  <data name="StockTakes_Date" xml:space="preserve">
+    <value>Дата пересчёта</value>
+  </data>
+  <data name="StockTakes_Counted" xml:space="preserve">
+    <value>Позиций</value>
+  </data>
+  <data name="StockTakes_CompletedAt" xml:space="preserve">
+    <value>Завершена</value>
+  </data>
+  <data name="StockTakes_CompletedBy" xml:space="preserve">
+    <value>Завершил</value>
+  </data>
+  <data name="StockTakes_EmptyTitle" xml:space="preserve">
+    <value>Инвентаризаций пока нет</value>
+  </data>
+  <data name="StockTakes_EmptyHint" xml:space="preserve">
+    <value>Начните первую инвентаризацию: внесите фактические остатки. Она станет базой для расчёта расхода.</value>
+  </data>
+  <data name="StockTakes_SessionHeading" xml:space="preserve">
+    <value>Инвентаризация от {0:d}</value>
+  </data>
+  <data name="StockTakes_Progress" xml:space="preserve">
+    <value>Посчитано {0} из {1}</value>
+  </data>
+  <data name="StockTakes_Autosave" xml:space="preserve">
+    <value>Сохраняется автоматически</value>
+  </data>
+  <data name="StockTakes_Location" xml:space="preserve">
+    <value>Место хранения:</value>
+  </data>
+  <data name="StockTakes_OnlyUncounted" xml:space="preserve">
+    <value>Только непосчитанные здесь</value>
+  </data>
+  <data name="StockTakes_CountHere" xml:space="preserve">
+    <value>Факт здесь</value>
+  </data>
+  <data name="StockTakes_Total" xml:space="preserve">
+    <value>Всего</value>
+  </data>
+  <data name="StockTakes_Expected" xml:space="preserve">
+    <value>Расчётный</value>
+  </data>
+  <data name="StockTakes_ExpectedHint" xml:space="preserve">
+    <value>Расчётный остаток на дату пересчёта: предыдущая инвентаризация плюс поступления после неё.</value>
+  </data>
+  <data name="StockTakes_Difference" xml:space="preserve">
+    <value>Расхождение</value>
+  </data>
+  <data name="StockTakes_Complete" xml:space="preserve">
+    <value>Завершить</value>
+  </data>
+  <data name="StockTakes_CompleteTitle" xml:space="preserve">
+    <value>Завершить инвентаризацию?</value>
+  </data>
+  <data name="StockTakes_CompleteConfirm" xml:space="preserve">
+    <value>Посчитано позиций: {0}. После завершения инвентаризация станет недоступна для изменений, а расход будет пересчитан.</value>
+  </data>
+  <data name="StockTakes_CompleteConfirmPartial" xml:space="preserve">
+    <value>Посчитано {0} из {1} позиций. {2} без факта не будут учтены в расчётах этой инвентаризации. Завершить?</value>
+  </data>
+  <data name="StockTakes_Completed" xml:space="preserve">
+    <value>Инвентаризация завершена</value>
+  </data>
+  <data name="StockTakes_Reopen" xml:space="preserve">
+    <value>Переоткрыть</value>
+  </data>
+  <data name="StockTakes_ReopenConfirm" xml:space="preserve">
+    <value>Переоткрыть инвентаризацию для изменений? Пока она не завершена повторно, её данные не участвуют в расчётах.</value>
+  </data>
+  <data name="StockTakes_Reopened" xml:space="preserve">
+    <value>Инвентаризация переоткрыта</value>
+  </data>
+  <data name="StockTakes_DeleteDraft" xml:space="preserve">
+    <value>Удалить черновик</value>
+  </data>
+  <data name="StockTakes_DeleteConfirm" xml:space="preserve">
+    <value>Удалить незавершённую инвентаризацию со всеми введёнными данными?</value>
+  </data>
 </root>
