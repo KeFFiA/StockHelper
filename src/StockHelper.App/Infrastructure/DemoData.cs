@@ -145,7 +145,8 @@ public sealed class DemoData(
                     {
                         ItemId = item.Id,
                         Quantity = received,
-                        Price = sample.Price,
+                        // Prices grow a little every month: older purchases were cheaper than the catalog price.
+                        Price = Math.Round(sample.Price * (1 - 0.04m * (month - 1)), 2),
                         UnitId = isPaint ? can10.Id : null,
                         UnitQuantity = isPaint ? received / 10 : null,
                         Date = countDate.AddDays(10 + random.Next(10)),
