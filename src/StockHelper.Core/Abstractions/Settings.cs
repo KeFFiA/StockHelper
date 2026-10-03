@@ -25,7 +25,12 @@ public sealed record AppSettings
 
     /// <summary>Navigation pane shows icons only.</summary>
     public bool IsNavigationCollapsed { get; init; }
+
+    /// <summary>Main window placement restored on the next start (null = default size, centered).</summary>
+    public WindowPlacement? MainWindow { get; init; }
 }
+
+public sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool IsMaximized);
 
 public interface ISettingsService
 {

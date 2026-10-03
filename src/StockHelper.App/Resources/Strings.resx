@@ -433,7 +433,7 @@
     <value>Всё время</value>
   </data>
   <data name="Receipts_Summary" xml:space="preserve">
-    <value>Записей: {0} · на сумму {1:N2}</value>
+    <value>Записей: {0} · на сумму {1:C2}</value>
   </data>
   <data name="Receipts_Add" xml:space="preserve">
     <value>Добавить поступление</value>
@@ -469,7 +469,7 @@
     <value>Не указано</value>
   </data>
   <data name="Receipts_AmountPreview" xml:space="preserve">
-    <value>Сумма: {0:N2}</value>
+    <value>Сумма: {0:C2}</value>
   </data>
   <data name="Receipts_SelectItem" xml:space="preserve">
     <value>Выберите позицию.</value>
@@ -703,7 +703,7 @@
     <value>Позиции с расчётным остатком ниже минимального или с прогнозом короче горизонта закупки. Рекомендуемое количество покрывает минимум и расход на горизонт.</value>
   </data>
   <data name="Reports_PurchaseSummary" xml:space="preserve">
-    <value>Позиций: {0} · ориентировочно на {1:N2}</value>
+    <value>Позиций: {0} · ориентировочно на {1:C2}</value>
   </data>
   <data name="Reports_PurchaseEmpty" xml:space="preserve">
     <value>Закупать пока нечего</value>
@@ -715,7 +715,7 @@
     <value>Для позиций с выдачами расход = выдано − вернули за период; «Неучтено» — недостача, найденная инвентаризацией. Для позиций без выдач расход считается между инвентаризациями. Стоимость — по текущей цене.</value>
   </data>
   <data name="Reports_ConsumptionSummary" xml:space="preserve">
-    <value>Позиций: {0} · стоимость расхода: {1:N2} · с расхождениями: {2}</value>
+    <value>Позиций: {0} · стоимость расхода: {1:C2} · с расхождениями: {2}</value>
   </data>
   <data name="Reports_ConsumptionEmpty" xml:space="preserve">
     <value>Нет данных о расходе за период. Расход считается между двумя завершёнными инвентаризациями.</value>
@@ -739,7 +739,7 @@
     <value>Расчётный остаток: последняя инвентаризация + поступления после неё</value>
   </data>
   <data name="Reports_EstimatedStock" xml:space="preserve">
-    <value>Остаток (расч.)</value>
+    <value>Остаток</value>
   </data>
   <data name="Reports_NoBaseline" xml:space="preserve">
     <value>без инвентаризации</value>
@@ -1378,27 +1378,84 @@
     <value>{0:dd.MM.yyyy HH:mm} — {1} {2}</value>
   </data>
   <data name="Chart_MonthTooltip" xml:space="preserve">
-    <value>{0:MMMM yyyy}: расход на {1:N2}</value>
+    <value>{0:MMMM yyyy}: расход на {1:C2}</value>
   </data>
   <data name="Chart_MonthlyTitle" xml:space="preserve">
     <value>Расход по месяцам</value>
   </data>
   <data name="Chart_MonthlySummary" xml:space="preserve">
-    <value>В этом месяце: {0:N0} · в прошлом: {1:N0} (по текущим ценам)</value>
+    <value>В этом месяце: {0:C0} · в прошлом: {1:C0} (по текущим ценам)</value>
   </data>
   <data name="Chart_StockTitle" xml:space="preserve">
-    <value>Остаток за 4 месяца</value>
+    <value>Остаток за 3 месяца</value>
   </data>
   <data name="Chart_StockHint" xml:space="preserve">
     <value>Точки — инвентаризации. Пунктир — минимальный остаток. Наведите курсор, чтобы увидеть значение.</value>
   </data>
   <data name="Compact_Thousand" xml:space="preserve">
-    <value>{0:0.#} тыс.</value>
+    <value>{0:0.#} тыс. ₽</value>
   </data>
   <data name="Compact_Million" xml:space="preserve">
-    <value>{0:0.#} млн</value>
+    <value>{0:0.#} млн ₽</value>
   </data>
   <data name="Dashboard_OpenConsumption" xml:space="preserve">
     <value>Отчёт о расходе</value>
+  </data>
+  <data name="Chart_OtherPeriods" xml:space="preserve">
+    <value>Другие периоды</value>
+  </data>
+  <data name="Reports_Charts" xml:space="preserve">
+    <value>Графики</value>
+  </data>
+  <data name="Reports_ChartsHint" xml:space="preserve">
+    <value>Расход и остаток за выбранный период. Выберите позицию, чтобы увидеть её остаток и расход в единицах.</value>
+  </data>
+  <data name="Reports_ChartsAllItems" xml:space="preserve">
+    <value>Все позиции (стоимость, ₽)</value>
+  </data>
+  <data name="Reports_ChartsCostTitle" xml:space="preserve">
+    <value>Стоимость расхода, ₽</value>
+  </data>
+  <data name="Reports_ChartsQtyTitle" xml:space="preserve">
+    <value>Расход, {0}</value>
+  </data>
+  <data name="Reports_ChartsStockTitle" xml:space="preserve">
+    <value>Остаток</value>
+  </data>
+  <data name="Reports_ChartsPickItem" xml:space="preserve">
+    <value>Выберите позицию, чтобы увидеть график остатка</value>
+  </data>
+  <data name="Reports_ChartsSummaryCost" xml:space="preserve">
+    <value>Итого за период: {0:C2}</value>
+  </data>
+  <data name="Reports_ChartsSummaryQty" xml:space="preserve">
+    <value>Итого за период: {0} {1}</value>
+  </data>
+  <data name="Reports_ChartsBucket" xml:space="preserve">
+    <value>Период</value>
+  </data>
+  <data name="Reports_ChartsValue" xml:space="preserve">
+    <value>Значение</value>
+  </data>
+  <data name="ChartPeriod_Month" xml:space="preserve">
+    <value>Месяц</value>
+  </data>
+  <data name="ChartPeriod_Quarter" xml:space="preserve">
+    <value>3 месяца</value>
+  </data>
+  <data name="ChartPeriod_HalfYear" xml:space="preserve">
+    <value>6 месяцев</value>
+  </data>
+  <data name="ChartPeriod_Year" xml:space="preserve">
+    <value>Год</value>
+  </data>
+  <data name="Chart_WeekLabel" xml:space="preserve">
+    <value>{0:dd.MM}</value>
+  </data>
+  <data name="Chart_BucketTooltipCost" xml:space="preserve">
+    <value>{0}: {1:C2}</value>
+  </data>
+  <data name="Chart_BucketTooltipQty" xml:space="preserve">
+    <value>{0}: {1} {2}</value>
   </data>
 </root>

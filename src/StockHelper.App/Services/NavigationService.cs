@@ -13,6 +13,9 @@ public interface INavigationService
     Task<bool> NavigateToAsync<TPage>() where TPage : PageViewModel;
 
     Task<bool> NavigateToAsync(Type pageType);
+
+    /// <summary>Recreates the page even if it is the current one (fresh view and data).</summary>
+    Task ReloadAsync(Type pageType);
 }
 
 public sealed class NavigationService(IServiceProvider services) : ObservableObject, INavigationService
@@ -22,6 +25,15 @@ public sealed class NavigationService(IServiceProvider services) : ObservableObj
     public event EventHandler? Navigated;
 
     public Task<bool> NavigateToAsync<TPage>() where TPage : PageViewModel => NavigateToAsync(typeof(TPage));
+
+    public async Task ReloadAsync(Type pageType)
+    {
+        var page = (PageViewModel)services.GetRequiredService(pageType);
+        CurrentPage = page;
+        OnPropertyChanged(nameof(CurrentPage));
+        Navigated?.Invoke(this, EventArgs.Empty);
+        await page.OnNavigatedToAsync();
+    }
 
     public async Task<bool> NavigateToAsync(Type pageType)
     {

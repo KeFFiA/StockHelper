@@ -43,9 +43,8 @@
 
             <Border Grid.Row="2" Style="{StaticResource Card.Flush}">
                 <Grid>
-                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding StockTakes}" SelectedItem="{Binding SelectedStockTake}">
+                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding StockTakes}" SelectedItem="{Binding SelectedStockTake}" b:GridBehavior.RowClickCommand="{Binding OpenSelectedCommand}">
                         <DataGrid.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenSelectedCommand}" />
                             <KeyBinding Key="Enter" Command="{Binding OpenSelectedCommand}" />
                         </DataGrid.InputBindings>
                         <DataGrid.Columns>

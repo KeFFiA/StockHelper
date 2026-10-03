@@ -122,7 +122,7 @@
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="{x:Static res:Strings.Items_Price}" Width="Auto" MinWidth="90" SortMemberPath="Item.Price"
                                                     HeaderStyle="{StaticResource Grid.HeaderRight}"
-                                                    Binding="{Binding Item.Price, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}"
+                                                    Binding="{Binding Item.Price, Converter={StaticResource Money}}"
                                                     ElementStyle="{StaticResource Cell.Number}" />
                             </DataGrid.Columns>
                         </DataGrid>
@@ -211,7 +211,7 @@
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="{x:Static res:Strings.Reports_Cost}" Width="Auto" MinWidth="110" SortMemberPath="Cost"
                                                     HeaderStyle="{StaticResource Grid.HeaderRight}"
-                                                    Binding="{Binding Cost, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}" ElementStyle="{StaticResource Cell.Number}" />
+                                                    Binding="{Binding Cost, Converter={StaticResource Money}}" ElementStyle="{StaticResource Cell.Number}" />
                                 <DataGridTextColumn Header="{x:Static res:Strings.Reports_AvgDaily}" Width="Auto" MinWidth="110" SortMemberPath="AverageDaily"
                                                     HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                     Binding="{Binding AverageDaily, Converter={StaticResource Decimal}, ConverterParameter=#\,0.##}" ElementStyle="{StaticResource Cell.Number}" />
@@ -243,6 +243,42 @@
                     </Grid>
                 </Border>
             </DockPanel>
+        </DataTemplate>
+
+        <!-- ===== Charts ===== -->
+        <DataTemplate DataType="{x:Type pages:ChartsReportSection}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <DockPanel Style="{StaticResource Toolbar}">
+                        <ComboBox Width="320" ItemsSource="{Binding ItemOptions}" SelectedItem="{Binding SelectedItem}" DisplayMemberPath="Title"
+                                  IsEditable="True" IsTextSearchEnabled="True" TextSearch.TextPath="Title" ToolTip="{x:Static res:Strings.Tip_ItemSearch}" />
+                        <ListBox Style="{StaticResource SegmentedList}" Margin="12,0,0,0" ItemsSource="{Binding Periods}" SelectedItem="{Binding SelectedPeriod}"
+                                 DisplayMemberPath="Title" />
+                    </DockPanel>
+
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,16" b:Motion.OnVisible="FadeUp">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Subtitle}" Text="{Binding BarsTitle}" />
+                            <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Summary}" Margin="0,4,0,16" />
+                            <controls:BarChart Height="210" ItemsSource="{Binding Bars}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Subtitle}" Text="{x:Static res:Strings.Reports_ChartsStockTitle}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{x:Static res:Strings.Chart_StockHint}" Margin="0,4,0,12" TextWrapping="Wrap"
+                                       Visibility="{Binding HasItem, Converter={StaticResource BoolToVisibility}}" />
+                            <controls:StockChart Height="230" Points="{Binding StockPoints}" Minimum="{Binding MinStock}" Unit="{Binding UnitName}"
+                                                 LineBrush="{DynamicResource AccentFillColorDefaultBrush}" MinimumBrush="{DynamicResource SystemFillColorCriticalBrush}"
+                                                 GridBrush="{DynamicResource Brush.Divider}" LabelBrush="{DynamicResource TextFillColorSecondaryBrush}"
+                                                 Visibility="{Binding HasItem, Converter={StaticResource BoolToVisibility}}" />
+                            <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.Reports_ChartsPickItem}" Margin="0,12,0,4"
+                                       Visibility="{Binding HasItem, Converter={StaticResource InverseBoolToVisibility}}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
         </DataTemplate>
 
         <!-- ===== History ===== -->

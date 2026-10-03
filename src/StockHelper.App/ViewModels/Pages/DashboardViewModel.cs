@@ -42,6 +42,9 @@ public sealed partial class DashboardViewModel(
 
     public bool CanAddReceipt => currentUser.Has(Permission.ManageReceipts);
 
+    /// <summary>Money charts are for managers and administrators.</summary>
+    public bool CanViewCosts => currentUser.Has(Permission.ViewCosts);
+
     [ObservableProperty]
     public partial int ActiveItems { get; private set; }
 

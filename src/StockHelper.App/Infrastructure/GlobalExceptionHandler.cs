@@ -28,9 +28,31 @@ public static class GlobalExceptionHandler
         _ => Strings.Error_Unexpected,
     };
 
+    /// <summary>Raised when WPF failed to re-apply styles after a Windows theme/accent change; the shell rebuilds the page.</summary>
+    public static event EventHandler? ThemeRefreshFailed;
+
+    /// <summary>
+    /// WPF's theme manager reloads all styles when Windows changes the accent color or light/dark mode
+    /// (e.g. accent taken from the wallpaper). It can throw "cyclic reference while evaluating Style" in the middle of that.
+    /// Nothing is wrong with the data: the page is rebuilt instead of showing an error.
+    /// </summary>
+    private static bool IsThemeRefreshGlitch(Exception ex) =>
+        ex is InvalidOperationException
+        && ex.StackTrace is { } trace
+        && trace.Contains("UpdateStyleProperty", StringComparison.Ordinal)
+        && (trace.Contains("ThemeManager", StringComparison.Ordinal) || trace.Contains("OnResourcesChanged", StringComparison.Ordinal)
+            || trace.Contains("InvalidateStyleAndReferences", StringComparison.Ordinal));
+
     public static void Handle(Exception ex)
     {
         var actual = Unwrap(ex);
+        if (IsThemeRefreshGlitch(actual))
+        {
+            Log.Warning(actual, "Style refresh after a Windows theme change failed; rebuilding the page");
+            ThemeRefreshFailed?.Invoke(null, EventArgs.Empty);
+            return;
+        }
+
         if (actual is DomainException or ConcurrencyConflictException)
         {
             Log.Warning(actual, "Operation rejected: {Message}", actual.Message);

@@ -127,7 +127,8 @@
             </Grid>
 
             <!-- Monthly consumption -->
-            <Border Style="{StaticResource Card}" Margin="0,0,0,16" b:Motion.OnLoaded="FadeUp">
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16" b:Motion.OnLoaded="FadeUp"
+                    Visibility="{Binding CanViewCosts, Converter={StaticResource BoolToVisibility}}">
                 <StackPanel>
                     <DockPanel Margin="0,0,0,16">
                         <Button DockPanel.Dock="Right" Style="{StaticResource Button.Subtle}" Command="{Binding GoToReportsCommand}"

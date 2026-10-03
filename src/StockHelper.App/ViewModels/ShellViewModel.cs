@@ -45,6 +45,7 @@ public sealed partial class ShellViewModel : ViewModelBase
         IsNavigationCollapsed = settings.Current.IsNavigationCollapsed;
         Notifications = notifications;
         _navigation.Navigated += (_, _) => OnNavigated();
+        GlobalExceptionHandler.ThemeRefreshFailed += (_, _) => ScheduleRebuild();
         _currentUser.Changed += (_, _) => OnUserChanged();
     }
 
@@ -170,6 +171,27 @@ public sealed partial class ShellViewModel : ViewModelBase
         }
 
         FooterItems.Add(new NavItem(Strings.Nav_Settings, "Icon.Settings", typeof(SettingsViewModel)));
+    }
+
+    private bool _rebuildScheduled;
+
+    /// <summary>Recreates the current page once the theme update has finished (see GlobalExceptionHandler).</summary>
+    private void ScheduleRebuild()
+    {
+        if (_rebuildScheduled)
+        {
+            return;
+        }
+
+        _rebuildScheduled = true;
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, async () =>
+        {
+            _rebuildScheduled = false;
+            if (_navigation.CurrentPage?.GetType() is { } type)
+            {
+                await _navigation.ReloadAsync(type);
+            }
+        });
     }
 
     private void OnNavigated()

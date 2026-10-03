@@ -52,7 +52,7 @@ public sealed class ExcelExportService(IDialogService dialogs, INotificationServ
     : IExportService
 {
     private const string QuantityFormat = "#,##0.####";
-    private const string MoneyFormat = "#,##0.00";
+    private const string MoneyFormat = "#,##0.00 \"₽\"";
 
     public Task ExportAsync<T>(string title, IReadOnlyList<T> rows, IReadOnlyList<ExportColumn<T>> columns, string? subtitle = null) =>
         ExportAsync(title, [ExportSheet.From(title, title, subtitle, rows, columns)]);

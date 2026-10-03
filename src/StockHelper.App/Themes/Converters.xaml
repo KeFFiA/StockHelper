@@ -11,6 +11,7 @@
     <conv:ResourceKeyToValueConverter x:Key="ResourceKeyToValue" />
     <conv:EnumDisplayConverter x:Key="EnumDisplay" />
     <conv:DecimalConverter x:Key="Decimal" />
+    <conv:MoneyConverter x:Key="Money" />
     <conv:DaysConverter x:Key="Days" />
     <conv:EnteredConverter x:Key="Entered" />
     <conv:ReturnedConverter x:Key="Returned" />

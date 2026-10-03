@@ -6,6 +6,7 @@
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
              xmlns:controls="clr-namespace:StockHelper.App.Controls"
              xmlns:res="clr-namespace:StockHelper.App.Resources"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:ReceiptsViewModel}">
     <Grid Margin="{StaticResource Space.Page}">
@@ -54,9 +55,8 @@
 
             <Border Style="{StaticResource Card.Flush}">
                 <Grid>
-                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding ReceiptsView}" SelectedItem="{Binding SelectedReceipt}">
+                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding ReceiptsView}" SelectedItem="{Binding SelectedReceipt}" b:GridBehavior.RowClickCommand="{Binding EditCommand}">
                         <DataGrid.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditCommand}" />
                             <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                         </DataGrid.InputBindings>
                         <DataGrid.Columns>
@@ -92,11 +92,11 @@
                             </DataGridTemplateColumn>
                             <DataGridTextColumn Header="{x:Static res:Strings.Receipts_Price}" Width="Auto" MinWidth="90" SortMemberPath="Price"
                                                 HeaderStyle="{StaticResource Grid.HeaderRight}"
-                                                Binding="{Binding Price, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}"
+                                                Binding="{Binding Price, Converter={StaticResource Money}}"
                                                 ElementStyle="{StaticResource Cell.Number}" />
                             <DataGridTextColumn Header="{x:Static res:Strings.Receipts_Amount}" Width="Auto" MinWidth="96" SortMemberPath="Amount"
                                                 HeaderStyle="{StaticResource Grid.HeaderRight}"
-                                                Binding="{Binding Amount, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}"
+                                                Binding="{Binding Amount, Converter={StaticResource Money}}"
                                                 ElementStyle="{StaticResource Cell.Number}" />
                             <DataGridTextColumn Header="{x:Static res:Strings.Receipts_Location}" Width="*" MinWidth="110" Binding="{Binding StorageLocation.Name}"
                                                 ElementStyle="{StaticResource Cell.Secondary}" />

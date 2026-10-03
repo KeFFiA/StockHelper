@@ -66,7 +66,12 @@
     <DataTemplate DataType="{x:Type pages:ItemEditorViewModel}">
         <StackPanel>
             <StackPanel Margin="0,0,0,20" Visibility="{Binding HasHistory, Converter={StaticResource BoolToVisibility}}">
-                <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{x:Static res:Strings.Chart_StockTitle}" />
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Subtle}" Padding="6,2" Content="{x:Static res:Strings.Chart_OtherPeriods}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Command="{Binding OpenChartsCommand}"
+                            Visibility="{Binding CanOpenCharts, Converter={StaticResource BoolToVisibility}}" />
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{x:Static res:Strings.Chart_StockTitle}" VerticalAlignment="Center" />
+                </DockPanel>
                 <TextBlock Style="{StaticResource Text.Caption}" Text="{x:Static res:Strings.Chart_StockHint}" Margin="0,2,0,8" TextWrapping="Wrap" />
                 <controls:StockChart Height="150" Points="{Binding StockHistory}" Minimum="{Binding MinStockValue}" Unit="{Binding UnitName}"
                                      LineBrush="{DynamicResource AccentFillColorDefaultBrush}" MinimumBrush="{DynamicResource SystemFillColorCriticalBrush}"

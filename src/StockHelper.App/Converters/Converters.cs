@@ -171,3 +171,17 @@ public sealed class PackageActionConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+
+/// <summary>Money in rubles: "1 234,50 ₽".</summary>
+public sealed class MoneyConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => value switch
+    {
+        decimal d => d.ToString("C2", culture),
+        null => string.Empty,
+        _ => value,
+    };
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}

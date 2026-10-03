@@ -6,6 +6,7 @@
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
              xmlns:controls="clr-namespace:StockHelper.App.Controls"
              xmlns:res="clr-namespace:StockHelper.App.Resources"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:ItemsViewModel}">
     <Grid Margin="{StaticResource Space.Page}">
@@ -53,9 +54,8 @@
             <Border Style="{StaticResource Card.Flush}">
                 <Grid>
                     <DataGrid x:Name="Grid" Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding ItemsView}"
-                              SelectedItem="{Binding SelectedItem}">
+                              SelectedItem="{Binding SelectedItem}" b:GridBehavior.RowClickCommand="{Binding EditCommand}">
                         <DataGrid.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditCommand}" />
                             <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                         </DataGrid.InputBindings>
                         <DataGrid.Columns>
@@ -99,7 +99,7 @@
                             <DataGridTextColumn Header="{x:Static res:Strings.Items_MinStock}" Width="Auto" MinWidth="100" SortMemberPath="Item.MinStock" HeaderStyle="{StaticResource Grid.HeaderRight}"
                                                 Binding="{Binding Item.MinStock, Converter={StaticResource Decimal}}" ElementStyle="{StaticResource Cell.Number}" />
                             <DataGridTextColumn Header="{x:Static res:Strings.Items_Price}" Width="Auto" MinWidth="96" SortMemberPath="Item.Price" HeaderStyle="{StaticResource Grid.HeaderRight}"
-                                                Binding="{Binding Item.Price, Converter={StaticResource Decimal}, ConverterParameter=#\,0.00}"
+                                                Binding="{Binding Item.Price, Converter={StaticResource Money}}"
                                                 ElementStyle="{StaticResource Cell.Number}" />
                         </DataGrid.Columns>
                     </DataGrid>

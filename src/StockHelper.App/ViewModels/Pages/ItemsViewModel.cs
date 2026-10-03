@@ -16,7 +16,7 @@ namespace StockHelper.App.ViewModels.Pages;
 
 public sealed partial class ItemsViewModel : PageViewModel
 {
-    private const int HistoryDays = 120;
+    private const int HistoryDays = 91;
 
     // Remembered for the session so a series of new items keeps the same category and unit.
     private static int? _lastCategoryId;
@@ -31,6 +31,7 @@ public sealed partial class ItemsViewModel : PageViewModel
     private readonly ICurrentUserService _currentUser;
     private readonly IAnalyticsService _analytics;
     private AnalyticsResult? _data;
+    private readonly INavigationService _navigation;
 
     public ItemsViewModel(
         IItemRepository items,
@@ -40,8 +41,10 @@ public sealed partial class ItemsViewModel : PageViewModel
         INotificationService notifications,
         IExportService export,
         ICurrentUserService currentUser,
-        IAnalyticsService analytics)
+        IAnalyticsService analytics,
+        INavigationService navigation)
     {
+        _navigation = navigation;
         _items = items;
         _categories = categories;
         _units = units;
@@ -182,6 +185,12 @@ public sealed partial class ItemsViewModel : PageViewModel
             .Where(u => !u.IsArchived || u.Id == item?.UnitId).ToList();
 
         var editor = new ItemEditorViewModel(item, categories, units, CanEdit);
+        editor.CanOpenCharts = _currentUser.Has(Permission.ViewReports);
+        editor.OpenChartsRequested += async (_, _) =>
+        {
+            ReportsViewModel.RequestedChartItemId = editor.Id;
+            await _navigation.NavigateToAsync<ReportsViewModel>();
+        };
         if (item is not null && _data is not null)
         {
             var now = _data.NowUtc;
@@ -370,6 +379,13 @@ public sealed partial class ItemEditorViewModel : ObservableObject
     private IReadOnlyList<StockPoint>? _stockHistory;
 
     public bool HasHistory => _stockHistory is { Count: > 2 };
+
+    public bool CanOpenCharts { get; set; }
+
+    public event EventHandler? OpenChartsRequested;
+
+    [RelayCommand]
+    private void OpenCharts() => OpenChartsRequested?.Invoke(this, EventArgs.Empty);
 
     public decimal MinStockValue => _original?.MinStock ?? 0;
 

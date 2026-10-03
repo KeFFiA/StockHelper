@@ -23,37 +23,35 @@ public static class ChartCalculator
     /// Cost of consumption in (<paramref name="fromUtc"/>, <paramref name="toUtc"/>] at current prices.
     /// Issue-based items: issues − returns in the range. Others: the overlapping share of each period between counts.
     /// </summary>
-    public static decimal ConsumptionCost(StockSnapshot snapshot, DateTime fromUtc, DateTime toUtc)
+    public static decimal ConsumptionCost(StockSnapshot snapshot, DateTime fromUtc, DateTime toUtc) =>
+        snapshot.Items.Sum(item => ConsumptionQuantity(snapshot, item.Id, fromUtc, toUtc) * item.Price);
+
+    /// <summary>
+    /// Consumed quantity of one item in (<paramref name="fromUtc"/>, <paramref name="toUtc"/>]: net issues for issue-based items,
+    /// otherwise the overlapping share of each period between counts.
+    /// </summary>
+    public static decimal ConsumptionQuantity(StockSnapshot snapshot, int itemId, DateTime fromUtc, DateTime toUtc)
     {
-        var total = 0m;
-        foreach (var item in snapshot.Items)
+        if (StockCalculator.UsesIssues(snapshot, itemId))
         {
-            decimal quantity;
-            if (StockCalculator.UsesIssues(snapshot, item.Id))
-            {
-                quantity = snapshot.Issues.Where(i => i.ItemId == item.Id && i.Date > fromUtc && i.Date <= toUtc).Sum(i => i.Quantity)
-                    - snapshot.Issues.Where(i => i.ItemId == item.Id && i.ReturnedAt > fromUtc && i.ReturnedAt <= toUtc).Sum(i => i.ReturnedQuantity ?? 0);
-            }
-            else
-            {
-                quantity = 0;
-                foreach (var period in StockCalculator.GetPeriods(snapshot, item.Id))
-                {
-                    var start = period.From > fromUtc ? period.From : fromUtc;
-                    var end = period.To < toUtc ? period.To : toUtc;
-                    if (end <= start || period.Days <= 0)
-                    {
-                        continue;
-                    }
-
-                    quantity += period.Consumption * (decimal)(end - start).TotalDays / period.Days;
-                }
-            }
-
-            total += quantity * item.Price;
+            return snapshot.Issues.Where(i => i.ItemId == itemId && i.Date > fromUtc && i.Date <= toUtc).Sum(i => i.Quantity)
+                - snapshot.Issues.Where(i => i.ItemId == itemId && i.ReturnedAt > fromUtc && i.ReturnedAt <= toUtc).Sum(i => i.ReturnedQuantity ?? 0);
         }
 
-        return total;
+        var quantity = 0m;
+        foreach (var period in StockCalculator.GetPeriods(snapshot, itemId))
+        {
+            var start = period.From > fromUtc ? period.From : fromUtc;
+            var end = period.To < toUtc ? period.To : toUtc;
+            if (end <= start || period.Days <= 0)
+            {
+                continue;
+            }
+
+            quantity += period.Consumption * (decimal)(end - start).TotalDays / period.Days;
+        }
+
+        return quantity;
     }
 
     /// <summary>Stock of one item over time: a point after every count, receipt, issue and return in the range.</summary>

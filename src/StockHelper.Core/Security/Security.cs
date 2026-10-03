@@ -6,6 +6,9 @@ namespace StockHelper.Core.Security;
 public enum Permission
 {
     ViewReports,
+
+    /// <summary>Money analytics: consumption cost charts.</summary>
+    ViewCosts,
     ManageCatalog,
     ManageReceipts,
     ManageIssues,
@@ -22,7 +25,7 @@ public static class Permissions
     private static readonly Dictionary<UserRole, HashSet<Permission>> Map = new()
     {
         [UserRole.Storekeeper] = [Permission.ViewReports, Permission.ManageReceipts, Permission.ManageIssues, Permission.EditStockTakes],
-        [UserRole.Manager] = [Permission.ViewReports, Permission.ManageCatalog, Permission.ReopenStockTakes],
+        [UserRole.Manager] = [Permission.ViewReports, Permission.ViewCosts, Permission.ManageCatalog, Permission.ReopenStockTakes],
         [UserRole.Administrator] = [.. Enum.GetValues<Permission>()],
     };
 

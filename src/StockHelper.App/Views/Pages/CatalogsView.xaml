@@ -35,9 +35,8 @@
 
                     <Border Style="{StaticResource Card.Flush}">
                         <Grid>
-                            <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding RowsView}" SelectedItem="{Binding SelectedRow}">
+                            <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding RowsView}" SelectedItem="{Binding SelectedRow}" b:GridBehavior.RowClickCommand="{Binding EditCommand}">
                                 <DataGrid.InputBindings>
-                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditCommand}" />
                                     <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                                 </DataGrid.InputBindings>
                                 <DataGrid.Columns>

@@ -139,9 +139,8 @@
 
             <Border Style="{StaticResource Card.Flush}" Visibility="{Binding IsIssuesListVisible, Converter={StaticResource BoolToVisibility}}">
                 <Grid>
-                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding IssuesView}" SelectedItem="{Binding SelectedIssue}">
+                    <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding IssuesView}" SelectedItem="{Binding SelectedIssue}" b:GridBehavior.RowClickCommand="{Binding EditCommand}">
                         <DataGrid.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditCommand}" />
                             <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                         </DataGrid.InputBindings>
                         <DataGrid.Columns>

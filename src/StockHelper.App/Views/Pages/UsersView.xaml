@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
              xmlns:res="clr-namespace:StockHelper.App.Resources"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance pages:UsersViewModel}">
     <Grid Margin="{StaticResource Space.Page}">
@@ -25,9 +26,8 @@
             </Grid.ColumnDefinitions>
 
             <Border Style="{StaticResource Card.Flush}">
-                <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}">
+                <DataGrid Style="{StaticResource Grid.ReadOnly}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" b:GridBehavior.RowClickCommand="{Binding EditCommand}">
                     <DataGrid.InputBindings>
-                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditCommand}" />
                         <KeyBinding Key="Enter" Command="{Binding EditCommand}" />
                     </DataGrid.InputBindings>
                     <DataGrid.Columns>

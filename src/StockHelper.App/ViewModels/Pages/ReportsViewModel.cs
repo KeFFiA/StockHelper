@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.ComponentModel;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -7,6 +8,8 @@ using StockHelper.App.Infrastructure;
 using StockHelper.App.Resources;
 using StockHelper.App.Services;
 using StockHelper.Core.Abstractions;
+using StockHelper.Core.Entities;
+using StockHelper.Core.Security;
 using StockHelper.Core.Services;
 
 namespace StockHelper.App.ViewModels.Pages;
@@ -19,16 +22,20 @@ public sealed partial class ReportsViewModel : PageViewModel
 
     private readonly IDialogService _dialogs;
 
-    public ReportsViewModel(IAnalyticsService analytics, IExportService export, IDialogService dialogs)
+    /// <summary>Set before navigating here to open the charts of one item.</summary>
+    public static int? RequestedChartItemId { get; set; }
+
+    public ReportsViewModel(IAnalyticsService analytics, IExportService export, IDialogService dialogs, ICurrentUserService currentUser)
     {
         _analytics = analytics;
         _export = export;
         _dialogs = dialogs;
+        Charts = new ChartsReportSection(currentUser.Has(Permission.ViewCosts));
         Stock = new StockReportSection();
         Purchase = new PurchaseReportSection();
         Consumption = new ConsumptionReportSection();
         History = new HistoryReportSection();
-        Sections = [Stock, Purchase, Consumption, History];
+        Sections = [Stock, Purchase, Consumption, History, Charts];
         SelectedSection = Sections[0];
         Consumption.PeriodChanged += (_, _) => Consumption.Recalculate(Data);
     }
@@ -49,6 +56,8 @@ public sealed partial class ReportsViewModel : PageViewModel
 
     public HistoryReportSection History { get; }
 
+    public ChartsReportSection Charts { get; }
+
     [ObservableProperty]
     public partial ReportSection SelectedSection { get; set; }
 
@@ -59,7 +68,16 @@ public sealed partial class ReportsViewModel : PageViewModel
         ? string.Empty
         : string.Format(Strings.Reports_Subtitle, Data.Options.ForecastWindowDays, Data.Options.PurchaseHorizonDays);
 
-    public override Task OnNavigatedToAsync() => LoadAsync();
+    public override async Task OnNavigatedToAsync()
+    {
+        await LoadAsync();
+        if (RequestedChartItemId is { } itemId)
+        {
+            RequestedChartItemId = null;
+            SelectedSection = Charts;
+            Charts.SelectItem(itemId);
+        }
+    }
 
     [RelayCommand]
     private Task LoadAsync() => RunBusyAsync(async () =>
@@ -366,3 +384,189 @@ public sealed class HistoryReportSection : ReportSection
 }
 
 public sealed record HistoryRow(string ItemName, string? CategoryName, string? UnitName, ConsumptionPeriod Period);
+
+public enum ChartPeriod
+{
+    Month,
+    Quarter,
+    HalfYear,
+    Year,
+}
+
+public sealed record ChartPeriodOption(ChartPeriod Period, string Title);
+
+public sealed record ChartItemOption(Item? Item, string Title);
+
+/// <summary>Consumption bars and stock history for a chosen period (month, 3 / 6 months, year).</summary>
+public sealed partial class ChartsReportSection : ReportSection
+{
+    private readonly bool _canViewCosts;
+    private AnalyticsResult? _data;
+    private IReadOnlyList<(string Label, decimal Value, string Tooltip)> _buckets = [];
+
+    public ChartsReportSection(bool canViewCosts)
+        : base(Strings.Reports_Charts, "Icon.Trend", Strings.Reports_ChartsHint)
+    {
+        _canViewCosts = canViewCosts;
+        Periods =
+        [
+            new ChartPeriodOption(ChartPeriod.Month, Strings.ChartPeriod_Month),
+            new ChartPeriodOption(ChartPeriod.Quarter, Strings.ChartPeriod_Quarter),
+            new ChartPeriodOption(ChartPeriod.HalfYear, Strings.ChartPeriod_HalfYear),
+            new ChartPeriodOption(ChartPeriod.Year, Strings.ChartPeriod_Year),
+        ];
+        SelectedPeriod = Periods[1];
+    }
+
+    public IReadOnlyList<ChartPeriodOption> Periods { get; }
+
+    public ObservableCollection<ChartItemOption> ItemOptions { get; } = [];
+
+    [ObservableProperty]
+    public partial ChartPeriodOption SelectedPeriod { get; set; }
+
+    [ObservableProperty]
+    public partial ChartItemOption? SelectedItem { get; set; }
+
+    [ObservableProperty]
+    public partial IReadOnlyList<Controls.BarPoint> Bars { get; private set; } = [];
+
+    [ObservableProperty]
+    public partial string BarsTitle { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial IReadOnlyList<StockPoint>? StockPoints { get; private set; }
+
+    [ObservableProperty]
+    public partial decimal MinStock { get; private set; }
+
+    [ObservableProperty]
+    public partial string? UnitName { get; private set; }
+
+    public bool HasItem => SelectedItem?.Item is not null;
+
+    partial void OnSelectedPeriodChanged(ChartPeriodOption value) => Rebuild();
+
+    partial void OnSelectedItemChanged(ChartItemOption? value)
+    {
+        OnPropertyChanged(nameof(HasItem));
+        Rebuild();
+    }
+
+    /// <summary>Opens the charts of one item (from the item panel).</summary>
+    public void SelectItem(int itemId) =>
+        SelectedItem = ItemOptions.FirstOrDefault(o => o.Item?.Id == itemId) ?? SelectedItem;
+
+    public override void Recalculate(AnalyticsResult? data)
+    {
+        _data = data;
+        var selectedId = SelectedItem?.Item?.Id;
+        ItemOptions.Clear();
+        if (_canViewCosts)
+        {
+            ItemOptions.Add(new ChartItemOption(null, Strings.Reports_ChartsAllItems));
+        }
+
+        foreach (var item in (data?.Snapshot.Items ?? []).Where(i => !i.IsArchived).OrderBy(i => i.Name, StringComparer.CurrentCultureIgnoreCase))
+        {
+            ItemOptions.Add(new ChartItemOption(item, item.Name));
+        }
+
+        SelectedItem = ItemOptions.FirstOrDefault(o => o.Item?.Id == selectedId) ?? ItemOptions.FirstOrDefault();
+        Rebuild();
+    }
+
+    protected override void OnFilterChanged()
+    {
+    }
+
+    public override ExportSheet BuildSheet() => new(
+        Title,
+        $"{Title}: {SelectedItem?.Title}",
+        $"{SelectedPeriod.Title} · {BarsTitle}",
+        [Strings.Reports_ChartsBucket, Strings.Reports_ChartsValue],
+        [ExportFormat.Text, SelectedItem?.Item is null ? ExportFormat.Money : ExportFormat.Quantity],
+        [.. _buckets.Select(b => new object?[] { b.Label, b.Value })]);
+
+    private void Rebuild()
+    {
+        if (_data is null || SelectedItem is null)
+        {
+            Bars = [];
+            StockPoints = null;
+            return;
+        }
+
+        var item = SelectedItem.Item;
+        var buckets = BuildBuckets(SelectedPeriod.Period, DateTime.Now);
+        _buckets = [.. buckets.Select(b =>
+        {
+            var from = b.Start.ToUniversalTime();
+            var to = (b.End > DateTime.Now ? DateTime.Now : b.End).ToUniversalTime();
+            var value = item is null
+                ? ChartCalculator.ConsumptionCost(_data.Snapshot, from, to)
+                : ChartCalculator.ConsumptionQuantity(_data.Snapshot, item.Id, from, to);
+            value = Math.Max(0, value);
+            var tooltip = item is null
+                ? string.Format(Strings.Chart_BucketTooltipCost, b.Title, value)
+                : string.Format(Strings.Chart_BucketTooltipQty, b.Title, NumberInput.Format(Math.Round(value, 2)), item.Unit?.Name);
+            return (b.Label, value, tooltip);
+        })];
+
+        var max = _buckets.Count == 0 ? 0 : _buckets.Max(b => b.Value);
+        Bars = [.. _buckets.Select((b, i) => new Controls.BarPoint(
+            b.Label,
+            item is null ? Compact.Money(b.Value) : NumberInput.Format(Math.Round(b.Value, 1)),
+            max <= 0 ? 0 : (double)(b.Value / max),
+            b.Tooltip,
+            i == _buckets.Count - 1))];
+
+        var total = _buckets.Sum(b => b.Value);
+        BarsTitle = item is null ? Strings.Reports_ChartsCostTitle : string.Format(Strings.Reports_ChartsQtyTitle, item.Unit?.Name);
+        Summary = item is null
+            ? string.Format(Strings.Reports_ChartsSummaryCost, total)
+            : string.Format(Strings.Reports_ChartsSummaryQty, NumberInput.Format(Math.Round(total, 2)), item.Unit?.Name);
+
+        if (item is null)
+        {
+            StockPoints = null;
+        }
+        else
+        {
+            var now = _data.NowUtc;
+            StockPoints = ChartCalculator.GetStockHistory(_data.Snapshot, item.Id, buckets[0].Start.ToUniversalTime(), now);
+            MinStock = item.MinStock;
+            UnitName = item.Unit?.Name;
+        }
+    }
+
+    /// <summary>Weeks (Monday-based) for a month or a quarter, calendar months for half a year or a year.</summary>
+    private static List<(DateTime Start, DateTime End, string Label, string Title)> BuildBuckets(ChartPeriod period, DateTime now)
+    {
+        var today = now.Date;
+        var result = new List<(DateTime, DateTime, string, string)>();
+        if (period is ChartPeriod.Month or ChartPeriod.Quarter)
+        {
+            var days = period == ChartPeriod.Month ? 30 : 91;
+            var start = today.AddDays(-days + 1);
+            start = start.AddDays(-(((int)start.DayOfWeek + 6) % 7));
+            for (var week = start; week <= today; week = week.AddDays(7))
+            {
+                var title = $"{week:dd.MM} — {week.AddDays(6):dd.MM}";
+                result.Add((week, week.AddDays(7), string.Format(Strings.Chart_WeekLabel, week), title));
+            }
+        }
+        else
+        {
+            var months = period == ChartPeriod.HalfYear ? 6 : 12;
+            var first = new DateTime(today.Year, today.Month, 1).AddMonths(-months + 1);
+            for (var month = first; month <= today; month = month.AddMonths(1))
+            {
+                var label = month.ToString("MMM", CultureInfo.CurrentCulture).TrimEnd('.');
+                result.Add((month, month.AddMonths(1), label, month.ToString("MMMM yyyy", CultureInfo.CurrentCulture)));
+            }
+        }
+
+        return result;
+    }
+}

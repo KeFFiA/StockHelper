@@ -9,6 +9,6 @@ public static class Compact
     {
         >= 1_000_000 => string.Format(CultureInfo.CurrentCulture, Resources.Strings.Compact_Million, value / 1_000_000),
         >= 10_000 => string.Format(CultureInfo.CurrentCulture, Resources.Strings.Compact_Thousand, value / 1_000),
-        _ => value.ToString("#,0", CultureInfo.CurrentCulture),
+        _ => value.ToString("#,0 ₽", CultureInfo.CurrentCulture),
     };
 }
