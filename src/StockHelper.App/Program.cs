@@ -1,5 +1,6 @@
 using Serilog;
 using StockHelper.App.Infrastructure;
+using Velopack;
 
 namespace StockHelper.App;
 
@@ -8,6 +9,10 @@ public static class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        // Must run first: handles install/update hooks and applies an update downloaded earlier
+        // ("restart later" means the update is installed on the next start).
+        VelopackApp.Build().Run();
+
         AppPaths.EnsureCreated();
 
         Log.Logger = new LoggerConfiguration()

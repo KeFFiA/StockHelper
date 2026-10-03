@@ -1,0 +1,83 @@
+name: Release
+
+# Push a tag vX.Y.Z to build, test, pack with Velopack and publish to GitHub Releases.
+# Installed apps pick the new release up automatically.
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') { throw "Tag must be vX.Y.Z, got '${{ github.ref_name }}'" }
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Test
+        run: dotnet test StockHelper.sln -c Release
+
+      - name: Publish
+        run: >
+          dotnet publish src/StockHelper.App/StockHelper.App.csproj
+          -c Release -r win-x64 --self-contained
+          -p:Version=${{ steps.version.outputs.value }}
+          -o publish
+
+      # Previous release is needed to build delta packages (small updates).
+      - name: Download previous release
+        continue-on-error: true
+        run: >
+          dotnet vpk download github
+          --repoUrl https://github.com/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }}
+          -o releases
+
+      # Code signing: set the SIGN_PARAMS secret (signtool arguments, e.g. "/a /fd sha256 /tr http://timestamp.digicert.com /td sha256")
+      # or switch to --azureTrustedSignFile. Without the secret the package is built unsigned.
+      - name: Pack
+        shell: pwsh
+        env:
+          SIGN_PARAMS: ${{ secrets.SIGN_PARAMS }}
+        run: |
+          $sign = @()
+          if ($env:SIGN_PARAMS) { $sign = @('--signParams', $env:SIGN_PARAMS) }
+          dotnet vpk pack `
+            --packId StockHelper `
+            --packVersion ${{ steps.version.outputs.value }} `
+            --packDir publish `
+            --mainExe StockHelper.exe `
+            --packTitle StockHelper `
+            --packAuthors StockHelper `
+            --icon src/StockHelper.App/Assets/app.ico `
+            -o releases `
+            @sign
+
+      - name: Upload to GitHub Releases
+        run: >
+          dotnet vpk upload github
+          --repoUrl https://github.com/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }}
+          --publish
+          --releaseName "StockHelper ${{ steps.version.outputs.value }}"
+          --tag ${{ github.ref_name }}
+          -o releases

@@ -13,8 +13,6 @@ namespace StockHelper.App.ViewModels.Pages;
 public sealed partial class StockTakesViewModel(
     IStockTakeRepository stockTakes,
     StockTakeSessionFactory sessionFactory,
-    IDialogService dialogs,
-    INotificationService notifications,
     IExportService export,
     ICurrentUserService currentUser) : PageViewModel
 {

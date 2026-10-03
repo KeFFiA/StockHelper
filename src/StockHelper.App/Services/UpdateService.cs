@@ -48,7 +48,8 @@ public sealed partial class UpdateService : ObservableObject, IUpdateService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Update manager is unavailable");
+            // Expected in development builds that were not installed by Velopack.
+            _logger.LogInformation("Updates are disabled: {Reason}", ex.Message);
         }
 
         StatusText = IsInstalled ? string.Empty : Strings.Updates_DevBuild;

@@ -8,6 +8,7 @@
     <AssemblyName>StockHelper</AssemblyName>
     <StartupObject>StockHelper.App.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <!-- WPF0001: Fluent ThemeMode API is marked experimental. -->
     <NoWarn>$(NoWarn);WPF0001</NoWarn>
   </PropertyGroup>
@@ -57,6 +58,7 @@
 
   <ItemGroup>
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="Assets\app.ico" />
   </ItemGroup>
 
 </Project>
