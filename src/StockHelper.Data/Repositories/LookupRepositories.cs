@@ -28,6 +28,7 @@ public abstract class LookupRepository<T>(IDbContextFactory<StockHelperDbContext
         Rules.Validate(entity);
         await using var db = await CreateAsync(ct);
         await EnsureUniqueAsync(db, entity, ct);
+        await ValidateAsync(db, entity, ct);
         db.Set<T>().Add(entity);
         await SaveAsync(db, ct);
         return entity;
@@ -39,6 +40,7 @@ public abstract class LookupRepository<T>(IDbContextFactory<StockHelperDbContext
         Rules.Validate(entity);
         await using var db = await CreateAsync(ct);
         await EnsureUniqueAsync(db, entity, ct);
+        await ValidateAsync(db, entity, ct);
         var tracked = Required(await db.Set<T>().FindAsync([entity.Id], ct));
         ExpectStamp(db, tracked, entity.ConcurrencyStamp);
         tracked.Name = entity.Name;
@@ -77,6 +79,9 @@ public abstract class LookupRepository<T>(IDbContextFactory<StockHelperDbContext
 
     protected abstract Task<bool> IsInUseAsync(StockHelperDbContext db, int id, CancellationToken ct);
 
+    /// <summary>Type-specific validation that needs the database.</summary>
+    protected virtual Task ValidateAsync(StockHelperDbContext db, T entity, CancellationToken ct) => Task.CompletedTask;
+
     /// <summary>Copies type-specific fields on update.</summary>
     protected virtual void CopyExtra(T source, T target)
     {
@@ -100,15 +105,52 @@ public sealed class CategoryRepository(IDbContextFactory<StockHelperDbContext> f
 
 public sealed class UnitRepository(IDbContextFactory<StockHelperDbContext> factory) : LookupRepository<Unit>(factory)
 {
-    protected override Task<bool> IsInUseAsync(StockHelperDbContext db, int id, CancellationToken ct) =>
-        db.Items.AnyAsync(i => i.UnitId == id, ct);
+    protected override async Task<bool> IsInUseAsync(StockHelperDbContext db, int id, CancellationToken ct) =>
+        await db.Items.AnyAsync(i => i.UnitId == id, ct)
+        || await db.Units.AnyAsync(u => u.BaseUnitId == id, ct)
+        || await db.Receipts.AnyAsync(r => r.UnitId == id, ct)
+        || await db.Issues.AnyAsync(i => i.UnitId == id, ct);
+
+    /// <summary>A package refers to a base unit; base units cannot become packages while others refer to them.</summary>
+    protected override async Task ValidateAsync(StockHelperDbContext db, Unit entity, CancellationToken ct)
+    {
+        Rules.Validate(entity);
+        if (entity.BaseUnitId is not { } baseId)
+        {
+            return;
+        }
+
+        var baseUnit = await db.Units.AsNoTracking().FirstOrDefaultAsync(u => u.Id == baseId, ct)
+            ?? throw new DomainException(DomainErrorCode.NotFound, "Base unit");
+        if (baseUnit.BaseUnitId is not null || (entity.Id != 0 && await db.Units.AnyAsync(u => u.BaseUnitId == entity.Id, ct)))
+        {
+            throw new DomainException(DomainErrorCode.PackageOfPackage);
+        }
+
+        // Changing the root of a unit used by items would make their quantities meaningless.
+        if (entity.Id != 0 && await db.Items.AnyAsync(i => i.UnitId == entity.Id, ct))
+        {
+            var current = await db.Units.AsNoTracking().FirstAsync(u => u.Id == entity.Id, ct);
+            if ((current.BaseUnitId ?? current.Id) != baseId)
+            {
+                throw new DomainException(DomainErrorCode.IncompatibleUnit);
+            }
+        }
+    }
+
+    protected override void CopyExtra(Unit source, Unit target)
+    {
+        target.BaseUnitId = source.BaseUnitId;
+        target.Factor = source.BaseUnitId is null ? 1 : source.Factor;
+    }
 }
 
 public sealed class StorageLocationRepository(IDbContextFactory<StockHelperDbContext> factory) : LookupRepository<StorageLocation>(factory)
 {
     protected override async Task<bool> IsInUseAsync(StockHelperDbContext db, int id, CancellationToken ct) =>
         await db.StockTakeLines.AnyAsync(l => l.StorageLocationId == id, ct)
-        || await db.Receipts.AnyAsync(r => r.StorageLocationId == id, ct);
+        || await db.Receipts.AnyAsync(r => r.StorageLocationId == id, ct)
+        || await db.Issues.AnyAsync(i => i.StorageLocationId == id, ct);
 
     protected override void CopyExtra(StorageLocation source, StorageLocation target) =>
         target.Description = Clean(source.Description);

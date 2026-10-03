@@ -82,7 +82,9 @@ public sealed class ItemRepository(IDbContextFactory<StockHelperDbContext> facto
     }
 
     private static async Task<bool> HasHistoryAsync(StockHelperDbContext db, int id, CancellationToken ct) =>
-        await db.Receipts.AnyAsync(r => r.ItemId == id, ct) || await db.StockTakeLines.AnyAsync(l => l.ItemId == id, ct);
+        await db.Receipts.AnyAsync(r => r.ItemId == id, ct)
+        || await db.StockTakeLines.AnyAsync(l => l.ItemId == id, ct)
+        || await db.Issues.AnyAsync(i => i.ItemId == id, ct);
 
     private static void Normalize(Item item)
     {

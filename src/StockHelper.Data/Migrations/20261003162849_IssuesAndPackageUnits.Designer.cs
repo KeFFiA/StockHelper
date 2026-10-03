@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StockHelper.Data;
 
@@ -10,9 +11,11 @@ using StockHelper.Data;
 namespace StockHelper.Data.Migrations
 {
     [DbContext(typeof(StockHelperDbContext))]
-    partial class StockHelperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261003162849_IssuesAndPackageUnits")]
+    partial class IssuesAndPackageUnits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");

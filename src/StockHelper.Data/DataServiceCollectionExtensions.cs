@@ -43,6 +43,7 @@ public static class DataServiceCollectionExtensions
         services.AddSingleton<ILookupRepository<StorageLocation>, StorageLocationRepository>();
         services.AddSingleton<IItemRepository, ItemRepository>();
         services.AddSingleton<IReceiptRepository, ReceiptRepository>();
+        services.AddSingleton<IIssueRepository, IssueRepository>();
         services.AddSingleton<IStockTakeRepository, StockTakeRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<IStockDataReader, StockDataReader>();

@@ -37,6 +37,9 @@ internal sealed class UnitConfiguration : IEntityTypeConfiguration<Unit>
     {
         b.ConfigureLookup();
         b.Property(e => e.Name).HasMaxLength(50);
+        b.Property(e => e.Factor).HasDefaultValue(1m);
+        b.Ignore(e => e.IsPackage);
+        b.HasOne(e => e.BaseUnit).WithMany().HasForeignKey(e => e.BaseUnitId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 
@@ -72,9 +75,30 @@ internal sealed class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
         b.Ignore(e => e.Amount);
         b.Property(e => e.Note).HasMaxLength(ConfigurationExtensions.NoteLength);
         b.HasOne(e => e.Item).WithMany().HasForeignKey(e => e.ItemId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne(e => e.Unit).WithMany().HasForeignKey(e => e.UnitId).OnDelete(DeleteBehavior.Restrict);
         b.HasOne(e => e.StorageLocation).WithMany().HasForeignKey(e => e.StorageLocationId).OnDelete(DeleteBehavior.Restrict);
         b.HasIndex(e => e.Date);
         b.HasIndex(e => new { e.ItemId, e.Date });
+    }
+}
+
+internal sealed class IssueConfiguration : IEntityTypeConfiguration<Issue>
+{
+    public void Configure(EntityTypeBuilder<Issue> b)
+    {
+        b.ConfigureAudit();
+        b.Ignore(e => e.IsReturned);
+        b.Ignore(e => e.IsOnHand);
+        b.Ignore(e => e.NetQuantity);
+        b.Property(e => e.IssuedTo).HasMaxLength(ConfigurationExtensions.NameLength);
+        b.Property(e => e.Note).HasMaxLength(ConfigurationExtensions.NoteLength);
+        b.Property(e => e.ReturnedBy).HasMaxLength(100);
+        b.HasOne(e => e.Item).WithMany().HasForeignKey(e => e.ItemId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne(e => e.Unit).WithMany().HasForeignKey(e => e.UnitId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne(e => e.StorageLocation).WithMany().HasForeignKey(e => e.StorageLocationId).OnDelete(DeleteBehavior.Restrict);
+        b.HasIndex(e => e.Date);
+        b.HasIndex(e => new { e.ItemId, e.Date });
+        b.HasIndex(e => e.ReturnedAt);
     }
 }
 

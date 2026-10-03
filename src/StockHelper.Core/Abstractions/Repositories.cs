@@ -56,6 +56,29 @@ public interface IReceiptRepository
     Task DeleteAsync(int id, CancellationToken ct = default);
 }
 
+public sealed record IssueFilter(DateTime? FromUtc = null, DateTime? ToUtc = null, bool OnlyOnHand = false);
+
+public interface IIssueRepository
+{
+    /// <summary>Issues with Item (+Unit), entered Unit and StorageLocation loaded, newest first. On-hand issues are always included.</summary>
+    Task<IReadOnlyList<Issue>> GetAsync(IssueFilter filter, CancellationToken ct = default);
+
+    /// <summary>Distinct recipients used before, for autocompletion.</summary>
+    Task<IReadOnlyList<string>> GetRecipientsAsync(CancellationToken ct = default);
+
+    Task<Issue> AddAsync(Issue issue, CancellationToken ct = default);
+
+    Task<Issue> UpdateAsync(Issue issue, CancellationToken ct = default);
+
+    /// <summary>Registers the return of the remainder (in item units, 0..issued).</summary>
+    Task ReturnAsync(int issueId, decimal returnedQuantity, DateTime returnedAtUtc, CancellationToken ct = default);
+
+    /// <summary>Cancels a registered return.</summary>
+    Task CancelReturnAsync(int issueId, CancellationToken ct = default);
+
+    Task DeleteAsync(int id, CancellationToken ct = default);
+}
+
 public sealed record StockTakeSummary(
     int Id,
     DateTime Date,
@@ -114,7 +137,14 @@ public interface IStockDataReader
 public sealed record StockSnapshot(
     IReadOnlyList<Item> Items,
     IReadOnlyList<CompletedStockTake> StockTakes,
-    IReadOnlyList<Receipt> Receipts);
+    IReadOnlyList<Receipt> Receipts,
+    IReadOnlyList<Issue> Issues)
+{
+    public StockSnapshot(IReadOnlyList<Item> items, IReadOnlyList<CompletedStockTake> stockTakes, IReadOnlyList<Receipt> receipts)
+        : this(items, stockTakes, receipts, [])
+    {
+    }
+}
 
 /// <summary>A completed stock-take with counted totals per item (summed over storage locations).</summary>
 public sealed record CompletedStockTake(int Id, DateTime Date, IReadOnlyDictionary<int, decimal> CountedByItem);

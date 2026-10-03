@@ -38,6 +38,39 @@ public static class Rules
         }
     }
 
+    public static void Validate(Issue issue)
+    {
+        if (issue.Quantity <= 0)
+        {
+            throw new DomainException(DomainErrorCode.QuantityMustBePositive);
+        }
+
+        if (issue.ReturnedQuantity is { } returned && (returned < 0 || returned > issue.Quantity))
+        {
+            throw new DomainException(DomainErrorCode.ReturnExceedsIssued);
+        }
+    }
+
+    public static void Validate(Unit unit)
+    {
+        RequireName(unit.Name);
+        if (unit.BaseUnitId is null)
+        {
+            unit.Factor = 1;
+            return;
+        }
+
+        if (unit.Factor <= 0)
+        {
+            throw new DomainException(DomainErrorCode.InvalidUnitFactor);
+        }
+
+        if (unit.BaseUnitId == unit.Id)
+        {
+            throw new DomainException(DomainErrorCode.PackageOfPackage);
+        }
+    }
+
     public static void ValidateCount(decimal quantity)
     {
         if (quantity < 0)

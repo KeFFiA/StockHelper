@@ -24,6 +24,11 @@ public enum DomainErrorCode
     CannotDeactivateSelf,
     LastAdministrator,
     ArchivedReference,
+    ReturnExceedsIssued,
+    AlreadyReturned,
+    IncompatibleUnit,
+    InvalidUnitFactor,
+    PackageOfPackage,
 }
 
 public class DomainException(DomainErrorCode code, string? details = null)

@@ -14,6 +14,7 @@ public sealed class ReceiptRepository(IDbContextFactory<StockHelperDbContext> fa
         var query = db.Receipts.AsNoTracking()
             .Include(r => r.Item).ThenInclude(i => i!.Unit)
             .Include(r => r.StorageLocation)
+            .Include(r => r.Unit)
             .AsQueryable();
 
         if (filter.FromUtc is { } from)
@@ -74,6 +75,8 @@ public sealed class ReceiptRepository(IDbContextFactory<StockHelperDbContext> fa
         target.Price = source.Price;
         target.Date = source.Date.Kind == DateTimeKind.Utc ? source.Date : source.Date.ToUniversalTime();
         target.StorageLocationId = source.StorageLocationId;
+        target.UnitId = source.UnitId;
+        target.UnitQuantity = source.UnitId is null ? null : source.UnitQuantity;
         target.Note = Clean(source.Note);
     }
 

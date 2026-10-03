@@ -8,6 +8,7 @@ public enum Permission
     ViewReports,
     ManageCatalog,
     ManageReceipts,
+    ManageIssues,
     EditStockTakes,
     ReopenStockTakes,
     ManageLocations,
@@ -20,7 +21,7 @@ public static class Permissions
 {
     private static readonly Dictionary<UserRole, HashSet<Permission>> Map = new()
     {
-        [UserRole.Storekeeper] = [Permission.ViewReports, Permission.ManageReceipts, Permission.EditStockTakes],
+        [UserRole.Storekeeper] = [Permission.ViewReports, Permission.ManageReceipts, Permission.ManageIssues, Permission.EditStockTakes],
         [UserRole.Manager] = [Permission.ViewReports, Permission.ManageCatalog, Permission.ReopenStockTakes],
         [UserRole.Administrator] = [.. Enum.GetValues<Permission>()],
     };

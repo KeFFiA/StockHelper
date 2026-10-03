@@ -4,8 +4,8 @@ using StockHelper.Core.Entities;
 namespace StockHelper.Core.Services;
 
 /// <summary>
-/// Consumption of one item between two consecutive completed stock-takes in which the item was counted:
-/// <c>consumption = opening + received in (from, to] − closing</c>.
+/// One item between two consecutive completed stock-takes in which it was counted.
+/// <c>Expected = Opening + Received − Issued</c> (issued net of returns); <c>Difference = Closing − Expected</c>.
 /// </summary>
 public sealed record ConsumptionPeriod(
     int ItemId,
@@ -15,12 +15,20 @@ public sealed record ConsumptionPeriod(
     DateTime To,
     decimal OpeningStock,
     decimal Received,
-    decimal ClosingStock)
+    decimal ClosingStock,
+    decimal Issued = 0,
+    bool UsesIssues = false)
 {
-    public decimal Consumption => OpeningStock + Received - ClosingStock;
+    public decimal Expected => OpeningStock + Received - Issued;
 
-    /// <summary>Counted more than expected: shown as a discrepancy, never hidden.</summary>
-    public bool IsDiscrepancy => Consumption < 0;
+    /// <summary>Counted minus expected: negative = shortage (unrecorded consumption), positive = surplus.</summary>
+    public decimal Difference => ClosingStock - Expected;
+
+    /// <summary>Issue-based items: what was issued; others: what disappeared between the counts.</summary>
+    public decimal Consumption => UsesIssues ? Issued : OpeningStock + Received - ClosingStock;
+
+    /// <summary>Shown as a discrepancy, never hidden.</summary>
+    public bool IsDiscrepancy => UsesIssues ? Difference != 0 : Consumption < 0;
 
     public decimal Days => (decimal)(To - From).TotalDays;
 }
@@ -38,7 +46,9 @@ public sealed record ItemStockStatus(
     DateTime? RunOutDate,
     bool IsBelowMinimum,
     bool IsRunningOut,
-    decimal SuggestedQuantity)
+    decimal SuggestedQuantity,
+    decimal IssuedSinceCount = 0,
+    decimal OnHand = 0)
 {
     public bool NeedsPurchase => IsBelowMinimum || IsRunningOut;
 }
@@ -51,35 +61,47 @@ public sealed record ItemConsumption(
     decimal Days,
     decimal? AverageDaily,
     bool HasDiscrepancy,
-    IReadOnlyList<ConsumptionPeriod> Periods);
+    IReadOnlyList<ConsumptionPeriod> Periods,
+    bool UsesIssues = false,
+    decimal Issued = 0,
+    decimal Returned = 0,
+    decimal Unaccounted = 0);
 
 public sealed record ForecastOptions(int PurchaseHorizonDays, int ForecastWindowDays);
 
 /// <summary>
 /// Pure calculations over a <see cref="StockSnapshot"/>: no database or UI access, fully unit-tested.
-/// All dates are UTC.
+/// Issues (net of returns) are the main consumption source. Items that were never issued fall back to
+/// consumption between stock-takes. Stock-takes always correct the stock. All dates are UTC.
 /// </summary>
 public static class StockCalculator
 {
-    /// <summary>Consumption periods of an item, oldest first. The first count of an item is only a baseline.</summary>
+    /// <summary>True when the item has any issues: consumption then comes from issues, not from counts.</summary>
+    public static bool UsesIssues(StockSnapshot snapshot, int itemId) => snapshot.Issues.Any(i => i.ItemId == itemId);
+
+    /// <summary>Periods between consecutive counts of an item, oldest first. The first count is only a baseline.</summary>
     public static IReadOnlyList<ConsumptionPeriod> GetPeriods(StockSnapshot snapshot, int itemId)
     {
         var counts = CountsOf(snapshot, itemId);
-        var receipts = ReceiptsOf(snapshot, itemId);
+        var usesIssues = UsesIssues(snapshot, itemId);
         var periods = new List<ConsumptionPeriod>(Math.Max(0, counts.Count - 1));
 
         for (var i = 1; i < counts.Count; i++)
         {
             var (prevTake, prevQty) = counts[i - 1];
             var (currTake, currQty) = counts[i];
-            var received = SumReceipts(receipts, prevTake.Date, currTake.Date);
-            periods.Add(new ConsumptionPeriod(itemId, prevTake.Id, prevTake.Date, currTake.Id, currTake.Date, prevQty, received, currQty));
+            periods.Add(new ConsumptionPeriod(
+                itemId, prevTake.Id, prevTake.Date, currTake.Id, currTake.Date, prevQty,
+                Received(snapshot, itemId, prevTake.Date, currTake.Date),
+                currQty,
+                NetIssued(snapshot, itemId, prevTake.Date, currTake.Date),
+                usesIssues));
         }
 
         return periods;
     }
 
-    /// <summary>Average consumption per day over the periods that end inside the window; falls back to the latest period.</summary>
+    /// <summary>Count-based average over the periods that end inside the window; falls back to the latest period.</summary>
     public static decimal? AverageDailyConsumption(IReadOnlyList<ConsumptionPeriod> periods, DateTime windowStartUtc)
     {
         if (periods.Count == 0)
@@ -97,27 +119,40 @@ public static class StockCalculator
         return days <= 0 ? null : inWindow.Sum(p => p.Consumption) / days;
     }
 
+    /// <summary>Average daily consumption of an item: net issues over the window, or count-based for items never issued.</summary>
+    public static decimal? AverageDailyConsumption(StockSnapshot snapshot, int itemId, DateTime nowUtc, int windowDays)
+    {
+        var windowStart = nowUtc.AddDays(-windowDays);
+        if (!UsesIssues(snapshot, itemId))
+        {
+            return AverageDailyConsumption(GetPeriods(snapshot, itemId), windowStart);
+        }
+
+        // Do not dilute the average with days before the item was tracked at all.
+        var start = Max(windowStart, FirstActivity(snapshot, itemId) ?? windowStart);
+        var days = Math.Max(1m, (decimal)(nowUtc - start).TotalDays);
+        return NetIssued(snapshot, itemId, start, nowUtc) / days;
+    }
+
     /// <summary>
-    /// Estimated stock at a moment: the latest completed count before it plus receipts after that count.
-    /// Without any count the result is receipts only and <c>HasBaseline</c> is false.
+    /// Estimated stock at a moment: the latest completed count before it plus receipts and returns minus issues after it.
+    /// Without any count the result is movements only and <c>HasBaseline</c> is false.
     /// </summary>
     public static (decimal Stock, decimal? Counted, DateTime? CountDate, decimal Received, bool HasBaseline) EstimateStock(
         StockSnapshot snapshot, int itemId, DateTime atUtc, int? excludeStockTakeId = null)
     {
-        var receipts = ReceiptsOf(snapshot, itemId);
         var last = CountsOf(snapshot, itemId)
             .Where(c => c.Take.Date <= atUtc && c.Take.Id != excludeStockTakeId)
             .Select(c => ((CompletedStockTake Take, decimal Qty)?)c)
             .LastOrDefault();
 
-        if (last is not { } baseline)
-        {
-            var receivedTotal = receipts.Where(r => r.Date <= atUtc).Sum(r => r.Quantity);
-            return (receivedTotal, null, null, receivedTotal, false);
-        }
+        var from = last?.Take.Date ?? DateTime.MinValue;
+        var received = Received(snapshot, itemId, from, atUtc);
+        var movement = received - NetIssued(snapshot, itemId, from, atUtc);
 
-        var received = SumReceipts(receipts, baseline.Take.Date, atUtc);
-        return (baseline.Qty + received, baseline.Qty, baseline.Take.Date, received, true);
+        return last is { } baseline
+            ? (baseline.Qty + movement, baseline.Qty, baseline.Take.Date, received, true)
+            : (movement, null, null, received, false);
     }
 
     /// <summary>Expected stock of every item that has a baseline before <paramref name="atUtc"/>.</summary>
@@ -139,13 +174,12 @@ public static class StockCalculator
     /// <summary>Stock position, forecast and purchase need of every active item.</summary>
     public static IReadOnlyList<ItemStockStatus> GetStatuses(StockSnapshot snapshot, DateTime nowUtc, ForecastOptions options)
     {
-        var windowStart = nowUtc.AddDays(-options.ForecastWindowDays);
         var result = new List<ItemStockStatus>();
 
         foreach (var item in snapshot.Items.Where(i => !i.IsArchived))
         {
             var estimate = EstimateStock(snapshot, item.Id, nowUtc);
-            var average = AverageDailyConsumption(GetPeriods(snapshot, item.Id), windowStart);
+            var average = AverageDailyConsumption(snapshot, item.Id, nowUtc, options.ForecastWindowDays);
 
             decimal? daysLeft = null;
             DateTime? runOut = null;
@@ -161,6 +195,9 @@ public static class StockCalculator
             var target = item.MinStock + (average is > 0 ? average.Value * options.PurchaseHorizonDays : 0);
             var suggested = belowMinimum || runningOut ? Math.Max(0, Math.Ceiling(target - estimate.Stock)) : 0;
 
+            var issuedSinceCount = NetIssued(snapshot, item.Id, estimate.CountDate ?? DateTime.MinValue, nowUtc);
+            var onHand = snapshot.Issues.Where(i => i.ItemId == item.Id && i.IsOnHand).Sum(i => i.Quantity);
+
             result.Add(new ItemStockStatus(
                 item,
                 estimate.Counted,
@@ -173,7 +210,9 @@ public static class StockCalculator
                 runOut,
                 belowMinimum,
                 runningOut,
-                suggested));
+                suggested,
+                issuedSinceCount,
+                onHand));
         }
 
         return result;
@@ -187,7 +226,8 @@ public static class StockCalculator
             .ThenBy(s => s.Item.Name, StringComparer.CurrentCultureIgnoreCase)];
 
     /// <summary>
-    /// Consumption per item for periods that end inside (<paramref name="fromUtc"/>, <paramref name="toUtc"/>].
+    /// Consumption per item in (<paramref name="fromUtc"/>, <paramref name="toUtc"/>]. Issue-based items: issued − returned in the range,
+    /// plus the unaccounted shortage found by stock-takes in the range. Others: periods between counts that end in the range.
     /// Cost uses the current item price.
     /// </summary>
     public static IReadOnlyList<ItemConsumption> GetConsumption(StockSnapshot snapshot, DateTime fromUtc, DateTime toUtc)
@@ -196,21 +236,38 @@ public static class StockCalculator
         foreach (var item in snapshot.Items)
         {
             var periods = GetPeriods(snapshot, item.Id).Where(p => p.To > fromUtc && p.To <= toUtc).ToList();
-            if (periods.Count == 0)
-            {
-                continue;
-            }
 
-            var consumption = periods.Sum(p => p.Consumption);
-            var days = periods.Sum(p => p.Days);
-            result.Add(new ItemConsumption(
-                item,
-                consumption,
-                consumption * item.Price,
-                days,
-                days > 0 ? consumption / days : null,
-                periods.Any(p => p.IsDiscrepancy),
-                periods));
+            if (UsesIssues(snapshot, item.Id))
+            {
+                var issued = snapshot.Issues.Where(i => i.ItemId == item.Id && i.Date > fromUtc && i.Date <= toUtc).Sum(i => i.Quantity);
+                var returned = snapshot.Issues.Where(i => i.ItemId == item.Id && i.ReturnedAt > fromUtc && i.ReturnedAt <= toUtc)
+                    .Sum(i => i.ReturnedQuantity ?? 0);
+                if (issued == 0 && returned == 0 && periods.Count == 0)
+                {
+                    continue;
+                }
+
+                var consumption = issued - returned;
+                var start = Max(fromUtc, FirstActivity(snapshot, item.Id) ?? fromUtc);
+                var days = Math.Max(1m, (decimal)(toUtc - start).TotalDays);
+                var unaccounted = -periods.Sum(p => p.Difference);
+                result.Add(new ItemConsumption(
+                    item, consumption, consumption * item.Price, days, consumption / days,
+                    periods.Any(p => p.IsDiscrepancy), periods, true, issued, returned, unaccounted));
+            }
+            else
+            {
+                if (periods.Count == 0)
+                {
+                    continue;
+                }
+
+                var consumption = periods.Sum(p => p.Consumption);
+                var days = periods.Sum(p => p.Days);
+                result.Add(new ItemConsumption(
+                    item, consumption, consumption * item.Price, days, days > 0 ? consumption / days : null,
+                    periods.Any(p => p.IsDiscrepancy), periods));
+            }
         }
 
         return [.. result.OrderBy(r => r.Item.Name, StringComparer.CurrentCultureIgnoreCase)];
@@ -222,10 +279,38 @@ public static class StockCalculator
             .OrderBy(s => s.Date)
             .Select(s => (s, s.CountedByItem[itemId]))];
 
-    private static List<Receipt> ReceiptsOf(StockSnapshot snapshot, int itemId) =>
-        [.. snapshot.Receipts.Where(r => r.ItemId == itemId)];
-
     /// <summary>Receipts in the half-open interval (from, to].</summary>
-    private static decimal SumReceipts(IEnumerable<Receipt> receipts, DateTime fromUtc, DateTime toUtc) =>
-        receipts.Where(r => r.Date > fromUtc && r.Date <= toUtc).Sum(r => r.Quantity);
+    private static decimal Received(StockSnapshot snapshot, int itemId, DateTime fromUtc, DateTime toUtc) =>
+        snapshot.Receipts.Where(r => r.ItemId == itemId && r.Date > fromUtc && r.Date <= toUtc).Sum(r => r.Quantity);
+
+    /// <summary>Issues minus returns in (from, to]; each movement counts at its own moment.</summary>
+    private static decimal NetIssued(StockSnapshot snapshot, int itemId, DateTime fromUtc, DateTime toUtc)
+    {
+        var issued = 0m;
+        foreach (var issue in snapshot.Issues.Where(i => i.ItemId == itemId))
+        {
+            if (issue.Date > fromUtc && issue.Date <= toUtc)
+            {
+                issued += issue.Quantity;
+            }
+
+            if (issue.ReturnedAt is { } returnedAt && returnedAt > fromUtc && returnedAt <= toUtc)
+            {
+                issued -= issue.ReturnedQuantity ?? 0;
+            }
+        }
+
+        return issued;
+    }
+
+    private static DateTime? FirstActivity(StockSnapshot snapshot, int itemId)
+    {
+        var dates = snapshot.StockTakes.Where(s => s.CountedByItem.ContainsKey(itemId)).Select(s => s.Date)
+            .Concat(snapshot.Receipts.Where(r => r.ItemId == itemId).Select(r => r.Date))
+            .Concat(snapshot.Issues.Where(i => i.ItemId == itemId).Select(i => i.Date))
+            .ToList();
+        return dates.Count == 0 ? null : dates.Min();
+    }
+
+    private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
 }

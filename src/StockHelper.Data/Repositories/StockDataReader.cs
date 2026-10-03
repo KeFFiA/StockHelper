@@ -34,7 +34,8 @@ public sealed class StockDataReader(IDbContextFactory<StockHelperDbContext> fact
             .ToList();
 
         var receipts = await db.Receipts.AsNoTracking().ToListAsync(ct);
+        var issues = await db.Issues.AsNoTracking().ToListAsync(ct);
 
-        return new StockSnapshot(items, stockTakes, receipts);
+        return new StockSnapshot(items, stockTakes, receipts, issues);
     }
 }

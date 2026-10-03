@@ -47,7 +47,21 @@ public abstract class LookupEntity : AuditableEntity
 
 public sealed class Category : LookupEntity;
 
-public sealed class Unit : LookupEntity;
+/// <summary>
+/// Unit of measure. A package unit is defined through a base unit: "Банка 5 л" = 5 × "л".
+/// Base units have no <see cref="BaseUnitId"/> and a factor of 1. Only one level of nesting is allowed.
+/// </summary>
+public sealed class Unit : LookupEntity
+{
+    public int? BaseUnitId { get; set; }
+
+    public Unit? BaseUnit { get; set; }
+
+    /// <summary>How many base units one of this unit contains.</summary>
+    public decimal Factor { get; set; } = 1;
+
+    public bool IsPackage => BaseUnitId is not null;
+}
 
 public sealed class StorageLocation : LookupEntity
 {
@@ -91,16 +105,36 @@ public sealed class Item : AuditableEntity
     public bool IsArchived { get; set; }
 }
 
-public sealed class Receipt : AuditableEntity
+/// <summary>
+/// Quantities of movements are always stored in the item's unit. When the user entered them in another
+/// (package) unit, <c>UnitId</c>/<c>UnitQuantity</c> keep what was entered, for display only.
+/// </summary>
+public interface IEnteredInUnit
+{
+    int? UnitId { get; set; }
+
+    Unit? Unit { get; set; }
+
+    decimal? UnitQuantity { get; set; }
+}
+
+public sealed class Receipt : AuditableEntity, IEnteredInUnit
 {
     public int ItemId { get; set; }
 
     public Item? Item { get; set; }
 
+    /// <summary>Quantity in the item's unit.</summary>
     public decimal Quantity { get; set; }
 
-    /// <summary>Unit price of this purchase.</summary>
+    /// <summary>Price per item unit.</summary>
     public decimal Price { get; set; }
+
+    public int? UnitId { get; set; }
+
+    public Unit? Unit { get; set; }
+
+    public decimal? UnitQuantity { get; set; }
 
     /// <summary>UTC.</summary>
     public DateTime Date { get; set; }
@@ -112,6 +146,55 @@ public sealed class Receipt : AuditableEntity
     public string? Note { get; set; }
 
     public decimal Amount => Quantity * Price;
+}
+
+/// <summary>
+/// Goods handed out (e.g. a can of paint). Optionally returned later with the approximate remainder,
+/// which goes back to stock. Net consumption = issued − returned.
+/// </summary>
+public sealed class Issue : AuditableEntity, IEnteredInUnit
+{
+    public int ItemId { get; set; }
+
+    public Item? Item { get; set; }
+
+    /// <summary>Issued quantity in the item's unit.</summary>
+    public decimal Quantity { get; set; }
+
+    public int? UnitId { get; set; }
+
+    public Unit? Unit { get; set; }
+
+    public decimal? UnitQuantity { get; set; }
+
+    /// <summary>UTC.</summary>
+    public DateTime Date { get; set; }
+
+    /// <summary>Free text: person or department.</summary>
+    public string? IssuedTo { get; set; }
+
+    public int? StorageLocationId { get; set; }
+
+    public StorageLocation? StorageLocation { get; set; }
+
+    public string? Note { get; set; }
+
+    /// <summary>The item is expected back (shown as "on hand" until returned).</summary>
+    public bool ExpectReturn { get; set; }
+
+    /// <summary>Returned remainder in the item's unit.</summary>
+    public decimal? ReturnedQuantity { get; set; }
+
+    /// <summary>UTC.</summary>
+    public DateTime? ReturnedAt { get; set; }
+
+    public string? ReturnedBy { get; set; }
+
+    public bool IsReturned => ReturnedAt is not null;
+
+    public bool IsOnHand => ExpectReturn && !IsReturned;
+
+    public decimal NetQuantity => Quantity - (ReturnedQuantity ?? 0);
 }
 
 public enum StockTakeStatus

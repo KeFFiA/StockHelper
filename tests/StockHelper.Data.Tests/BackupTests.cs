@@ -92,7 +92,7 @@ public sealed class BackupTests : IDisposable
         {
             await db.Database.ExecuteSqlRawAsync("DELETE FROM __EFMigrationsHistory");
             await db.Database.ExecuteSqlRawAsync("INSERT INTO __EFMigrationsHistory VALUES ('00000000000000_Old', '10.0.0')");
-            await db.Database.ExecuteSqlRawAsync("DROP TABLE StockTakeLines; DROP TABLE StockTakes; DROP TABLE Receipts; DROP TABLE Items; DROP TABLE Users; DROP TABLE Categories; DROP TABLE Units; DROP TABLE StorageLocations;");
+            await db.Database.ExecuteSqlRawAsync("DROP TABLE Issues; DROP TABLE StockTakeLines; DROP TABLE StockTakes; DROP TABLE Receipts; DROP TABLE Items; DROP TABLE Users; DROP TABLE Categories; DROP TABLE Units; DROP TABLE StorageLocations;");
         }
 
         await initializer.InitializeAsync(seed);
