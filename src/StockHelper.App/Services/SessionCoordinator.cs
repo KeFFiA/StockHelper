@@ -15,7 +15,9 @@ public sealed class SessionCoordinator(
     IDatabaseInitializer databaseInitializer,
     IAuthService auth,
     IThemeService theme,
-    ISettingsService settings)
+    ISettingsService settings,
+    IBackupService backups,
+    IUpdateService updates)
 {
     private MainWindow? _mainWindow;
 
@@ -23,6 +25,7 @@ public sealed class SessionCoordinator(
     {
         theme.Apply(settings.Current.Theme);
         await databaseInitializer.InitializeAsync(CreateSeedData());
+        backups.Prune(settings.Current.BackupsToKeep);
 
         if (Environment.GetCommandLineArgs().Contains("--demo", StringComparer.OrdinalIgnoreCase))
         {
@@ -40,6 +43,9 @@ public sealed class SessionCoordinator(
         _mainWindow.Closed += (_, _) => Application.Current.Shutdown();
         _mainWindow.Show();
         await services.GetRequiredService<ShellViewModel>().StartAsync();
+
+        // Fire and forget: never blocks the UI, errors are logged inside.
+        _ = updates.CheckInBackgroundAsync();
     }
 
     public async Task SignOutAsync()

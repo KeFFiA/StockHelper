@@ -88,4 +88,7 @@
     <sys:String x:Key="Icon.Folder">&#xE8B7;</sys:String>
     <sys:String x:Key="Icon.Tag">&#xE8EC;</sys:String>
     <sys:String x:Key="Icon.Ruler">&#xECC6;</sys:String>
+    <sys:String x:Key="Icon.Light">&#xE706;</sys:String>
+    <sys:String x:Key="Icon.Dark">&#xE708;</sys:String>
+    <sys:String x:Key="Icon.Back">&#xE72B;</sys:String>
 </ResourceDictionary>

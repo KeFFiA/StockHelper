@@ -801,4 +801,139 @@
   <data name="Reports_Closing" xml:space="preserve">
     <value>Стало</value>
   </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>Внешний вид</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Тема оформления</value>
+  </data>
+  <data name="Settings_ThemeSystem" xml:space="preserve">
+    <value>Как в системе</value>
+  </data>
+  <data name="Settings_ThemeLight" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="Settings_ThemeDark" xml:space="preserve">
+    <value>Тёмная</value>
+  </data>
+  <data name="Settings_Forecast" xml:space="preserve">
+    <value>Прогноз и закупки</value>
+  </data>
+  <data name="Settings_Horizon" xml:space="preserve">
+    <value>Горизонт закупки, дней</value>
+  </data>
+  <data name="Settings_HorizonHint" xml:space="preserve">
+    <value>Позиция попадёт в список на закупку, если её хватит меньше чем на это число дней.</value>
+  </data>
+  <data name="Settings_Window" xml:space="preserve">
+    <value>Период для среднего расхода, дней</value>
+  </data>
+  <data name="Settings_WindowHint" xml:space="preserve">
+    <value>За какой период брать инвентаризации при расчёте среднего расхода в день.</value>
+  </data>
+  <data name="Settings_BackupsToKeep" xml:space="preserve">
+    <value>Хранить резервных копий</value>
+  </data>
+  <data name="Settings_BackupsToKeepHint" xml:space="preserve">
+    <value>Более старые копии удаляются автоматически.</value>
+  </data>
+  <data name="Settings_InvalidNumbers" xml:space="preserve">
+    <value>Проверьте значения: горизонт 1–365 дней, период 7–3650 дней, копий 1–500.</value>
+  </data>
+  <data name="Settings_Backups" xml:space="preserve">
+    <value>Резервные копии</value>
+  </data>
+  <data name="Settings_BackupsHint" xml:space="preserve">
+    <value>Копия базы создаётся автоматически перед каждым обновлением структуры данных. Создайте копию вручную перед важными изменениями.</value>
+  </data>
+  <data name="Settings_CreateBackup" xml:space="preserve">
+    <value>Создать резервную копию</value>
+  </data>
+  <data name="Settings_RestoreFromFile" xml:space="preserve">
+    <value>Восстановить из файла…</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>Открыть папку</value>
+  </data>
+  <data name="Settings_OpenLogs" xml:space="preserve">
+    <value>Журналы</value>
+  </data>
+  <data name="Settings_NoBackups" xml:space="preserve">
+    <value>Резервных копий пока нет</value>
+  </data>
+  <data name="Settings_BackupCreated" xml:space="preserve">
+    <value>Резервная копия создана</value>
+  </data>
+  <data name="Settings_Restore" xml:space="preserve">
+    <value>Восстановить</value>
+  </data>
+  <data name="Settings_RestoreTitle" xml:space="preserve">
+    <value>Восстановить из копии?</value>
+  </data>
+  <data name="Settings_RestoreConfirm" xml:space="preserve">
+    <value>Текущие данные будут заменены копией от {0:g}. Перед этим автоматически сохранится копия текущего состояния. Программа будет перезапущена.</value>
+  </data>
+  <data name="Settings_RestoreDone" xml:space="preserve">
+    <value>Данные восстановлены. Программа будет перезапущена.</value>
+  </data>
+  <data name="Settings_BackupFilter" xml:space="preserve">
+    <value>Резервная копия StockHelper (*.db)|*.db</value>
+  </data>
+  <data name="Settings_Account" xml:space="preserve">
+    <value>Учётная запись</value>
+  </data>
+  <data name="Settings_CurrentPassword" xml:space="preserve">
+    <value>Текущий пароль</value>
+  </data>
+  <data name="Settings_ChangePassword" xml:space="preserve">
+    <value>Сменить пароль</value>
+  </data>
+  <data name="Settings_PasswordChanged" xml:space="preserve">
+    <value>Пароль изменён</value>
+  </data>
+  <data name="Settings_WrongCurrentPassword" xml:space="preserve">
+    <value>Текущий пароль указан неверно.</value>
+  </data>
+  <data name="Settings_About" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="Settings_Version" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="Settings_DataFolder" xml:space="preserve">
+    <value>Папка с данными</value>
+  </data>
+  <data name="Updates_CheckNow" xml:space="preserve">
+    <value>Проверить обновления</value>
+  </data>
+  <data name="Updates_RestartNow" xml:space="preserve">
+    <value>Перезапустить сейчас</value>
+  </data>
+  <data name="Updates_Checking" xml:space="preserve">
+    <value>Проверка обновлений…</value>
+  </data>
+  <data name="Updates_UpToDate" xml:space="preserve">
+    <value>Установлена последняя версия</value>
+  </data>
+  <data name="Updates_Downloading" xml:space="preserve">
+    <value>Загрузка версии {0}…</value>
+  </data>
+  <data name="Updates_Ready" xml:space="preserve">
+    <value>Версия {0} загружена и будет установлена при перезапуске</value>
+  </data>
+  <data name="Updates_CheckFailed" xml:space="preserve">
+    <value>Не удалось проверить обновления. Проверьте подключение к интернету.</value>
+  </data>
+  <data name="Updates_DevBuild" xml:space="preserve">
+    <value>Обновления доступны только в установленной версии программы</value>
+  </data>
+  <data name="Updates_AvailableTitle" xml:space="preserve">
+    <value>Доступно обновление</value>
+  </data>
+  <data name="Updates_AvailableMessage" xml:space="preserve">
+    <value>Версия {0} загружена. Перезапустите программу сейчас или позже — обновление установится при следующем запуске.</value>
+  </data>
 </root>

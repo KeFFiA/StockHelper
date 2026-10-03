@@ -74,6 +74,7 @@ public static class AppHost
         services.AddSingleton<IExportService, ExcelExportService>();
         services.AddSingleton<SessionCoordinator>();
         services.AddSingleton<IAnalyticsService, AnalyticsService>();
+        services.AddSingleton<IUpdateService, UpdateService>();
         services.AddTransient<DemoData>();
 
         services.AddSingleton<ShellViewModel>();
@@ -88,5 +89,6 @@ public static class AppHost
         services.AddTransient<ReportsViewModel>();
         services.AddSingleton<StockTakeSessionFactory>();
         services.AddTransient<UsersViewModel>();
+        services.AddTransient<SettingsViewModel>();
     }
 }

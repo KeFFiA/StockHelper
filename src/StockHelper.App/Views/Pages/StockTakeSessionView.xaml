@@ -53,7 +53,7 @@
 
         <!-- Header -->
         <DockPanel Margin="0,0,0,16">
-            <Button DockPanel.Dock="Left" Style="{StaticResource Button.Icon}" Content="&#xE72B;" Margin="-6,0,8,0" VerticalAlignment="Center"
+            <Button DockPanel.Dock="Left" Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Back}" Margin="-6,0,8,0" VerticalAlignment="Center"
                     ToolTip="{x:Static res:Strings.Common_Back}" Command="{Binding BackCommand}" />
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Style="{StaticResource Button.Icon}" Content="{StaticResource Icon.Delete}" ToolTip="{x:Static res:Strings.StockTakes_DeleteDraft}"

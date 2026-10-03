@@ -7,6 +7,7 @@ namespace StockHelper.Data;
 
 public sealed class DatabaseInitializer(
     IDbContextFactory<StockHelperDbContext> factory,
+    IBackupService backups,
     ILogger<DatabaseInitializer> logger) : IDatabaseInitializer
 {
     public async Task InitializeAsync(SeedData seed, CancellationToken ct = default)
@@ -16,6 +17,13 @@ public sealed class DatabaseInitializer(
         var pending = (await db.Database.GetPendingMigrationsAsync(ct)).ToList();
         if (pending.Count > 0)
         {
+            // Never migrate existing data without a copy to fall back to.
+            var applied = (await db.Database.GetAppliedMigrationsAsync(ct)).Any();
+            if (applied)
+            {
+                await backups.CreateBackupAsync("premigration", ct);
+            }
+
             logger.LogInformation("Applying {Count} migration(s): {Migrations}", pending.Count, string.Join(", ", pending));
             await db.Database.MigrateAsync(ct);
         }

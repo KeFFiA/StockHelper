@@ -21,6 +21,9 @@ public interface IAuthService
     Task<User> UpdateUserAsync(User user, CancellationToken ct = default);
 
     Task SetPasswordAsync(User user, string newPassword, CancellationToken ct = default);
+
+    /// <summary>Changes the signed-in user's password after checking the current one.</summary>
+    Task ChangeOwnPasswordAsync(string currentPassword, string newPassword, CancellationToken ct = default);
 }
 
 public sealed class AuthService(IUserRepository users, IPasswordHasher hasher, ICurrentUserService currentUser) : IAuthService
@@ -98,6 +101,18 @@ public sealed class AuthService(IUserRepository users, IPasswordHasher hasher, I
         ValidatePassword(newPassword);
         user.PasswordHash = hasher.Hash(newPassword);
         await users.UpdateAsync(user, ct);
+    }
+
+    public async Task ChangeOwnPasswordAsync(string currentPassword, string newPassword, CancellationToken ct = default)
+    {
+        var self = currentUser.User ?? throw new DomainException(DomainErrorCode.AccessDenied);
+        var stored = await users.FindByLoginAsync(self.Login, ct) ?? throw new DomainException(DomainErrorCode.NotFound);
+        if (!hasher.Verify(currentPassword, stored.PasswordHash))
+        {
+            throw new DomainException(DomainErrorCode.InvalidCredentials);
+        }
+
+        await SetPasswordAsync(stored, newPassword, ct);
     }
 
     private async Task<User> AddUserAsync(string login, string displayName, UserRole role, string password, CancellationToken ct)

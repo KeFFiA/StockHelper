@@ -1,0 +1,220 @@
+<UserControl x:Class="StockHelper.App.Views.Pages.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:StockHelper.App.ViewModels.Pages"
+             xmlns:b="clr-namespace:StockHelper.App.Behaviors"
+             xmlns:res="clr-namespace:StockHelper.App.Resources"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance pages:SettingsViewModel}">
+    <UserControl.Resources>
+        <!-- Settings card: Tag = icon, Header = title, Content = body. -->
+        <Style x:Key="SettingsCard" TargetType="HeaderedContentControl">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Margin" Value="0,0,0,16" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="HeaderedContentControl">
+                        <Border Style="{StaticResource Card}" Padding="24,20">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,16">
+                                    <TextBlock Style="{StaticResource Icon}" Text="{TemplateBinding Tag}" FontSize="18" Margin="0,0,12,0"
+                                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                    <TextBlock Style="{StaticResource Text.Subtitle}" Text="{TemplateBinding Header}" />
+                                </StackPanel>
+                                <ContentPresenter />
+                            </DockPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{StaticResource Space.Page}" MaxWidth="920" HorizontalAlignment="Left">
+            <HeaderedContentControl Style="{StaticResource PageHeader}" Header="{Binding Title}" />
+
+            <!-- Appearance -->
+            <HeaderedContentControl Style="{StaticResource SettingsCard}" Tag="{StaticResource Icon.Settings}" Header="{x:Static res:Strings.Settings_Appearance}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Settings_Theme}" />
+                    <ListBox Style="{StaticResource SegmentedList}" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Icon}" FontSize="{StaticResource FontSize.Caption}" Margin="0,0,8,0"
+                                               Text="{Binding IconKey, Converter={StaticResource ResourceKeyToValue}}" />
+                                    <TextBlock Text="{Binding Title}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </HeaderedContentControl>
+
+            <!-- Forecast -->
+            <HeaderedContentControl Style="{StaticResource SettingsCard}" Tag="{StaticResource Icon.Trend}" Header="{x:Static res:Strings.Settings_Forecast}">
+                <StackPanel IsEnabled="{Binding CanManageSettings}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Settings_Horizon}" />
+                            <TextBox Text="{Binding PurchaseHorizonDays, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{x:Static res:Strings.Settings_HorizonHint}" TextWrapping="Wrap" Margin="0,6,0,0" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Settings_Window}" />
+                            <TextBox Text="{Binding ForecastWindowDays, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{x:Static res:Strings.Settings_WindowHint}" TextWrapping="Wrap" Margin="0,6,0,0" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Settings_BackupsToKeep}" />
+                            <TextBox Text="{Binding BackupsToKeep, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{x:Static res:Strings.Settings_BackupsToKeepHint}" TextWrapping="Wrap" Margin="0,6,0,0" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Style="{StaticResource InfoBar.Error}" Margin="0,16,0,0" Visibility="{Binding ForecastError, Converter={StaticResource NullToCollapsed}}">
+                        <TextBlock Text="{Binding ForecastError}" TextWrapping="Wrap" />
+                    </Border>
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0" Visibility="{Binding CanManageSettings, Converter={StaticResource BoolToVisibility}}">
+                        <Button Style="{StaticResource Button.Accent}" Content="{x:Static res:Strings.Common_Save}" Command="{Binding SaveForecastCommand}" />
+                        <Button Style="{StaticResource Button.Standard}" Content="{x:Static res:Strings.Common_Cancel}" Command="{Binding ResetForecastFieldsCommand}"
+                                Margin="{StaticResource Space.ButtonGap}" />
+                    </StackPanel>
+                </StackPanel>
+            </HeaderedContentControl>
+
+            <!-- Backups -->
+            <HeaderedContentControl Style="{StaticResource SettingsCard}" Tag="{StaticResource Icon.Backup}" Header="{x:Static res:Strings.Settings_Backups}"
+                                    Visibility="{Binding CanManageBackups, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.Settings_BackupsHint}" TextWrapping="Wrap" Margin="0,0,0,16" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Backup}" Content="{x:Static res:Strings.Settings_CreateBackup}"
+                                Command="{Binding CreateBackupCommand}" />
+                        <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Restore}" Content="{x:Static res:Strings.Settings_RestoreFromFile}"
+                                Command="{Binding RestoreFromFileCommand}" Margin="{StaticResource Space.ButtonGap}" />
+                        <Button Style="{StaticResource Button.SubtleIcon}" Tag="{StaticResource Icon.Folder}" Content="{x:Static res:Strings.Settings_OpenFolder}"
+                                Command="{Binding OpenFolderCommand}" CommandParameter="backups" Margin="{StaticResource Space.ButtonGap}" />
+                    </StackPanel>
+                    <Border BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" CornerRadius="{StaticResource Radius.Control}">
+                        <Grid>
+                            <ItemsControl ItemsSource="{Binding Backups}" MaxHeight="300">
+                                <ItemsControl.Template>
+                                    <ControlTemplate>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </ItemsControl.Template>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="14,8" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                            <DockPanel>
+                                                <Button DockPanel.Dock="Right" Style="{StaticResource Button.Subtle}" Content="{x:Static res:Strings.Settings_Restore}"
+                                                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                                        Command="{Binding DataContext.RestoreBackupCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}" />
+                                                <TextBlock Style="{StaticResource Icon}" Text="{StaticResource Icon.Backup}" Margin="0,0,12,0"
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Style="{StaticResource Text.BodyStrong}"
+                                                               Text="{Binding CreatedAtUtc, Converter={StaticResource UtcToLocal}, ConverterParameter=g}" />
+                                                    <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding FileName}" />
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.Settings_NoBackups}" Margin="14,12"
+                                       Visibility="{Binding Backups.Count, Converter={StaticResource EmptyToVisible}}" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </HeaderedContentControl>
+
+            <!-- Account -->
+            <HeaderedContentControl Style="{StaticResource SettingsCard}" Tag="{StaticResource Icon.Lock}" Header="{x:Static res:Strings.Settings_Account}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Settings_CurrentPassword}" />
+                            <PasswordBox b:PasswordBoxBinding.Password="{Binding CurrentPassword}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Users_NewPassword}" />
+                            <PasswordBox b:PasswordBoxBinding.Password="{Binding NewPassword}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_PasswordConfirm}" />
+                            <PasswordBox b:PasswordBoxBinding.Password="{Binding NewPasswordConfirm}" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Style="{StaticResource InfoBar.Error}" Margin="0,16,0,0" Visibility="{Binding PasswordError, Converter={StaticResource NullToCollapsed}}">
+                        <TextBlock Text="{Binding PasswordError}" TextWrapping="Wrap" />
+                    </Border>
+                    <Button Style="{StaticResource Button.Standard}" Content="{x:Static res:Strings.Settings_ChangePassword}" Command="{Binding ChangePasswordCommand}"
+                            HorizontalAlignment="Left" Margin="0,16,0,0" />
+                </StackPanel>
+            </HeaderedContentControl>
+
+            <!-- About -->
+            <HeaderedContentControl Style="{StaticResource SettingsCard}" Tag="{StaticResource Icon.Info}" Header="{x:Static res:Strings.Settings_About}">
+                <StackPanel>
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Width="56" Height="56" CornerRadius="14" Background="{DynamicResource AccentFillColorDefaultBrush}" Margin="0,0,16,0">
+                            <TextBlock Style="{StaticResource Icon}" FontSize="26" Text="{StaticResource Icon.Items}" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource Text.Subtitle}" Text="{x:Static res:Strings.AppTitle}" />
+                            <TextBlock Style="{StaticResource Text.Secondary}">
+                                <Run Text="{x:Static res:Strings.Settings_Version}" />
+                                <Run Text="{Binding Version, Mode=OneWay}" FontWeight="SemiBold" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Update}" Content="{x:Static res:Strings.Updates_CheckNow}"
+                                Command="{Binding Updates.CheckNowCommand}" />
+                        <Button Style="{StaticResource Button.AccentIcon}" Tag="{StaticResource Icon.Refresh}" Content="{x:Static res:Strings.Updates_RestartNow}"
+                                Command="{Binding Updates.RestartCommand}" Margin="{StaticResource Space.ButtonGap}"
+                                Visibility="{Binding Updates.IsUpdateReady, Converter={StaticResource BoolToVisibility}}" />
+                        <ProgressBar IsIndeterminate="True" Width="80" Margin="16,0,0,0" VerticalAlignment="Center"
+                                     Visibility="{Binding Updates.IsChecking, Converter={StaticResource BoolToVisibility}}" />
+                        <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Updates.StatusText}" VerticalAlignment="Center" Margin="16,0,0,0" />
+                    </StackPanel>
+
+                    <Border Style="{StaticResource Divider}" Margin="0,20,0,16" />
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Settings_DataFolder}" />
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Style="{StaticResource Button.SubtleIcon}" Tag="{StaticResource Icon.Folder}" Content="{x:Static res:Strings.Settings_OpenFolder}"
+                                    Command="{Binding OpenFolderCommand}" CommandParameter="data" />
+                            <Button Style="{StaticResource Button.SubtleIcon}" Tag="{StaticResource Icon.History}" Content="{x:Static res:Strings.Settings_OpenLogs}"
+                                    Command="{Binding OpenFolderCommand}" CommandParameter="logs" />
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="{Binding DataDirectory}" VerticalAlignment="Center" FontFamily="Cascadia Mono, Consolas" />
+                    </DockPanel>
+                </StackPanel>
+            </HeaderedContentControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

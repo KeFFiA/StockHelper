@@ -122,6 +122,8 @@ public sealed partial class ShellViewModel : ViewModelBase
         {
             FooterItems.Add(new NavItem(Strings.Nav_Users, "Icon.Users", typeof(UsersViewModel)));
         }
+
+        FooterItems.Add(new NavItem(Strings.Nav_Settings, "Icon.Settings", typeof(SettingsViewModel)));
     }
 
     private void OnNavigated()

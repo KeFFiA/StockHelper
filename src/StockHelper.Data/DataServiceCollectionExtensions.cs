@@ -47,6 +47,7 @@ public static class DataServiceCollectionExtensions
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<IStockDataReader, StockDataReader>();
         services.AddSingleton<IDatabaseInitializer, DatabaseInitializer>();
+        services.AddSingleton<IBackupService, SqliteBackupService>();
 
         return services;
     }
