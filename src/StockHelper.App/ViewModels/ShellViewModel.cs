@@ -86,7 +86,9 @@ public sealed partial class ShellViewModel : ViewModelBase
     public async Task StartAsync()
     {
         BuildNavigation();
-        await NavigateAsync(NavItems[0]);
+
+        // Always a fresh page: after sign-out the previous user's page must not be reused.
+        await _navigation.ReloadAsync(NavItems[0].PageType);
     }
 
     [RelayCommand]
