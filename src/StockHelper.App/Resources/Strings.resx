@@ -336,9 +336,6 @@
   <data name="Seed_Units" xml:space="preserve">
     <value>шт|уп|пачка|л|кг|м|пара|рулон|комплект</value>
   </data>
-  <data name="Seed_Categories" xml:space="preserve">
-    <value>Канцелярия|Расходники для принтеров|Хозяйственные товары</value>
-  </data>
   <data name="Seed_DefaultLocation" xml:space="preserve">
     <value>Основной склад</value>
   </data>
@@ -1411,7 +1408,7 @@
     <value>Расход и остаток за выбранный период. Выберите позицию, чтобы увидеть её остаток и расход в единицах.</value>
   </data>
   <data name="Reports_ChartsAllItems" xml:space="preserve">
-    <value>Все позиции (стоимость, ₽)</value>
+    <value>Все позиции</value>
   </data>
   <data name="Reports_ChartsCostTitle" xml:space="preserve">
     <value>Стоимость расхода, ₽</value>
@@ -1421,9 +1418,6 @@
   </data>
   <data name="Reports_ChartsStockTitle" xml:space="preserve">
     <value>Остаток</value>
-  </data>
-  <data name="Reports_ChartsPickItem" xml:space="preserve">
-    <value>Выберите позицию, чтобы увидеть график остатка</value>
   </data>
   <data name="Reports_ChartsSummaryCost" xml:space="preserve">
     <value>Итого за период: {0:C2}</value>
@@ -1481,5 +1475,17 @@
   </data>
   <data name="Demo_Hint" xml:space="preserve">
     <value>Данные вымышленные. Пароль всех учётных записей — demo. Демо-версия хранит данные отдельно и не затрагивает рабочую базу.</value>
+  </data>
+  <data name="Reports_ChartsItemsTitle" xml:space="preserve">
+    <value>Остаток по позициям</value>
+  </data>
+  <data name="Reports_ChartsItemsHint" xml:space="preserve">
+    <value>Линия — остаток, пунктир — минимальный остаток. Нажмите на карточку, чтобы открыть подробные графики позиции.</value>
+  </data>
+  <data name="Reports_ChartsItemConsumption" xml:space="preserve">
+    <value>Расход: {0} {1}</value>
+  </data>
+  <data name="Tip_ChartsOpenItem" xml:space="preserve">
+    <value>Открыть графики этой позиции</value>
   </data>
 </root>
