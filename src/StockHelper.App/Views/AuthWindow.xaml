@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:AuthViewModel}"
         Title="{x:Static res:Strings.AppTitle}"
-        Width="900" Height="580"
+        Width="900" Height="620"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
@@ -48,22 +48,28 @@
                 <TextBlock Style="{StaticResource Text.Title}" Text="{Binding Heading}" />
                 <TextBlock Style="{StaticResource Text.Secondary}" Text="{Binding Subheading}" TextWrapping="Wrap" Margin="0,6,0,28" />
 
+                <StackPanel Style="{StaticResource Field}" Visibility="{Binding ShowCode, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_RecoveryCode}" />
+                    <TextBox x:Name="CodeBox" Text="{Binding RecoveryCode, UpdateSourceTrigger=PropertyChanged}" CharacterCasing="Upper"
+                             FontFamily="Cascadia Mono, Consolas" ToolTip="{x:Static res:Strings.Tip_RecoveryCode}" />
+                </StackPanel>
+
                 <StackPanel Style="{StaticResource Field}">
-                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_Login}" />
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{Binding LoginLabel}" />
                     <TextBox x:Name="LoginBox" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
-                <StackPanel Style="{StaticResource Field}" Visibility="{Binding IsSetup, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Style="{StaticResource Field}" Visibility="{Binding ShowDisplayName, Converter={StaticResource BoolToVisibility}}">
                     <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_DisplayName}" />
                     <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <StackPanel Style="{StaticResource Field}">
-                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_Password}" />
+                    <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{Binding PasswordLabel}" />
                     <PasswordBox x:Name="PasswordBox" b:PasswordBoxBinding.Password="{Binding Password}" />
                 </StackPanel>
 
-                <StackPanel Style="{StaticResource Field}" Visibility="{Binding IsSetup, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Style="{StaticResource Field}" Visibility="{Binding ShowConfirm, Converter={StaticResource BoolToVisibility}}">
                     <TextBlock Style="{StaticResource Text.FieldLabel}" Text="{x:Static res:Strings.Auth_PasswordConfirm}" />
                     <PasswordBox b:PasswordBoxBinding.Password="{Binding PasswordConfirm}" />
                 </StackPanel>
@@ -79,6 +85,14 @@
 
                 <Button Style="{StaticResource Button.Accent}" Content="{Binding SubmitText}" IsDefault="True"
                         HorizontalAlignment="Stretch" Padding="0,8" Command="{Binding SubmitCommand}" />
+
+                <Button Style="{StaticResource Button.Subtle}" HorizontalAlignment="Center" Margin="0,12,0,0" Padding="8,4"
+                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Content="{x:Static res:Strings.Auth_ForgotPassword}"
+                        Command="{Binding ForgotPasswordCommand}" ToolTip="{x:Static res:Strings.Tip_ForgotPassword}"
+                        Visibility="{Binding CanForget, Converter={StaticResource BoolToVisibility}}" />
+                <Button Style="{StaticResource Button.Subtle}" HorizontalAlignment="Center" Margin="0,12,0,0" Padding="8,4"
+                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Content="{x:Static res:Strings.Auth_BackToSignIn}"
+                        Command="{Binding BackToSignInCommand}" Visibility="{Binding CanGoBack, Converter={StaticResource BoolToVisibility}}" />
 
                 <ProgressBar IsIndeterminate="True" Margin="0,16,0,0"
                              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />

@@ -18,8 +18,15 @@ public sealed class SessionCoordinator(
     ISettingsService settings,
     IBackupService backups,
     IUpdateService updates,
-    IChangelogService changelog)
+    IChangelogService changelog,
+    IDialogService dialogs)
 {
+    /// <summary>
+    /// Local administrator reset: run on the computer with the database, e.g.
+    /// <c>%LOCALAPPDATA%\StockHelper\current\StockHelper.exe --reset-admin</c>.
+    /// </summary>
+    public const string ResetAdminArgument = "--reset-admin";
+
     private MainWindow? _mainWindow;
 
     public async Task StartAsync()
@@ -39,7 +46,8 @@ public sealed class SessionCoordinator(
             await services.GetRequiredService<DemoData>().SeedAsync();
         }
 
-        if (!await ShowAuthAsync())
+        var localReset = Environment.GetCommandLineArgs().Contains(ResetAdminArgument, StringComparer.OrdinalIgnoreCase);
+        if (!await ShowAuthAsync(localReset))
         {
             Application.Current.Shutdown();
             return;
@@ -71,11 +79,11 @@ public sealed class SessionCoordinator(
         await services.GetRequiredService<ShellViewModel>().StartAsync();
     }
 
-    private async Task<bool> ShowAuthAsync()
+    private async Task<bool> ShowAuthAsync(bool localReset = false)
     {
         var viewModel = services.GetRequiredService<AuthViewModel>();
-        await viewModel.InitializeAsync();
-        var window = new AuthWindow(viewModel);
+        await viewModel.InitializeAsync(localReset);
+        var window = new AuthWindow(viewModel, dialogs);
         return window.ShowDialog() == true;
     }
 

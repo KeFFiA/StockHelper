@@ -128,7 +128,7 @@ public sealed class AuthServiceTests
         Assert.Equal(DomainErrorCode.PasswordTooShort, ex.Code);
     }
 
-    private sealed class InMemoryUsers : IUserRepository
+    internal sealed class InMemoryUsers : IUserRepository
     {
         public List<User> All { get; } = [];
 
@@ -154,7 +154,7 @@ public sealed class AuthServiceTests
         }
     }
 
-    private sealed class TestCurrentUser : ICurrentUserService
+    internal sealed class TestCurrentUser : ICurrentUserService
     {
         public User? User { get; private set; }
 

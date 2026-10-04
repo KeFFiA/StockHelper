@@ -142,6 +142,17 @@
                 </StackPanel>
             </HeaderedContentControl>
 
+            <!-- Recovery code (administrators) -->
+            <HeaderedContentControl Style="{StaticResource SettingsCard}" Tag="{StaticResource Icon.Key}" Header="{x:Static res:Strings.Settings_Recovery}"
+                                    Visibility="{Binding CanManageRecovery, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Secondary}" Text="{x:Static res:Strings.Settings_RecoveryHint}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding RecoveryStatus}" TextWrapping="Wrap" Margin="0,0,0,16" />
+                    <Button Style="{StaticResource Button.StandardIcon}" Tag="{StaticResource Icon.Key}" Content="{x:Static res:Strings.Settings_RecoveryCreate}"
+                            HorizontalAlignment="Left" Command="{Binding CreateRecoveryCodeCommand}" />
+                </StackPanel>
+            </HeaderedContentControl>
+
             <!-- Account -->
             <HeaderedContentControl Style="{StaticResource SettingsCard}" Tag="{StaticResource Icon.Lock}" Header="{x:Static res:Strings.Settings_Account}">
                 <StackPanel>

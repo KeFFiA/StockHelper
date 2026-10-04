@@ -1488,4 +1488,100 @@
   <data name="Tip_ChartsOpenItem" xml:space="preserve">
     <value>Открыть графики этой позиции</value>
   </data>
+  <data name="Auth_ForgotPassword" xml:space="preserve">
+    <value>Забыли пароль?</value>
+  </data>
+  <data name="Tip_ForgotPassword" xml:space="preserve">
+    <value>Задать новый пароль администратора по коду восстановления</value>
+  </data>
+  <data name="Auth_RecoverHeading" xml:space="preserve">
+    <value>Восстановление доступа</value>
+  </data>
+  <data name="Auth_RecoverSubheading" xml:space="preserve">
+    <value>Введите код восстановления, логин администратора и новый пароль.</value>
+  </data>
+  <data name="Auth_RecoverSubmit" xml:space="preserve">
+    <value>Сбросить пароль и войти</value>
+  </data>
+  <data name="Auth_RecoveryCode" xml:space="preserve">
+    <value>Код восстановления</value>
+  </data>
+  <data name="Tip_RecoveryCode" xml:space="preserve">
+    <value>Код вида XXXXX-XXXXX-XXXXX-XXXXX, который программа показала при создании администратора. Регистр и дефисы не важны</value>
+  </data>
+  <data name="Auth_AdminLogin" xml:space="preserve">
+    <value>Логин администратора</value>
+  </data>
+  <data name="Auth_NewPassword" xml:space="preserve">
+    <value>Новый пароль</value>
+  </data>
+  <data name="Auth_BackToSignIn" xml:space="preserve">
+    <value>Назад ко входу</value>
+  </data>
+  <data name="Auth_ResetHeading" xml:space="preserve">
+    <value>Сброс доступа</value>
+  </data>
+  <data name="Auth_ResetSubheading" xml:space="preserve">
+    <value>Программа запущена для сброса доступа. Укажите логин и новый пароль: если такой пользователь есть, он станет администратором с этим паролем, если нет — будет создан.</value>
+  </data>
+  <data name="Auth_ResetSubmit" xml:space="preserve">
+    <value>Сохранить и войти</value>
+  </data>
+  <data name="DomainError_InvalidRecoveryCode" xml:space="preserve">
+    <value>Неверный код восстановления или логин администратора.</value>
+  </data>
+  <data name="Recovery_Title" xml:space="preserve">
+    <value>Код восстановления</value>
+  </data>
+  <data name="Recovery_Subtitle" xml:space="preserve">
+    <value>Сохраните его в надёжном месте</value>
+  </data>
+  <data name="Recovery_Text" xml:space="preserve">
+    <value>Если администратор забудет пароль, этот код позволит задать новый: на экране входа нажмите «Забыли пароль?». Код показывается только один раз и действует до первого использования — после этого программа выдаст новый.</value>
+  </data>
+  <data name="Recovery_Hint" xml:space="preserve">
+    <value>Запишите код или сохраните его в файл и храните отдельно от компьютера с программой, например у руководителя. Новый код всегда можно создать в «Настройках».</value>
+  </data>
+  <data name="Recovery_Copy" xml:space="preserve">
+    <value>Скопировать</value>
+  </data>
+  <data name="Recovery_Copied" xml:space="preserve">
+    <value>Скопировано</value>
+  </data>
+  <data name="Recovery_SaveFile" xml:space="preserve">
+    <value>Сохранить в файл…</value>
+  </data>
+  <data name="Recovery_Confirm" xml:space="preserve">
+    <value>Я сохранил код</value>
+  </data>
+  <data name="Recovery_Done" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="Recovery_FileFilter" xml:space="preserve">
+    <value>Текстовый файл (*.txt)|*.txt</value>
+  </data>
+  <data name="Recovery_FileName" xml:space="preserve">
+    <value>Код восстановления StockHelper</value>
+  </data>
+  <data name="Recovery_FileContent" xml:space="preserve">
+    <value>Код восстановления StockHelper: {0}&#xD;&#xA;Создан: {1:g}&#xD;&#xA;&#xD;&#xA;На экране входа нажмите «Забыли пароль?», введите этот код, логин администратора и новый пароль. После использования программа выдаст новый код.</value>
+  </data>
+  <data name="Settings_Recovery" xml:space="preserve">
+    <value>Код восстановления</value>
+  </data>
+  <data name="Settings_RecoveryHint" xml:space="preserve">
+    <value>Позволяет задать новый пароль администратора, если его забыли. Код показывается только при создании, в программе хранится лишь его отпечаток.</value>
+  </data>
+  <data name="Settings_RecoveryIssued" xml:space="preserve">
+    <value>Текущий код создан {0:g}. Если код потерян или его мог увидеть посторонний, создайте новый — старый перестанет действовать.</value>
+  </data>
+  <data name="Settings_RecoveryMissing" xml:space="preserve">
+    <value>Код восстановления ещё не создан. Создайте его, чтобы не потерять доступ, если администратор забудет пароль.</value>
+  </data>
+  <data name="Settings_RecoveryCreate" xml:space="preserve">
+    <value>Создать новый код</value>
+  </data>
+  <data name="Settings_RecoveryConfirm" xml:space="preserve">
+    <value>Создать новый код восстановления? Старый код перестанет действовать.</value>
+  </data>
 </root>

@@ -281,6 +281,12 @@ public enum UserRole
     Administrator = 2,
 }
 
+/// <summary>Hash of the account recovery code (one row). CreatedAt tells when the current code was issued.</summary>
+public sealed class RecoveryKey : AuditableEntity
+{
+    public string CodeHash { get; set; } = string.Empty;
+}
+
 public sealed class User : AuditableEntity
 {
     private string _login = string.Empty;

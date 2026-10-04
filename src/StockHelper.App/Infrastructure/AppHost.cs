@@ -62,6 +62,7 @@ public static class AppHost
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IAuthService, AuthService>();
+        services.AddSingleton<IAccountRecoveryService, AccountRecoveryService>();
         services.AddSingleton<ISettingsService, JsonSettingsService>();
     }
 

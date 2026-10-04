@@ -85,6 +85,8 @@
     <sys:String x:Key="Icon.Archive">&#xE7B8;</sys:String>
     <sys:String x:Key="Icon.Restore">&#xE777;</sys:String>
     <sys:String x:Key="Icon.Lock">&#xE72E;</sys:String>
+    <sys:String x:Key="Icon.Key">&#xE8D7;</sys:String>
+    <sys:String x:Key="Icon.Copy">&#xE8C8;</sys:String>
     <sys:String x:Key="Icon.Unlock">&#xE785;</sys:String>
     <sys:String x:Key="Icon.SignOut">&#xF3B1;</sys:String>
     <sys:String x:Key="Icon.Backup">&#xE8F7;</sys:String>

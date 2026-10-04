@@ -139,7 +139,7 @@ public sealed class AuthService(IUserRepository users, IPasswordHasher hasher, I
         }
     }
 
-    private static void ValidateNames(string login, string displayName)
+    internal static void ValidateNames(string login, string displayName)
     {
         if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(displayName))
         {
@@ -147,7 +147,7 @@ public sealed class AuthService(IUserRepository users, IPasswordHasher hasher, I
         }
     }
 
-    private static void ValidatePassword(string password)
+    internal static void ValidatePassword(string password)
     {
         if (string.IsNullOrEmpty(password) || password.Length < MinPasswordLength)
         {

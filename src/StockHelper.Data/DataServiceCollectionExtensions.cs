@@ -46,6 +46,7 @@ public static class DataServiceCollectionExtensions
         services.AddSingleton<IIssueRepository, IssueRepository>();
         services.AddSingleton<IStockTakeRepository, StockTakeRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton<IRecoveryKeyRepository, RecoveryKeyRepository>();
         services.AddSingleton<IStockDataReader, StockDataReader>();
         services.AddSingleton<IDatabaseInitializer, DatabaseInitializer>();
         services.AddSingleton<IBackupService, SqliteBackupService>();

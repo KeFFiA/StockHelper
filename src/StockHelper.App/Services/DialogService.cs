@@ -31,6 +31,9 @@ public interface IDialogService
     string? PickSaveFile(string defaultFileName, string filter);
 
     string? PickOpenFile(string filter, string? initialDirectory = null);
+
+    /// <summary>Shows a just-issued recovery code once; returns after the user confirms they saved it.</summary>
+    void ShowRecoveryCode(string code);
 }
 
 public sealed class DialogService : IDialogService
@@ -76,6 +79,22 @@ public sealed class DialogService : IDialogService
         }
 
         return dialog.ShowDialog(GetOwner()) == true ? dialog.FileName : null;
+    }
+
+    public void ShowRecoveryCode(string code)
+    {
+        var window = new RecoveryCodeWindow(code);
+        var owner = GetOwner();
+        if (owner is not null)
+        {
+            window.Owner = owner;
+        }
+        else
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        window.ShowDialog();
     }
 
     private static bool Show(DialogKind kind, string title, string message, string primary, string? secondary, bool destructive)

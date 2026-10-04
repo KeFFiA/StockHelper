@@ -24,6 +24,7 @@ public sealed partial class SettingsViewModel : PageViewModel
     private readonly INotificationService _notifications;
     private readonly ICurrentUserService _currentUser;
     private readonly IChangelogService _changelog;
+    private readonly IAccountRecoveryService _recovery;
 
     public SettingsViewModel(
         ISettingsService settings,
@@ -34,9 +35,11 @@ public sealed partial class SettingsViewModel : PageViewModel
         INotificationService notifications,
         ICurrentUserService currentUser,
         IUpdateService updates,
-        IChangelogService changelog)
+        IChangelogService changelog,
+        IAccountRecoveryService recovery)
     {
         _changelog = changelog;
+        _recovery = recovery;
         _settings = settings;
         _theme = theme;
         _backups = backups;
@@ -65,6 +68,14 @@ public sealed partial class SettingsViewModel : PageViewModel
     public bool CanManageSettings => _currentUser.Has(Permission.ManageSettings);
 
     public bool CanManageBackups => _currentUser.Has(Permission.ManageBackups);
+
+    public bool CanManageRecovery => _currentUser.Has(Permission.ManageUsers);
+
+    [ObservableProperty]
+    public partial string RecoveryStatus { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool HasRecoveryCode { get; set; }
 
     public string Version => AppInfo.Version;
 
@@ -102,7 +113,40 @@ public sealed partial class SettingsViewModel : PageViewModel
     [ObservableProperty]
     public partial string? PasswordError { get; set; }
 
-    public override Task OnNavigatedToAsync() => CanManageBackups ? LoadBackupsAsync() : Task.CompletedTask;
+    public override async Task OnNavigatedToAsync()
+    {
+        if (CanManageBackups)
+        {
+            await LoadBackupsAsync();
+        }
+
+        if (CanManageRecovery)
+        {
+            await LoadRecoveryStatusAsync();
+        }
+    }
+
+    private async Task LoadRecoveryStatusAsync()
+    {
+        var issuedAt = await _recovery.GetCodeIssuedAtAsync();
+        HasRecoveryCode = issuedAt is not null;
+        RecoveryStatus = issuedAt is { } at
+            ? string.Format(Strings.Settings_RecoveryIssued, at.ToLocalTime())
+            : Strings.Settings_RecoveryMissing;
+    }
+
+    [RelayCommand]
+    private async Task CreateRecoveryCodeAsync()
+    {
+        if (HasRecoveryCode && !_dialogs.Confirm(Strings.Settings_RecoveryConfirm, Strings.Settings_Recovery, Strings.Settings_RecoveryCreate))
+        {
+            return;
+        }
+
+        var code = await _recovery.IssueCodeAsync();
+        _dialogs.ShowRecoveryCode(code);
+        await LoadRecoveryStatusAsync();
+    }
 
     partial void OnSelectedThemeChanged(ThemeOption value)
     {
