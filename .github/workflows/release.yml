@@ -95,7 +95,7 @@ jobs:
             --packDir publish `
             --mainExe StockHelper.exe `
             --packTitle StockHelper `
-            --packAuthors KeFFiA `
+            --packAuthors "Aleksandr Ogienko" `
             --icon src/StockHelper.App/Assets/app.ico `
             --msi `
             --instLicense LICENSE.md `

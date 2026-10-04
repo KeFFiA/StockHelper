@@ -1,6 +1,6 @@
 # Лицензионное соглашение StockHelper
 
-**Copyright © 2026 KeFFiA. Все права защищены.**
+**Copyright © 2026 Aleksandr Ogienko. Все права защищены.**
 
 Настоящее лицензионное соглашение (далее — «Соглашение») заключается между правообладателем программы StockHelper (далее — «Правообладатель») и лицом, которое устанавливает или использует программу (далее — «Пользователь»). Устанавливая, копируя или используя программу, Пользователь подтверждает, что прочитал Соглашение и принимает его условия. Если Пользователь не согласен с условиями, он не вправе устанавливать и использовать программу.
 
@@ -73,7 +73,7 @@
 
 # StockHelper License Agreement
 
-**Copyright © 2026 KeFFiA. All rights reserved.**
+**Copyright © 2026 Aleksandr Ogienko. All rights reserved.**
 
 This license agreement (the "Agreement") is made between the owner of the StockHelper software (the "Licensor") and the person installing or using the software (the "User"). By installing, copying or using the software, the User confirms having read this Agreement and accepts its terms. If the User does not agree to the terms, the User may not install or use the software.
 

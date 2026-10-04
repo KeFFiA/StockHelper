@@ -132,7 +132,7 @@ Code signing: add a `SIGN_PARAMS` repository secret with signtool arguments; wit
 
 ## License
 
-Proprietary software. Copyright © 2026 KeFFiA. All rights reserved.
+Proprietary software. Copyright © 2026 Aleksandr Ogienko. All rights reserved.
 The source code is published for reference only; using, copying, modifying or distributing it requires the
 copyright holder's permission. See [LICENSE.md](LICENSE.md) (Russian and English) and
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the open-source components included in the app.
