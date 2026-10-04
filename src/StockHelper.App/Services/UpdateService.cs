@@ -20,7 +20,7 @@ public interface IUpdateService : INotifyPropertyChanged
     string StatusText { get; }
 
     /// <summary>
-    /// Checks at start-up and then every 5–10 minutes while the app runs, until an update is downloaded:
+    /// Checks at start-up and then every 15–20 minutes while the app runs, until an update is downloaded:
     /// downloads silently and shows an unobtrusive notification. Errors are only logged.
     /// </summary>
     Task CheckInBackgroundAsync();
@@ -35,8 +35,8 @@ public sealed partial class UpdateService : ObservableObject, IUpdateService
 {
     public const string RepositoryUrl = "https://github.com/KeFFiA/StockHelper";
 
-    private const int MinCheckIntervalSeconds = 5 * 60;
-    private const int MaxCheckIntervalSeconds = 10 * 60;
+    private const int MinCheckIntervalSeconds = 15 * 60;
+    private const int MaxCheckIntervalSeconds = 20 * 60;
 
     private readonly INotificationService _notifications;
     private readonly ILogger<UpdateService> _logger;
