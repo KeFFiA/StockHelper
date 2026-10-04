@@ -79,6 +79,8 @@ public sealed partial class SettingsViewModel : PageViewModel
 
     public string Version => AppInfo.Version;
 
+    public string Copyright => AppInfo.Copyright;
+
     public string DataDirectory => AppPaths.DataDirectory;
 
     public ObservableCollection<BackupInfo> Backups { get; } = [];
@@ -266,6 +268,10 @@ public sealed partial class SettingsViewModel : PageViewModel
 
     [RelayCommand]
     private void ShowChangelog() => _changelog.ShowAll();
+
+    [RelayCommand]
+    private void ShowLicense() =>
+        _dialogs.ShowDocument(Strings.License_Title, Strings.License_Subtitle, "Icon.Document", AppInfo.LicenseText);
 
     [RelayCommand]
     private static void OpenFolder(string? path)

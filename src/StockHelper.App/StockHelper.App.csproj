@@ -63,6 +63,10 @@
     <Resource Include="Assets\app.ico" />
     <!-- User-facing changelog (Russian): shown once after an update and from Settings. -->
     <EmbeddedResource Include="Resources\Changelog.md" LogicalName="StockHelper.Changelog.md" />
+    <!-- License agreement (Russian and English): shown in Settings and installed next to the exe with the third-party notices. -->
+    <EmbeddedResource Include="..\..\LICENSE.md" LogicalName="StockHelper.License.md" />
+    <Content Include="..\..\LICENSE.md" Link="LICENSE.md" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\THIRD-PARTY-NOTICES.md" Link="THIRD-PARTY-NOTICES.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -8,8 +8,9 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
     <Product>StockHelper</Product>
-    <Company>StockHelper</Company>
-    <Copyright>Copyright © StockHelper</Copyright>
+    <Company>KeFFiA</Company>
+    <Authors>KeFFiA</Authors>
+    <Copyright>Copyright © 2026 KeFFiA. All rights reserved.</Copyright>
     <!-- Overridden in CI from the git tag (vX.Y.Z). -->
     <Version>1.0.0</Version>
   </PropertyGroup>

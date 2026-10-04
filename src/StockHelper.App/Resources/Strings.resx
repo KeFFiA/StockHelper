@@ -1584,4 +1584,16 @@
   <data name="Settings_RecoveryConfirm" xml:space="preserve">
     <value>Создать новый код восстановления? Старый код перестанет действовать.</value>
   </data>
+  <data name="License_Title" xml:space="preserve">
+    <value>Лицензионное соглашение</value>
+  </data>
+  <data name="License_Subtitle" xml:space="preserve">
+    <value>Условия использования StockHelper</value>
+  </data>
+  <data name="License_Button" xml:space="preserve">
+    <value>Лицензионное соглашение</value>
+  </data>
+  <data name="Tip_License" xml:space="preserve">
+    <value>Условия использования программы (на русском и английском)</value>
+  </data>
 </root>
