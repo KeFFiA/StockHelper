@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using StockHelper.App.Behaviors;
 using StockHelper.App.ViewModels.Pages;
 
 namespace StockHelper.App.Views.Pages;
@@ -51,7 +52,7 @@ public partial class StockTakeSessionView : UserControl
     {
         if (sender is TextBox box)
         {
-            box.SelectAll();
+            NoAutoSelect.CaretToEnd(box);
         }
     }
 
@@ -81,7 +82,7 @@ public partial class StockTakeSessionView : UserControl
                 FindChild<TextBox>(container, "CountBox") is { } box)
             {
                 box.Focus();
-                box.SelectAll();
+                NoAutoSelect.CaretToEnd(box);
             }
         });
     }

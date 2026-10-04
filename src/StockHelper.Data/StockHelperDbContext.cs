@@ -26,6 +26,8 @@ public sealed class StockHelperDbContext(DbContextOptions<StockHelperDbContext> 
 
     public DbSet<User> Users => Set<User>();
 
+    public DbSet<RecoveryKey> RecoveryKeys => Set<RecoveryKey>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
         // Quantities and money: fixed precision on every provider.

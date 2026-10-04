@@ -121,6 +121,15 @@ public interface IStockTakeRepository
     Task DeleteAsync(int id, CancellationToken ct = default);
 }
 
+/// <summary>Stores the single account recovery code hash.</summary>
+public interface IRecoveryKeyRepository
+{
+    Task<RecoveryKey?> GetAsync(CancellationToken ct = default);
+
+    /// <summary>Replaces the current code (the old one stops working).</summary>
+    Task<RecoveryKey> ReplaceAsync(string codeHash, CancellationToken ct = default);
+}
+
 public interface IUserRepository
 {
     Task<IReadOnlyList<User>> GetAllAsync(CancellationToken ct = default);

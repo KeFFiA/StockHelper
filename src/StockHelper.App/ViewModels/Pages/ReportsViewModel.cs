@@ -397,6 +397,9 @@ public sealed record ChartPeriodOption(ChartPeriod Period, string Title);
 
 public sealed record ChartItemOption(Item? Item, string Title);
 
+/// <summary>Small stock chart of one item in the "all items" view.</summary>
+public sealed record ItemChart(int ItemId, string Name, string? UnitName, decimal MinStock, IReadOnlyList<StockPoint> Points, string ConsumptionText);
+
 /// <summary>Consumption bars and stock history for a chosen period (month, 3 / 6 months, year).</summary>
 public sealed partial class ChartsReportSection : ReportSection
 {
@@ -443,14 +446,34 @@ public sealed partial class ChartsReportSection : ReportSection
     [ObservableProperty]
     public partial string? UnitName { get; private set; }
 
+    /// <summary>"All items": a stock chart per item (stock is per item, units differ, so there is no common chart).</summary>
+    [ObservableProperty]
+    public partial IReadOnlyList<ItemChart> ItemCharts { get; private set; } = [];
+
     public bool HasItem => SelectedItem?.Item is not null;
+
+    public bool IsAllItems => SelectedItem is not null && SelectedItem.Item is null;
+
+    /// <summary>Consumption bars: per item in its unit, or for all items in rubles (only for roles that see costs).</summary>
+    public bool ShowBars => HasItem || (IsAllItems && _canViewCosts);
 
     partial void OnSelectedPeriodChanged(ChartPeriodOption value) => Rebuild();
 
     partial void OnSelectedItemChanged(ChartItemOption? value)
     {
         OnPropertyChanged(nameof(HasItem));
+        OnPropertyChanged(nameof(IsAllItems));
+        OnPropertyChanged(nameof(ShowBars));
         Rebuild();
+    }
+
+    [RelayCommand]
+    private void OpenItem(ItemChart? chart)
+    {
+        if (chart is not null)
+        {
+            SelectItem(chart.ItemId);
+        }
     }
 
     /// <summary>Opens the charts of one item (from the item panel).</summary>
@@ -462,10 +485,7 @@ public sealed partial class ChartsReportSection : ReportSection
         _data = data;
         var selectedId = SelectedItem?.Item?.Id;
         ItemOptions.Clear();
-        if (_canViewCosts)
-        {
-            ItemOptions.Add(new ChartItemOption(null, Strings.Reports_ChartsAllItems));
-        }
+        ItemOptions.Add(new ChartItemOption(null, Strings.Reports_ChartsAllItems));
 
         foreach (var item in (data?.Snapshot.Items ?? []).Where(i => !i.IsArchived).OrderBy(i => i.Name, StringComparer.CurrentCultureIgnoreCase))
         {
@@ -480,7 +500,15 @@ public sealed partial class ChartsReportSection : ReportSection
     {
     }
 
-    public override ExportSheet BuildSheet() => new(
+    public override ExportSheet BuildSheet() => IsAllItems && !_canViewCosts
+        ? new(
+            Title,
+            $"{Title}: {SelectedItem?.Title}",
+            SelectedPeriod.Title,
+            [Strings.Items_Name, Strings.Reports_ConsumptionQty],
+            [ExportFormat.Text, ExportFormat.Text],
+            [.. ItemCharts.Select(c => new object?[] { c.Name, c.ConsumptionText })])
+        : new(
         Title,
         $"{Title}: {SelectedItem?.Title}",
         $"{SelectedPeriod.Title} · {BarsTitle}",
@@ -494,6 +522,7 @@ public sealed partial class ChartsReportSection : ReportSection
         {
             Bars = [];
             StockPoints = null;
+            ItemCharts = [];
             return;
         }
 
@@ -530,9 +559,28 @@ public sealed partial class ChartsReportSection : ReportSection
         if (item is null)
         {
             StockPoints = null;
+            var fromUtc = buckets[0].Start.ToUniversalTime();
+            ItemCharts = [.. _data.Snapshot.Items
+                .Where(i => !i.IsArchived)
+                .OrderBy(i => i.Name, StringComparer.CurrentCultureIgnoreCase)
+                .Select(i => new ItemChart(
+                    i.Id,
+                    i.Name,
+                    i.Unit?.Name,
+                    i.MinStock,
+                    ChartCalculator.GetStockHistory(_data.Snapshot, i.Id, fromUtc, _data.NowUtc),
+                    string.Format(
+                        Strings.Reports_ChartsItemConsumption,
+                        NumberInput.Format(Math.Round(Math.Max(0, ChartCalculator.ConsumptionQuantity(_data.Snapshot, i.Id, fromUtc, _data.NowUtc)), 2)),
+                        i.Unit?.Name)))];
+            if (!_canViewCosts)
+            {
+                Summary = string.Empty;
+            }
         }
         else
         {
+            ItemCharts = [];
             var now = _data.NowUtc;
             StockPoints = ChartCalculator.GetStockHistory(_data.Snapshot, item.Id, buckets[0].Start.ToUniversalTime(), now);
             MinStock = item.MinStock;

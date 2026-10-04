@@ -10,7 +10,10 @@ public static class AppRestart
     {
         if (Environment.ProcessPath is { } exe)
         {
-            var args = Environment.GetCommandLineArgs().Skip(1).Where(a => !a.Equals("--demo", StringComparison.OrdinalIgnoreCase));
+            // One-time switches are not repeated on restart.
+            var args = Environment.GetCommandLineArgs().Skip(1).Where(a =>
+                !a.Equals("--demo", StringComparison.OrdinalIgnoreCase) &&
+                !a.Equals(Services.SessionCoordinator.ResetAdminArgument, StringComparison.OrdinalIgnoreCase));
             Process.Start(new ProcessStartInfo(exe, string.Join(' ', args)) { UseShellExecute = false });
         }
 

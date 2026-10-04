@@ -6,7 +6,7 @@ namespace StockHelper.App.Behaviors;
 
 public static class FocusBehavior
 {
-    /// <summary>Focuses the element (and selects text in a TextBox) once it is loaded.</summary>
+    /// <summary>Focuses the element once it is loaded; the caret goes to the end of the text, nothing is selected.</summary>
     public static readonly DependencyProperty FocusOnLoadProperty = DependencyProperty.RegisterAttached(
         "FocusOnLoad", typeof(bool), typeof(FocusBehavior), new PropertyMetadata(false, OnFocusOnLoadChanged));
 
@@ -26,7 +26,7 @@ public static class FocusBehavior
             element.Focus();
             if (element is TextBox box)
             {
-                box.SelectAll();
+                NoAutoSelect.CaretToEnd(box);
             }
         });
     }

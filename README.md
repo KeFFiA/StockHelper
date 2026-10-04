@@ -4,7 +4,7 @@ Desktop app for tracking consumables: item catalog, stock-taking, automatic cons
 
 **User guides (Russian):** [overview](docs/README.md) · [general](docs/general.md) · [storekeeper](docs/storekeeper.md) · [manager](docs/manager.md) · [administrator](docs/administrator.md)
 
-**Download:** [latest release](https://github.com/KeFFiA/StockHelper/releases/latest) — `StockHelper-win-Setup.exe` ·
+**Download:** [latest release](https://github.com/KeFFiA/StockHelper/releases/latest) — `StockHelper-win.msi` ·
 [demo version](https://github.com/KeFFiA/StockHelper/releases/tag/demo) — `StockHelper-Demo.exe` with sample data.
 
 ## Features
@@ -123,7 +123,16 @@ git push origin main v1.0.0
 ```
 
 The tag triggers `.github/workflows/release.yml`: tests, self-contained publish, Velopack pack and
-upload to GitHub Releases (`StockHelper-win-Setup.exe` is the installer). Installed apps download the
+upload to GitHub Releases. `StockHelper-win.msi` is the only installer offered: a wizard with the license agreement
+(`LICENSE.md`, Russian and English) and the choice to install for the current user or for all users; the one-click
+`Setup.exe` and the portable zip are removed from the release. Installed apps download the
 update in the background and offer to restart.
 
 Code signing: add a `SIGN_PARAMS` repository secret with signtool arguments; without it packages are unsigned.
+
+## License
+
+Proprietary software. Copyright © 2026 Aleksandr Ogienko. All rights reserved.
+The source code is published for reference only; using, copying, modifying or distributing it requires the
+copyright holder's permission. See [LICENSE.md](LICENSE.md) (Russian and English) and
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the open-source components included in the app.

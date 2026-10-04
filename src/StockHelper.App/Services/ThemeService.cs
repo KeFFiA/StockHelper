@@ -32,20 +32,32 @@ public sealed class ThemeService : IThemeService
         WindowTheme.SetTheme(theme);
         ApplyPalette();
 
+        // A theme switch reloads the Fluent dictionaries with the accent WPF cached at start-up: recolor them.
+        AccentColors.Apply();
+
         if (!_listening)
         {
-            // "As in system": follow Windows light/dark mode. The event also fires for unrelated settings
-            // (keyboard layout, accent color...), so react later, outside WPF's own theme update, and only on a real change.
+            // Follow Windows while running: light/dark mode ("As in system" only) and the accent color (always).
+            // The event also fires for unrelated settings (keyboard layout...), so react later, outside WPF's own
+            // theme update, and only on a real change.
             SystemEvents.UserPreferenceChanged += (_, e) =>
             {
-                if (e.Category == UserPreferenceCategory.General && _theme == AppTheme.System)
+                if (e.Category is not (UserPreferenceCategory.General or UserPreferenceCategory.Color or UserPreferenceCategory.VisualStyle))
                 {
-                    Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>
+                    return;
+                }
+
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>
+                {
+                    if (_theme == AppTheme.System)
                     {
                         WindowTheme.SetTheme(_theme);
                         ApplyPalette();
-                    });
-                }
+                    }
+
+                    // Forced: WPF may have reloaded its theme dictionaries (fresh brushes) on the same change.
+                    AccentColors.Apply();
+                });
             };
             _listening = true;
         }

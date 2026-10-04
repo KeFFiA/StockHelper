@@ -31,6 +31,7 @@ public enum DomainErrorCode
     PackageOfPackage,
     OpenPackageUnavailable,
     OpenPackageAlreadyIssued,
+    InvalidRecoveryCode,
 }
 
 public class DomainException(DomainErrorCode code, string? details = null)

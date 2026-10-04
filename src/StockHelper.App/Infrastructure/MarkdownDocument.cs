@@ -6,8 +6,8 @@ using System.Windows.Media;
 namespace StockHelper.App.Infrastructure;
 
 /// <summary>
-/// Minimal Markdown → FlowDocument for the changelog: "#", "##", "###" headings, "- " bullets,
-/// paragraphs and **bold**. Colors and fonts come from the app theme.
+/// Minimal Markdown → FlowDocument for the changelog and the license: "#", "##", "###" headings, "- " bullets,
+/// "---" rules, paragraphs and **bold**. Colors and fonts come from the app theme.
 /// </summary>
 public static partial class MarkdownDocument
 {
@@ -42,12 +42,28 @@ public static partial class MarkdownDocument
                 list = null;
             }
 
-            if (line.Length == 0 || line.StartsWith("# ", StringComparison.Ordinal))
+            if (line.Length == 0)
             {
                 continue;
             }
 
-            if (line.StartsWith("### ", StringComparison.Ordinal))
+            if (line == "---")
+            {
+                document.Blocks.Add(new Paragraph { Margin = new Thickness(0, 12, 0, 12), BorderThickness = new Thickness(0, 0, 0, 1),
+                    BorderBrush = (Brush)themeSource.FindResource("Brush.Divider") });
+                continue;
+            }
+
+            if (line.StartsWith("# ", StringComparison.Ordinal))
+            {
+                var title = Inline(line[2..]);
+                title.FontWeight = FontWeights.SemiBold;
+                title.FontSize = 24;
+                title.FontFamily = (FontFamily)themeSource.FindResource("Font.Display");
+                title.Margin = new Thickness(0, document.Blocks.Count == 0 ? 0 : 18, 0, 8);
+                document.Blocks.Add(title);
+            }
+            else if (line.StartsWith("### ", StringComparison.Ordinal))
             {
                 var heading = Inline(line[4..]);
                 heading.FontWeight = FontWeights.SemiBold;
@@ -69,7 +85,6 @@ public static partial class MarkdownDocument
             {
                 var paragraph = Inline(line);
                 paragraph.Margin = new Thickness(0, 0, 0, 8);
-                paragraph.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorSecondaryBrush");
                 document.Blocks.Add(paragraph);
             }
         }

@@ -18,8 +18,15 @@ public sealed class SessionCoordinator(
     ISettingsService settings,
     IBackupService backups,
     IUpdateService updates,
-    IChangelogService changelog)
+    IChangelogService changelog,
+    IDialogService dialogs)
 {
+    /// <summary>
+    /// Local administrator reset: run on the computer with the database, e.g.
+    /// <c>%LOCALAPPDATA%\StockHelper\current\StockHelper.exe --reset-admin</c>.
+    /// </summary>
+    public const string ResetAdminArgument = "--reset-admin";
+
     private MainWindow? _mainWindow;
 
     public async Task StartAsync()
@@ -39,7 +46,8 @@ public sealed class SessionCoordinator(
             await services.GetRequiredService<DemoData>().SeedAsync();
         }
 
-        if (!await ShowAuthAsync())
+        var localReset = Environment.GetCommandLineArgs().Contains(ResetAdminArgument, StringComparer.OrdinalIgnoreCase);
+        if (!await ShowAuthAsync(localReset))
         {
             Application.Current.Shutdown();
             return;
@@ -52,7 +60,7 @@ public sealed class SessionCoordinator(
         await services.GetRequiredService<ShellViewModel>().StartAsync();
         await changelog.ShowIfUpdatedAsync();
 
-        // Fire and forget: never blocks the UI, errors are logged inside.
+        // Fire and forget: checks now and every few minutes while the app runs; never blocks the UI, errors are logged inside.
         _ = updates.CheckInBackgroundAsync();
     }
 
@@ -71,16 +79,15 @@ public sealed class SessionCoordinator(
         await services.GetRequiredService<ShellViewModel>().StartAsync();
     }
 
-    private async Task<bool> ShowAuthAsync()
+    private async Task<bool> ShowAuthAsync(bool localReset = false)
     {
         var viewModel = services.GetRequiredService<AuthViewModel>();
-        await viewModel.InitializeAsync();
-        var window = new AuthWindow(viewModel);
+        await viewModel.InitializeAsync(localReset);
+        var window = new AuthWindow(viewModel, dialogs);
         return window.ShowDialog() == true;
     }
 
     private static SeedData CreateSeedData() => new(
         Units: Strings.Seed_Units.Split('|'),
-        Categories: Strings.Seed_Categories.Split('|'),
         DefaultLocation: Strings.Seed_DefaultLocation);
 }

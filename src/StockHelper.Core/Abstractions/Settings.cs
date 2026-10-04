@@ -66,4 +66,4 @@ public interface IDatabaseInitializer
 }
 
 /// <summary>Localized names for the initial reference data, supplied by the UI layer.</summary>
-public sealed record SeedData(IReadOnlyList<string> Units, IReadOnlyList<string> Categories, string DefaultLocation);
+public sealed record SeedData(IReadOnlyList<string> Units, string DefaultLocation);

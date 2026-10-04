@@ -6,14 +6,16 @@ using StockHelper.App.Infrastructure;
 
 namespace StockHelper.App.Views.Dialogs;
 
-/// <summary>"What's new" window rendering the changelog Markdown.</summary>
-public partial class ChangelogWindow : Window
+/// <summary>Read-only Markdown document in a card window: the changelog ("What's new") and the license agreement.</summary>
+public partial class DocumentWindow : Window
 {
-    public ChangelogWindow(string title, string markdown)
+    public DocumentWindow(string title, string subtitle, string iconKey, string markdown)
     {
         InitializeComponent();
         Title = title;
         TitleText.Text = title;
+        SubtitleText.Text = subtitle;
+        IconText.Text = (string)FindResource(iconKey);
         Viewer.Document = MarkdownDocument.Build(markdown, this);
         Viewer.PreviewMouseWheel += OnMouseWheel;
     }

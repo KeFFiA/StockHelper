@@ -140,6 +140,15 @@ internal sealed class StockTakeLineConfiguration : IEntityTypeConfiguration<Stoc
     }
 }
 
+internal sealed class RecoveryKeyConfiguration : IEntityTypeConfiguration<RecoveryKey>
+{
+    public void Configure(EntityTypeBuilder<RecoveryKey> b)
+    {
+        b.ConfigureAudit();
+        b.Property(e => e.CodeHash).HasMaxLength(500).IsRequired();
+    }
+}
+
 internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> b)

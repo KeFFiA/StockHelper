@@ -51,7 +51,7 @@ public sealed partial class ChangelogService(ISettingsService settings, ILogger<
 
     private static void Show(string title, IReadOnlyList<ChangelogSection> sections)
     {
-        var window = new ChangelogWindow(title, string.Join("\n\n", sections.Select(s => s.Markdown)));
+        var window = new DocumentWindow(title, Resources.Strings.Changelog_Subtitle, "Icon.Changelog", string.Join("\n\n", sections.Select(s => s.Markdown)));
         if (Application.Current.MainWindow is { IsVisible: true } owner)
         {
             window.Owner = owner;

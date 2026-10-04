@@ -52,7 +52,7 @@ jobs:
           $notes = $lines[($start + 1)..($end - 1)] -join "`n"
           $footer = @(
             '', '---', '',
-            '**Установка:** скачайте и запустите `StockHelper-win-Setup.exe`. Установленные программы обновятся сами.',
+            '**Установка:** скачайте и запустите `StockHelper-win.msi` — мастер покажет лицензионное соглашение и предложит установить программу для текущего пользователя или для всех пользователей компьютера. Установленные программы обновятся сами.',
             '',
             '**Документация:** [общая](https://github.com/${{ github.repository }}/blob/main/docs/general.md) · [кладовщик](https://github.com/${{ github.repository }}/blob/main/docs/storekeeper.md) · [руководитель](https://github.com/${{ github.repository }}/blob/main/docs/manager.md) · [администратор](https://github.com/${{ github.repository }}/blob/main/docs/administrator.md)'
           ) -join "`n"
@@ -95,8 +95,13 @@ jobs:
             --packDir publish `
             --mainExe StockHelper.exe `
             --packTitle StockHelper `
-            --packAuthors StockHelper `
+            --packAuthors "Aleksandr Ogienko" `
             --icon src/StockHelper.App/Assets/app.ico `
+            --msi `
+            --instLicense LICENSE.md `
+            --instLocation Either `
+            --msiDialogBackground installer/dialog.bmp `
+            --msiTopBanner installer/banner.bmp `
             --releaseNotes release-notes.md `
             -o releases `
             @sign
@@ -115,3 +120,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release edit ${{ github.ref_name }} --notes-file release-notes.md
+
+      # Only the MSI is offered for download: it shows the license agreement before installing.
+      # Updates use releases.win.json and the .nupkg packages, which stay.
+      - name: Keep the MSI as the only installer
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          foreach ($asset in 'StockHelper-win-Setup.exe', 'StockHelper-win-Portable.zip') {
+            gh release delete-asset ${{ github.ref_name }} $asset --yes 2>$null
+            $global:LASTEXITCODE = 0
+          }
