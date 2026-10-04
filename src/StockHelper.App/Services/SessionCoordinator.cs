@@ -60,7 +60,7 @@ public sealed class SessionCoordinator(
         await services.GetRequiredService<ShellViewModel>().StartAsync();
         await changelog.ShowIfUpdatedAsync();
 
-        // Fire and forget: never blocks the UI, errors are logged inside.
+        // Fire and forget: checks now and every few minutes while the app runs; never blocks the UI, errors are logged inside.
         _ = updates.CheckInBackgroundAsync();
     }
 

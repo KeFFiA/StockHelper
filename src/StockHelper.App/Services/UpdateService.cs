@@ -19,7 +19,10 @@ public interface IUpdateService : INotifyPropertyChanged
 
     string StatusText { get; }
 
-    /// <summary>Startup check: downloads silently and shows an unobtrusive notification. Errors are only logged.</summary>
+    /// <summary>
+    /// Checks at start-up and then every 5–10 minutes while the app runs, until an update is downloaded:
+    /// downloads silently and shows an unobtrusive notification. Errors are only logged.
+    /// </summary>
     Task CheckInBackgroundAsync();
 
     IAsyncRelayCommand CheckNowCommand { get; }
@@ -32,10 +35,14 @@ public sealed partial class UpdateService : ObservableObject, IUpdateService
 {
     public const string RepositoryUrl = "https://github.com/KeFFiA/StockHelper";
 
+    private const int MinCheckIntervalSeconds = 5 * 60;
+    private const int MaxCheckIntervalSeconds = 10 * 60;
+
     private readonly INotificationService _notifications;
     private readonly ILogger<UpdateService> _logger;
     private readonly UpdateManager? _manager;
     private UpdateInfo? _pending;
+    private bool _backgroundStarted;
 
     public UpdateService(INotificationService notifications, ILogger<UpdateService> logger)
     {
@@ -68,23 +75,32 @@ public sealed partial class UpdateService : ObservableObject, IUpdateService
 
     public async Task CheckInBackgroundAsync()
     {
-        if (!IsInstalled)
+        if (!IsInstalled || _backgroundStarted)
         {
             return;
         }
 
-        try
+        _backgroundStarted = true;
+        while (!IsUpdateReady)
         {
-            if (await CheckAndDownloadAsync())
+            try
             {
-                ShowReadyNotification();
+                if (await CheckAndDownloadAsync())
+                {
+                    ShowReadyNotification();
+                    return;
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            // No internet, GitHub unavailable, etc.: not a user-facing error.
-            _logger.LogWarning(ex, "Background update check failed");
-            StatusText = string.Empty;
+            catch (Exception ex)
+            {
+                // No internet, GitHub unavailable, etc.: not a user-facing error.
+                _logger.LogWarning(ex, "Background update check failed");
+                StatusText = string.Empty;
+            }
+
+            // A random pause spreads the requests of computers started at the same time
+            // (GitHub limits unauthenticated requests per IP address).
+            await Task.Delay(TimeSpan.FromSeconds(Random.Shared.Next(MinCheckIntervalSeconds, MaxCheckIntervalSeconds + 1)));
         }
     }
 
