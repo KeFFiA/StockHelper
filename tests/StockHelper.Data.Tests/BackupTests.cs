@@ -82,7 +82,7 @@ public sealed class BackupTests : IDisposable
         var factory = new Factory(_options);
         var backups = new SqliteBackupService(_options, NullLogger<SqliteBackupService>.Instance);
         var initializer = new DatabaseInitializer(factory, backups, NullLogger<DatabaseInitializer>.Instance);
-        var seed = new Core.Abstractions.SeedData(["шт"], ["Общее"], "Склад");
+        var seed = new Core.Abstractions.SeedData(["шт"], "Склад");
 
         await initializer.InitializeAsync(seed);
         Assert.Empty(await backups.GetBackupsAsync());

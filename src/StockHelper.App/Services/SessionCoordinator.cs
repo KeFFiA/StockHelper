@@ -81,6 +81,5 @@ public sealed class SessionCoordinator(
 
     private static SeedData CreateSeedData() => new(
         Units: Strings.Seed_Units.Split('|'),
-        Categories: Strings.Seed_Categories.Split('|'),
         DefaultLocation: Strings.Seed_DefaultLocation);
 }

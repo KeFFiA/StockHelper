@@ -41,12 +41,6 @@ public sealed class DatabaseInitializer(
             changed = true;
         }
 
-        if (!await db.Categories.AnyAsync(ct))
-        {
-            db.Categories.AddRange(seed.Categories.Select(name => new Category { Name = name }));
-            changed = true;
-        }
-
         if (!await db.StorageLocations.AnyAsync(ct))
         {
             db.StorageLocations.Add(new StorageLocation { Name = seed.DefaultLocation });
